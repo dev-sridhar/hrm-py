@@ -195,19 +195,21 @@
     }
 
     .grid-3-col > .card-panel {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+
+    .grid-3-col-tall > .card-panel {
         height: 485px;
         min-height: 485px;
         max-height: 485px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
         overflow: hidden;
-        margin-bottom: 20px;
     }
 
     @media (max-width: 1100px) {
         .grid-3-col { grid-template-columns: 1fr; }
-        .grid-3-col > .card-panel {
+        .grid-3-col-tall > .card-panel {
             height: auto;
             min-height: 460px;
             max-height: none;
@@ -727,7 +729,7 @@
     </div>
 
     <!-- Section 1: Overview Grid (3 Equal Columns) -->
-    <div class="grid-3-col">
+    <div class="grid-3-col grid-3-col-tall">
         <!-- Column 1: 1. ATTENDANCE OVERVIEW -->
         <div class="card-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div style="flex-grow: 1;">
@@ -971,7 +973,7 @@
     </div>
 
     <!-- Section 2: Department, Activities & Upcoming (3 Columns) -->
-    <div class="grid-3-col">
+    <div class="grid-3-col grid-3-col-tall">
         <!-- Card 1: 4. OVERALL PERFORMANCE -->
         <div class="card-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
             <div style="flex-grow: 1;">
