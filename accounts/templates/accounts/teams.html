@@ -1,0 +1,685 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Employee Portal - Teams & Functional Departments{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Header Section */
+    .teams-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .teams-title-wrap h2 {
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .teams-title-wrap p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+
+    /* KPI Summary Stats */
+    .kpi-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    @media (max-width: 992px) {
+        .kpi-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+        .kpi-metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .kpi-card-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 8px 0 4px;
+        letter-spacing: -0.5px;
+    }
+
+    .kpi-card-sub {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Controls & Filter Bar */
+    .controls-filter-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 16px 20px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    /* Single Line Non-Scrollable Team Navigation Tabs Grid */
+    .team-tab-pills-row {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 6px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 1100px) {
+        .team-tab-pills-row {
+            gap: 4px;
+        }
+    }
+
+    .team-tab-pill {
+        padding: 8px 4px;
+        border-radius: 10px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        white-space: nowrap;
+        text-align: center;
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .team-tab-pill:hover {
+        background: var(--card-bg);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .team-tab-pill.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 3px 10px var(--primary-shadow);
+    }
+
+    .tab-title-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .tab-counter-badge {
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 800;
+        background: rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
+    }
+
+    .team-tab-pill.active .tab-counter-badge {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+    }
+
+    .search-row-box {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .teams-search-wrap {
+        position: relative;
+        flex: 1;
+        max-width: 380px;
+    }
+
+    .teams-search-wrap svg {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .teams-search-input {
+        width: 100%;
+        padding: 9px 14px 9px 38px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--input-bg);
+        color: var(--text-main);
+        font-size: 12.5px;
+        font-weight: 600;
+        outline: none;
+        transition: all 0.15s ease;
+    }
+
+    .teams-search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-shadow);
+    }
+
+    /* Team Section Block */
+    .team-section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 24px;
+    }
+
+    .team-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .team-identity-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .team-icon-pill {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .team-info-meta h3 {
+        font-size: 17px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .team-info-meta p {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    .team-stats-pills-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .team-stat-chip {
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 11.5px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* Enhanced Clean Members Grid */
+    .team-members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
+    }
+
+    .member-profile-card {
+        background: var(--bg-main);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 18px;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+        position: relative;
+    }
+
+    .member-profile-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: rgba(124, 93, 250, 0.45);
+    }
+
+    .member-top-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .member-avatar-wrap {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .member-avatar-img {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        object-fit: cover;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid rgba(124, 93, 250, 0.15);
+        display: block;
+    }
+
+    .member-avatar-fallback {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #7c5dfa 0%, #a855f7 100%);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 10px var(--primary-shadow);
+    }
+
+    .presence-dot-indicator {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2.5px solid var(--bg-main);
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+    }
+
+    .dot-in_office { background: #10b981; }
+    .dot-remote { background: #3b82f6; }
+    .dot-meeting { background: #f59e0b; }
+    .dot-on_leave { background: #f43f5e; }
+    .dot-out_of_office { background: #8b5cf6; }
+
+    .member-main-details {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .member-name-link {
+        font-size: 15.5px;
+        font-weight: 800;
+        color: var(--text-main);
+        text-decoration: none;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: color 0.15s ease;
+        line-height: 1.25;
+    }
+
+    .member-name-link:hover {
+        color: var(--primary);
+    }
+
+    .member-desig-text {
+        font-size: 12.5px;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-top: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .member-role-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 8px;
+        margin-top: 6px;
+        letter-spacing: 0.2px;
+    }
+
+    .member-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+
+    .punch-status-pill {
+        font-size: 11.5px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    .btn-view-profile-sm {
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--primary);
+        background: var(--pill-purple);
+        border: 1px solid rgba(124, 93, 250, 0.25);
+        text-decoration: none;
+        transition: all 0.18s ease;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-view-profile-sm:hover {
+        background: var(--primary);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--primary-shadow);
+    }
+
+    /* Empty state */
+    .empty-team-state {
+        text-align: center;
+        padding: 36px 16px;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Header Bar -->
+    <div class="teams-header-bar">
+        <div class="teams-title-wrap">
+            <h2>
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Teams & Functional Units
+            </h2>
+            <p>Direct team rosters across all 8 organizational functional groups.</p>
+        </div>
+    </div>
+
+    <!-- 4 KPI Summary Cards -->
+    <div class="kpi-metrics-grid">
+        <div class="kpi-card">
+            <div class="kpi-card-label">
+                <span>Total Teams</span>
+                <div style="width: 26px; height: 26px; border-radius: 8px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </div>
+            </div>
+            <div class="kpi-card-value">{{ total_teams_count }}</div>
+            <div class="kpi-card-sub">
+                <span>Active Departments</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-card-label">
+                <span>Total Members</span>
+                <div style="width: 26px; height: 26px; border-radius: 8px; background: var(--pill-blue); color: #3b82f6; display: flex; align-items: center; justify-content: center;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </div>
+            </div>
+            <div class="kpi-card-value">{{ total_members }}</div>
+            <div class="kpi-card-sub">
+                <span>Active Organization Staff</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-card-label">
+                <span>In Office Today</span>
+                <div style="width: 26px; height: 26px; border-radius: 8px; background: var(--pill-green); color: #10b981; display: flex; align-items: center; justify-content: center;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+            </div>
+            <div class="kpi-card-value">{{ total_in_office }}</div>
+            <div class="kpi-card-sub">
+                <span style="color: #10b981; font-weight: 700;">On-Premises Presence</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-card-label">
+                <span>Remote / Online</span>
+                <div style="width: 26px; height: 26px; border-radius: 8px; background: var(--pill-cyan); color: #06b6d4; display: flex; align-items: center; justify-content: center;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+            </div>
+            <div class="kpi-card-value">{{ total_remote }}</div>
+            <div class="kpi-card-sub">
+                <span style="color: #06b6d4; font-weight: 700;">Active Connected</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Pills & Search Card -->
+    <div class="controls-filter-card">
+        <!-- Single Line Non-Scrollable Team Navigation Tabs -->
+        <div class="team-tab-pills-row">
+            <a href="?team=all{% if search_query %}&q={{ search_query }}{% endif %}" class="team-tab-pill {% if selected_team == 'all' %}active{% endif %}" title="All Teams ({{ total_members }})">
+                <span class="tab-title-text">All Teams</span>
+                <span class="tab-counter-badge">{{ total_members }}</span>
+            </a>
+            {% for t in teams_config %}
+            <a href="?team={{ t.key }}{% if search_query %}&q={{ search_query }}{% endif %}" class="team-tab-pill {% if selected_team == t.key %}active{% endif %}" title="{{ t.name }} ({{ t.member_count }})">
+                <span class="tab-title-text">{{ t.name }}</span>
+                <span class="tab-counter-badge">{{ t.member_count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Search input -->
+        <div class="search-row-box">
+            <form method="get" class="teams-search-wrap">
+                {% if selected_team != 'all' %}
+                <input type="hidden" name="team" value="{{ selected_team }}">
+                {% endif %}
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" name="q" value="{{ search_query }}" class="teams-search-input" placeholder="Search team members by name, role, email..." oninput="handleClientSearch(this.value)">
+            </form>
+        </div>
+    </div>
+
+    <!-- Team Sections -->
+    {% for team in display_teams %}
+    <div class="team-section-card" id="teamSection_{{ team.key }}">
+        <div class="team-section-header">
+            <div class="team-identity-left">
+                <div class="team-icon-pill" style="background: {{ team.bg_color }}; color: {{ team.color }}; border: 1px solid {{ team.border_color }};">
+                    {{ team.short_code }}
+                </div>
+                <div class="team-info-meta">
+                    <h3>
+                        {{ team.name }}
+                        <span style="font-size: 12px; font-weight: 700; color: {{ team.color }}; background: {{ team.bg_color }}; padding: 2px 10px; border-radius: 12px;">
+                            {{ team.member_count }} Members
+                        </span>
+                    </h3>
+                    <p>{{ team.description }}</p>
+                </div>
+            </div>
+
+            <div class="team-stats-pills-right">
+                <span class="team-stat-chip" style="background: var(--pill-green); color: #10b981;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                    {{ team.in_office_count }} In Office
+                </span>
+                <span class="team-stat-chip" style="background: var(--pill-blue); color: #3b82f6;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #3b82f6; display: inline-block;"></span>
+                    {{ team.remote_count }} Remote
+                </span>
+                {% if team.leave_count > 0 %}
+                <span class="team-stat-chip" style="background: var(--pill-red); color: #f43f5e;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: #f43f5e; display: inline-block;"></span>
+                    {{ team.leave_count }} On Leave
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if team.members %}
+        <div class="team-members-grid">
+            {% for member in team.members %}
+            <div class="member-profile-card team-member-card" data-search-text="{{ member.full_name|lower }} {{ member.email|lower }} {{ member.designation|lower }} {{ member.department|lower }} {{ member.username|lower }}">
+                <div class="member-top-row">
+                    <div class="member-avatar-wrap">
+                        {% if member.avatar %}
+                        <img src="{{ member.avatar }}" alt="{{ member.full_name }}" class="member-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="member-avatar-fallback" style="display: none;">{{ member.initials }}</div>
+                        {% else %}
+                        <div class="member-avatar-fallback">{{ member.initials }}</div>
+                        {% endif %}
+                        <span class="presence-dot-indicator dot-{{ member.presence }}" title="{{ member.presence_label }}"></span>
+                    </div>
+                    <div class="member-main-details">
+                        <a href="{% url 'employee_profile' member.id %}" class="member-name-link" title="{{ member.full_name }}">
+                            {{ member.full_name }}
+                        </a>
+                        <div class="member-desig-text" title="{{ member.designation }}">{{ member.designation }}</div>
+                        <span class="member-role-badge" style="background: {{ team.bg_color }}; color: {{ team.color }};">
+                            {{ team.name }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="member-card-footer">
+                    <div>
+                        {% if member.is_punched_in %}
+                        <span class="punch-status-pill" style="color: #10b981; background: var(--pill-green);">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2.2"/><path stroke-linecap="round" stroke-width="2.2" d="M12 6v6l4 2"/></svg>
+                            In: {{ member.punch_in_str }}
+                        </span>
+                        {% elif member.punch_out_str %}
+                        <span class="punch-status-pill" style="color: var(--text-muted);">
+                            Out: {{ member.punch_out_str }}
+                        </span>
+                        {% elif member.presence == 'on_leave' %}
+                        <span class="punch-status-pill" style="color: #f43f5e; background: var(--pill-red);">
+                            On Leave
+                        </span>
+                        {% else %}
+                        <span class="punch-status-pill" style="color: var(--text-muted);">
+                            Not Checked In
+                        </span>
+                        {% endif %}
+                    </div>
+                    <a href="{% url 'employee_profile' member.id %}" class="btn-view-profile-sm">
+                        <span>View Profile</span>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-team-state">
+            No active members found for this team matching the search query.
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    // Real-time client side search across team member cards
+    function handleClientSearch(val) {
+        const query = val.trim().toLowerCase();
+        const cards = document.querySelectorAll('.team-member-card');
+        
+        cards.forEach(card => {
+            const searchText = card.getAttribute('data-search-text') || '';
+            if (!query || searchText.includes(query)) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Hide empty team sections dynamically
+        document.querySelectorAll('.team-section-card').forEach(section => {
+            const visibleCards = section.querySelectorAll('.team-member-card:not([style*="display: none"])');
+            const emptyState = section.querySelector('.empty-team-state');
+            
+            if (visibleCards.length === 0 && !emptyState) {
+                const grid = section.querySelector('.team-members-grid');
+                if (grid) {
+                    let tempEmpty = section.querySelector('.dynamic-empty-state');
+                    if (!tempEmpty) {
+                        tempEmpty = document.createElement('div');
+                        tempEmpty.className = 'empty-team-state dynamic-empty-state';
+                        tempEmpty.textContent = 'No team members matching your search query.';
+                        grid.parentNode.insertBefore(tempEmpty, grid.nextSibling);
+                    }
+                    tempEmpty.style.display = 'block';
+                }
+            } else {
+                const tempEmpty = section.querySelector('.dynamic-empty-state');
+                if (tempEmpty) tempEmpty.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}

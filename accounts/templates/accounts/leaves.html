@@ -1,0 +1,468 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Employee Portal - Leave Applications & Balances{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    .leaves-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    /* 4 Leave Balance Cards Grid */
+    .leave-balance-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 1024px) {
+        .leave-balance-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 500px) {
+        .leave-balance-grid { grid-template-columns: 1fr; }
+    }
+
+    .leave-card-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.2s ease;
+    }
+
+    .leave-card-box:hover {
+        transform: translateY(-2px);
+    }
+
+    .leave-card-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+    }
+
+    .leave-card-num {
+        font-size: 26px;
+        font-weight: 900;
+        margin: 6px 0 2px 0;
+        line-height: 1.1;
+    }
+
+    .leave-card-sub {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    /* Action Buttons Group */
+    .crud-action-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-action-icon:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--pill-purple);
+    }
+
+    .btn-action-icon.danger:hover {
+        border-color: var(--danger);
+        color: var(--danger);
+        background: var(--pill-red);
+    }
+
+    .btn-action-icon.approve:hover {
+        border-color: #10b981;
+        color: #10b981;
+        background: var(--pill-green);
+    }
+
+    /* Professional Pagination Footer */
+    .pagination-footer {
+        padding: 16px 4px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border);
+        margin-top: 14px;
+    }
+
+    .pagination-info {
+        font-size: 12.5px;
+        color: var(--text-muted);
+    }
+
+    .pagination-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        min-width: 32px;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        background: var(--card-bg);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+
+<!-- Header & Apply Action -->
+<div class="leaves-header-bar">
+    <div>
+        <h2 style="font-size: 20px; font-weight: 800; color: var(--text-main);">Leave Applications & Balances</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Track your accrued paid time-off and submit new leave requests.</p>
+    </div>
+    <button type="button" class="btn-custom btn-custom-primary" onclick="openLeaveModal()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>+ Apply for Leave</span>
+    </button>
+</div>
+
+<!-- Leave Balances Overview -->
+<div class="leave-balance-grid">
+    <div class="leave-card-box">
+        <span class="leave-card-label">Casual Leave (CL)</span>
+        <div class="leave-card-num" style="color: #10b981;">{{ leave_balances.casual }} <span style="font-size: 14px; font-weight: 600;">Days</span></div>
+        <span class="leave-card-sub">Available Balance (12 Annual Quota)</span>
+    </div>
+    <div class="leave-card-box">
+        <span class="leave-card-label">Sick Leave (SL)</span>
+        <div class="leave-card-num" style="color: var(--primary);">{{ leave_balances.sick }} <span style="font-size: 14px; font-weight: 600;">Days</span></div>
+        <span class="leave-card-sub">Available Balance (8 Annual Quota)</span>
+    </div>
+    <div class="leave-card-box">
+        <span class="leave-card-label">Annual Leave (AL)</span>
+        <div class="leave-card-num" style="color: #3b82f6;">{{ leave_balances.annual }} <span style="font-size: 14px; font-weight: 600;">Days</span></div>
+        <span class="leave-card-sub">Available Balance (15 Annual Quota)</span>
+    </div>
+    <div class="leave-card-box">
+        <span class="leave-card-label">Total PTO Remaining</span>
+        <div class="leave-card-num" style="color: #f59e0b;">{{ leave_balances.total_remaining }} <span style="font-size: 14px; font-weight: 600;">Days</span></div>
+        <span class="leave-card-sub">Combined Paid Leave</span>
+    </div>
+</div>
+
+<!-- Leave Request History Table -->
+<div class="card-panel">
+    <div class="card-header-flex" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+            <h3 class="card-section-title">Leave Applications History</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                Showing {{ leaves|length }} of {{ page_obj.paginator.count|default:total_count }} total applications.
+            </p>
+        </div>
+
+        <!-- Search & Filter Bar -->
+        <form method="get" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <select name="status" class="form-control-select" style="padding: 7px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main);" onchange="this.form.submit()">
+                <option value="all" {% if selected_status == 'all' or not selected_status %}selected{% endif %}>All Statuses</option>
+                <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="approved" {% if selected_status == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="rejected" {% if selected_status == 'rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search reason, type, name..." class="form-control-input" style="padding: 7px 12px; font-size: 12.5px; width: 200px;">
+            <button type="submit" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Search</button>
+            {% if search_query or selected_status != 'all' and selected_status %}
+            <a href="{% url 'leaves' %}" class="btn-custom btn-custom-outline" style="padding: 7px 12px; font-size: 12.5px;">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+                <tr style="border-bottom: 1.5px solid var(--border);">
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 140px; white-space: nowrap;">Leave Type</th>
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 155px; white-space: nowrap;">Duration & Dates</th>
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 85px; white-space: nowrap;">Days</th>
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 200px;">Reason / Notes</th>
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 110px; white-space: nowrap;">Status</th>
+                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: right; min-width: 120px; white-space: nowrap;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave in leaves %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 14px; font-weight: 800; color: var(--text-main); white-space: nowrap;">
+                        {{ leave.get_leave_type_display }}
+                    </td>
+                    <td style="padding: 14px; color: var(--text-muted); font-size: 12.5px; white-space: nowrap;">
+                        {{ leave.start_date|date:"M d, Y" }} &rarr; {{ leave.end_date|date:"M d, Y" }}
+                    </td>
+                    <td style="padding: 14px; font-weight: 800; color: var(--text-main); white-space: nowrap;">
+                        <span style="background: var(--pill-gray); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border); display: inline-block;">
+                            {{ leave.days_count }} {% if leave.days_count == 1 %}Day{% else %}Days{% endif %}
+                        </span>
+                    </td>
+                    <td style="padding: 14px; color: var(--text-muted); font-size: 12.5px; max-width: 260px;">
+                        {{ leave.reason|truncatewords:10 }}
+                    </td>
+                    <td style="padding: 14px; white-space: nowrap;">
+                        {% if leave.status == 'approved' %}
+                        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; background: var(--pill-green); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); white-space: nowrap;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                            Approved
+                        </span>
+                        {% elif leave.status == 'rejected' %}
+                        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; background: var(--pill-red); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.25); white-space: nowrap;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Rejected
+                        </span>
+                        {% else %}
+                        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; background: var(--pill-orange); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.25); white-space: nowrap;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                            Pending
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 14px; text-align: right; white-space: nowrap;">
+                        <div class="crud-action-group" style="justify-content: flex-end; white-space: nowrap;">
+                            <!-- Admin Status Toggle (Only when pending) -->
+                            {% if leave.status == 'pending' and request.user.is_superuser or leave.status == 'pending' and request.user.is_staff %}
+                            <form action="{% url 'leave_status_update' leave.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="approved">
+                                <button type="submit" class="btn-action-icon approve" title="Approve Leave">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                </button>
+                            </form>
+                            <form action="{% url 'leave_status_update' leave.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" value="rejected">
+                                <button type="submit" class="btn-action-icon danger" title="Reject Leave">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Edit & Cancel Options (Always available for owner/admin) -->
+                            {% if request.user.is_superuser or request.user.is_staff or leave.user == request.user %}
+                            <button type="button" class="btn-action-icon" onclick="openEditLeaveModal('{{ leave.id }}', '{{ leave.leave_type }}', '{{ leave.start_date|date:'Y-m-d' }}', '{{ leave.end_date|date:'Y-m-d' }}', '{{ leave.reason|escapejs }}')" title="Edit Application">
+                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                            </button>
+                            <form action="{% url 'leave_delete' leave.id %}" method="post" onsubmit="return confirm('Cancel this leave application?');" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action-icon danger" title="Cancel Application">
+                                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        No leave applications found. Click <strong>+ Apply for Leave</strong> to submit one.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Polished Pagination Footer for Leaves -->
+    <div class="pagination-footer">
+        <div class="pagination-info">
+            Showing <strong>{{ page_obj.start_index|default:0 }} - {{ page_obj.end_index|default:0 }}</strong> of <strong>{{ page_obj.paginator.count|default:total_count }}</strong> leave applications
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-nav-group">
+            <!-- First Page -->
+            <a href="?page=1{% if selected_status != 'all' %}&status={{ selected_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="First Page">
+                &laquo;
+            </a>
+
+            <!-- Previous Page -->
+            <a href="?page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}{% if selected_status != 'all' %}&status={{ selected_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="Previous Page">
+                &lsaquo; Prev
+            </a>
+
+            <!-- Page Number Links -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="pagination-btn active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}{% if selected_status != 'all' %}&status={{ selected_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Next Page -->
+            <a href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}{% if selected_status != 'all' %}&status={{ selected_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Next Page">
+                Next &rsaquo;
+            </a>
+
+            <!-- Last Page -->
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if selected_status != 'all' %}&status={{ selected_status }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Last Page">
+                &raquo;
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Apply Leave Modal -->
+<div class="modal-backdrop-wrap" id="leaveModal">
+    <div class="modal-inner-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 800;">Apply for Leave</h3>
+            <button type="button" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);" onclick="closeLeaveModal()">&times;</button>
+        </div>
+        <form action="{% url 'leave_apply' %}" method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 14px;">
+                <label class="form-label-title">Leave Type</label>
+                <select name="leave_type" class="form-control-select">
+                    <option value="casual" selected>Casual Leave</option>
+                    <option value="sick">Sick Leave</option>
+                    <option value="annual">Annual Leave</option>
+                    <option value="emergency">Emergency Leave</option>
+                </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label class="form-label-title">Start Date</label>
+                    <input type="date" name="start_date" class="form-control-input" required>
+                </div>
+                <div>
+                    <label class="form-label-title">End Date</label>
+                    <input type="date" name="end_date" class="form-control-input" required>
+                </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label class="form-label-title">Reason for Leave</label>
+                <textarea name="reason" class="form-control-textarea" rows="3" placeholder="State reason for absence..." required></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <button type="button" class="btn-custom btn-custom-outline" onclick="closeLeaveModal()">Cancel</button>
+                <button type="submit" class="btn-custom btn-custom-primary">Submit Application</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Leave Modal -->
+<div class="modal-backdrop-wrap" id="editLeaveModal">
+    <div class="modal-inner-card">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <h3 style="font-size: 18px; font-weight: 800;">Edit Leave Application</h3>
+            <button type="button" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);" onclick="closeEditLeaveModal()">&times;</button>
+        </div>
+        <form id="editLeaveForm" method="post">
+            {% csrf_token %}
+            <div style="margin-bottom: 14px;">
+                <label class="form-label-title">Leave Type</label>
+                <select name="leave_type" id="editLeaveType" class="form-control-select">
+                    <option value="casual">Casual Leave</option>
+                    <option value="sick">Sick Leave</option>
+                    <option value="annual">Annual Leave</option>
+                    <option value="emergency">Emergency Leave</option>
+                </select>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label class="form-label-title">Start Date</label>
+                    <input type="date" name="start_date" id="editLeaveStartDate" class="form-control-input" required>
+                </div>
+                <div>
+                    <label class="form-label-title">End Date</label>
+                    <input type="date" name="end_date" id="editLeaveEndDate" class="form-control-input" required>
+                </div>
+            </div>
+            <div style="margin-bottom: 14px;">
+                <label class="form-label-title">Reason for Leave</label>
+                <textarea name="reason" id="editLeaveReason" class="form-control-textarea" rows="3" required></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                <button type="button" class="btn-custom btn-custom-outline" onclick="closeEditLeaveModal()">Cancel</button>
+                <button type="submit" class="btn-custom btn-custom-primary">Update Application</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openLeaveModal() {
+        document.getElementById('leaveModal').style.display = 'flex';
+    }
+    function closeLeaveModal() {
+        document.getElementById('leaveModal').style.display = 'none';
+    }
+
+    function openEditLeaveModal(id, type, start, end, reason) {
+        document.getElementById('editLeaveForm').action = "/applications/leaves/" + id + "/edit/";
+        document.getElementById('editLeaveType').value = type;
+        document.getElementById('editLeaveStartDate').value = start;
+        document.getElementById('editLeaveEndDate').value = end;
+        document.getElementById('editLeaveReason').value = reason;
+        document.getElementById('editLeaveModal').style.display = 'flex';
+    }
+    function closeEditLeaveModal() {
+        document.getElementById('editLeaveModal').style.display = 'none';
+    }
+</script>
+{% endblock %}

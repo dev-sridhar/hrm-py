@@ -1,0 +1,209 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Employee Portal - System Settings & Preferences{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    .settings-layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+        .settings-layout-grid { grid-template-columns: 1fr; }
+    }
+
+    .theme-mode-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        background: var(--pill-gray);
+        padding: 4px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+    }
+
+    .theme-mode-btn {
+        padding: 9px;
+        font-size: 12.5px;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .theme-mode-btn.active {
+        background: var(--card-bg);
+        color: var(--text-main);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .color-swatches-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+    }
+
+    .color-swatch-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .color-swatch-circle:hover { transform: scale(1.1); }
+    .color-swatch-circle.active {
+        border-color: var(--text-main);
+        box-shadow: 0 0 0 2px var(--card-bg);
+    }
+</style>
+
+<div class="settings-layout-grid">
+    <!-- Card 1: Appearance & Theme Settings -->
+    <div class="card-panel">
+        <div class="card-header-flex">
+            <h3 class="card-section-title">Appearance & Accent Theme</h3>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label class="form-label-title">Theme Mode</label>
+            <div class="theme-mode-grid">
+                <button type="button" class="theme-mode-btn active" id="btnThemeLight" onclick="setThemePreference('light', this)">
+                    Light
+                </button>
+                <button type="button" class="theme-mode-btn" id="btnThemeNight" onclick="setThemePreference('night', this)">
+                    Dark
+                </button>
+                <button type="button" class="theme-mode-btn" id="btnThemeSystem" onclick="setThemePreference('system', this)">
+                    System
+                </button>
+            </div>
+        </div>
+
+        <div>
+            <label class="form-label-title">Brand Accent Color</label>
+            <div class="color-swatches-grid">
+                <div class="color-swatch-circle active" style="background: #7c5dfa;" onclick="setColorPreference('purple', this)" title="Purple Accent"></div>
+                <div class="color-swatch-circle" style="background: #2563eb;" onclick="setColorPreference('blue', this)" title="Blue Accent"></div>
+                <div class="color-swatch-circle" style="background: #059669;" onclick="setColorPreference('green', this)" title="Green Accent"></div>
+                <div class="color-swatch-circle" style="background: #e11d48;" onclick="setColorPreference('red', this)" title="Red Accent"></div>
+                <div class="color-swatch-circle" style="background: #ea580c;" onclick="setColorPreference('orange', this)" title="Orange Accent"></div>
+                <div class="color-swatch-circle" style="background: #db2777;" onclick="setColorPreference('pink', this)" title="Pink Accent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Profile Settings -->
+    <div class="card-panel">
+        <div class="card-header-flex">
+            <h3 class="card-section-title">Personal Profile Details</h3>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_profile">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                <div>
+                    <label class="form-label-title">First Name</label>
+                    <input type="text" name="first_name" value="{{ profile_form.first_name.value|default:request.user.first_name }}" class="form-control-input" required>
+                </div>
+                <div>
+                    <label class="form-label-title">Last Name</label>
+                    <input type="text" name="last_name" value="{{ profile_form.last_name.value|default:request.user.last_name }}" class="form-control-input">
+                </div>
+            </div>
+            <div style="margin-bottom: 16px;">
+                <label class="form-label-title">Email Address</label>
+                <input type="email" name="email" value="{{ profile_form.email.value|default:request.user.email }}" class="form-control-input" required>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn-custom btn-custom-primary">Save Profile</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Card 3: Security & Password -->
+    <div class="card-panel">
+        <div class="card-header-flex">
+            <h3 class="card-section-title">Password & Security</h3>
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="change_password">
+            <div style="margin-bottom: 14px;">
+                <label class="form-label-title">Current Password</label>
+                <input type="password" name="old_password" class="form-control-input" placeholder="Enter existing password" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                <div>
+                    <label class="form-label-title">New Password</label>
+                    <input type="password" name="new_password1" class="form-control-input" placeholder="New secure password" required>
+                </div>
+                <div>
+                    <label class="form-label-title">Confirm New Password</label>
+                    <input type="password" name="new_password2" class="form-control-input" placeholder="Confirm password" required>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn-custom btn-custom-outline">Update Password</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Card 4: Organization Info -->
+    <div class="card-panel">
+        <div class="card-header-flex">
+            <h3 class="card-section-title">Organization Overview</h3>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted); font-weight: 700;">Company</span>
+                <span style="font-weight: 800;">Enterprise HRMS Portal</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted); font-weight: 700;">Role / Clearance</span>
+                <span style="font-weight: 800; color: var(--primary);">{% if request.user.is_superuser %}SUPER ADMIN{% elif request.user.is_staff %}STAFF{% else %}EMPLOYEE{% endif %}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: var(--text-muted); font-weight: 700;">System Platform</span>
+                <span style="font-weight: 800;">HRMS Enterprise Portal 2026</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setThemePreference(mode, btn) {
+        document.querySelectorAll('.theme-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        localStorage.setItem('app-theme', mode);
+        if (mode === 'system') {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-theme', prefersDark ? 'night' : 'light');
+        } else {
+            document.documentElement.setAttribute('data-theme', mode);
+        }
+    }
+
+    function setColorPreference(color, el) {
+        document.querySelectorAll('.color-swatch-circle').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        localStorage.setItem('app-color', color);
+        document.documentElement.setAttribute('data-color', color);
+    }
+</script>
+{% endblock %}

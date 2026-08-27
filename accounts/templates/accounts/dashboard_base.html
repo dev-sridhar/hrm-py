@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-color="purple">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Employee Portal - HRMS Dashboard{% endblock %}</title>
+    <!-- Instant Theme Loader (Zero FOUC) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app-theme') || 'light';
+            const savedColor = localStorage.getItem('app-color') || 'purple';
+            document.documentElement.setAttribute('data-color', savedColor);
+            if (savedTheme === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'night' : 'light');
+                document.documentElement.setAttribute('data-theme-setting', 'system');
+            } else {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.documentElement.setAttribute('data-theme-setting', savedTheme);
+            }
+        })();
+    </script>
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Variables - Soft Modern SaaS Palette */
+        :root {
+            --primary: #7c5dfa;
+            --primary-hover: #6c47ff;
+            --primary-light: #f3effe;
+            --primary-gradient: linear-gradient(135deg, #7c5dfa 0%, #6366f1 100%);
+            --primary-shadow: rgba(124, 93, 250, 0.28);
+
+            --body-bg: #f8f9fe;
+            --sidebar-bg: #f8f9fe;
+            --sidebar-card-bg: #ffffff;
+            --sidebar-card-border: rgba(230, 233, 245, 0.9);
+            --sidebar-item-hover: #f3f4fa;
+            --sidebar-text: #1e293b;
+            --sidebar-muted: #8e9cb2;
+
+            --card-bg: #ffffff;
+            --card-border: rgba(230, 233, 245, 0.9);
+            --card-shadow: 0 4px 20px -2px rgba(112, 128, 176, 0.08), 0 2px 6px -1px rgba(112, 128, 176, 0.04);
+            
+            --topbar-bg: #f8f9fe;
+            --topbar-border: rgba(230, 233, 245, 0.8);
+            
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --border: #edf2f7;
+            --border-subtle: #f1f5f9;
+            --input-bg: #ffffff;
+            --modal-bg: #ffffff;
+
+            --pill-gray: #f1f3f9;
+            --pill-purple: #f3effe;
+            --pill-green: #eafaf1;
+            --pill-red: #feeef0;
+            --pill-orange: #fef6e8;
+            --pill-blue: #eff6ff;
+
+            --success: #10b981;
+            --success-light: #eafaf1;
+            --warning: #f59e0b;
+            --warning-light: #fef6e8;
+            --danger: #f43f5e;
+            --danger-light: #feeef0;
+            --info: #3b82f6;
+            --info-light: #eff6ff;
+        }
+
+        /* Accent Color Swatches */
+        [data-color="purple"] {
+            --primary: #7c5dfa;
+            --primary-hover: #6c47ff;
+            --primary-light: #f3effe;
+            --primary-gradient: linear-gradient(135deg, #7c5dfa 0%, #6366f1 100%);
+            --primary-shadow: rgba(124, 93, 250, 0.28);
+        }
+        [data-color="blue"] {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            --primary-shadow: rgba(37, 99, 235, 0.28);
+        }
+        [data-color="green"] {
+            --primary: #059669;
+            --primary-hover: #047857;
+            --primary-light: #eafaf1;
+            --primary-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            --primary-shadow: rgba(5, 150, 105, 0.28);
+        }
+        [data-color="red"] {
+            --primary: #e11d48;
+            --primary-hover: #be123c;
+            --primary-light: #feeef0;
+            --primary-gradient: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+            --primary-shadow: rgba(225, 29, 72, 0.28);
+        }
+        [data-color="orange"] {
+            --primary: #ea580c;
+            --primary-hover: #c2410c;
+            --primary-light: #fef6e8;
+            --primary-gradient: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+            --primary-shadow: rgba(234, 88, 12, 0.28);
+        }
+        [data-color="pink"] {
+            --primary: #db2777;
+            --primary-hover: #be185d;
+            --primary-light: #fdf2f8;
+            --primary-gradient: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            --primary-shadow: rgba(219, 39, 119, 0.28);
+        }
+
+        /* Night Mode / Dark Slate Glass */
+        [data-theme="night"] {
+            --body-bg: #0b0f19;
+            --sidebar-bg: #0b0f19;
+            --sidebar-card-bg: #111827;
+            --sidebar-card-border: rgba(255, 255, 255, 0.08);
+            --sidebar-item-hover: rgba(255, 255, 255, 0.05);
+            --sidebar-text: #f8fafc;
+            --sidebar-muted: #94a3b8;
+
+            --card-bg: #111827;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+            
+            --topbar-bg: #0b0f19;
+            --topbar-border: rgba(255, 255, 255, 0.07);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-light: #64748b;
+            --border: rgba(255, 255, 255, 0.09);
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --input-bg: #1f2937;
+            --modal-bg: #111827;
+
+            --pill-gray: rgba(255, 255, 255, 0.05);
+            --pill-purple: rgba(124, 93, 250, 0.15);
+            --pill-green: rgba(16, 185, 129, 0.15);
+            --pill-red: rgba(244, 63, 94, 0.15);
+            --pill-orange: rgba(245, 158, 11, 0.15);
+            --pill-blue: rgba(59, 130, 246, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+
+        /* Left Floating Modular Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            max-height: 100vh;
+            background-color: var(--sidebar-bg);
+            padding: 16px 14px 32px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 50;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border-right: 1px solid var(--sidebar-card-border);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.35);
+            border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        .sidebar-card {
+            background: var(--sidebar-card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--sidebar-card-border);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        /* Profile Box */
+        .profile-module {
+            padding: 20px 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .avatar-box-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .avatar-rounded-box {
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
+            background: var(--pill-purple);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            border: 2px solid rgba(124, 93, 250, 0.2);
+            box-shadow: 0 4px 12px var(--primary-shadow);
+        }
+
+        .camera-badge-btn {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 24px;
+            height: 24px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            color: var(--text-muted);
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+
+        .camera-badge-btn:hover { transform: scale(1.1); color: var(--primary); }
+
+        .profile-user-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--sidebar-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .profile-user-email {
+            font-size: 11px;
+            color: var(--sidebar-muted);
+            word-break: break-all;
+            font-weight: 500;
+        }
+
+        /* Navigation Links List */
+        .nav-list { display: flex; flex-direction: column; padding: 6px; gap: 3px; }
+
+        .nav-section-title {
+            padding: 10px 12px 4px 12px;
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--sidebar-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .nav-item-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            transition: all 0.18s ease;
+        }
+
+        .nav-item-link svg {
+            width: 18px;
+            height: 18px;
+            color: var(--sidebar-muted);
+            transition: color 0.18s ease, transform 0.18s ease;
+            flex-shrink: 0;
+        }
+
+        .nav-item-link:hover {
+            background-color: var(--sidebar-item-hover);
+            color: var(--primary);
+        }
+
+        .nav-item-link:hover svg {
+            color: var(--primary);
+            transform: translateX(2px);
+        }
+
+        .nav-item-link.active {
+            background-color: var(--pill-purple);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item-link.active svg {
+            color: var(--primary);
+        }
+
+        /* Sidebar Settings Button & Popover */
+        .sidebar-footer-box {
+            margin-top: 0;
+            padding-bottom: 14px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .btn-sidebar-settings {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--sidebar-card-bg);
+            border-radius: 14px;
+            border: 1px solid var(--sidebar-card-border);
+            color: var(--sidebar-text);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: var(--card-shadow);
+            font-family: inherit;
+        }
+
+        .btn-sidebar-settings:hover, .btn-sidebar-settings.active {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .settings-popover-menu {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--modal-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.25);
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            z-index: 100;
+            animation: popoverFade 0.15s ease-out;
+        }
+
+        .settings-popover-menu.open { display: flex; }
+
+        @keyframes popoverFade {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .popover-item-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+
+        .popover-item-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .popover-item-btn.logout {
+            color: #ef4444;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+            padding-top: 10px;
+        }
+
+        .popover-item-btn.logout:hover {
+            background-color: rgba(239, 68, 68, 0.08);
+            color: #ef4444;
+        }
+
+        /* Main Workspace Container */
+        .main-workspace {
+            margin-left: 260px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Topbar Header */
+        .topbar-header {
+            height: 76px;
+            background: var(--topbar-bg);
+            border-bottom: 1px solid var(--topbar-border);
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            transition: background-color 0.25s ease, border-color 0.25s ease;
+        }
+
+        .company-brand-title {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 6px;
+        }
+
+        .topbar-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Search Pill Bar */
+        .top-search-bar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 7px 14px;
+            width: 280px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .top-search-bar:focus-within {
+            width: 320px;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-shadow);
+        }
+
+        .top-search-input {
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text-main);
+            margin-left: 8px;
+            width: 100%;
+        }
+
+        .search-shortcut-tag {
+            font-size: 10.5px;
+            font-weight: 700;
+            background: var(--pill-gray);
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 6px;
+            letter-spacing: 0.02em;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        /* Top Action Buttons */
+        .btn-check-in-pill {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px var(--primary-shadow);
+            transition: all 0.2s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-check-in-pill:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px var(--primary-shadow);
+        }
+
+        .icon-action-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s ease;
+        }
+
+        .icon-action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .unread-dot-badge {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 9.5px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--card-bg);
+        }
+
+        /* Topbar User Profile Pill */
+        .topbar-user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 4px 10px 4px 4px;
+            border-radius: 24px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .topbar-user-pill:hover {
+            border-color: var(--primary);
+        }
+
+        .user-initials-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-pill-meta {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .user-pill-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .user-pill-role {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Main Content Viewport */
+        .content-body {
+            padding: 28px 32px;
+            flex-grow: 1;
+        }
+
+        /* Notifications & Activity Center Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 110px;
+            width: 390px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+            padding: 16px 18px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+            animation: popoverFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (max-width: 500px) {
+            .notification-dropdown {
+                width: calc(100vw - 32px);
+                right: 16px;
+            }
+        }
+
+        .notification-dropdown.open { display: flex; }
+
+        .notif-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .notif-badge-pill {
+            font-size: 11px;
+            font-weight: 800;
+            background: #ef4444;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .notif-clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .notif-clear-btn:hover {
+            background: var(--pill-gray);
+            color: var(--primary);
+        }
+
+        /* Filter Tabs */
+        .notif-tabs-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .notif-tab-chip {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            background: var(--pill-gray);
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+            font-family: inherit;
+        }
+        .notif-tab-chip:hover {
+            color: var(--primary);
+        }
+        .notif-tab-chip.active {
+            background: var(--pill-purple);
+            color: var(--primary);
+            border-color: rgba(124, 93, 250, 0.3);
+            font-weight: 800;
+        }
+
+        /* Feed List */
+        .notif-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 330px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .notif-items-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .notif-items-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .notif-feed-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: var(--pill-gray);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.15s ease;
+        }
+        .notif-feed-card:hover {
+            border-color: var(--primary);
+            background: var(--card-bg);
+            transform: translateX(2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .notif-avatar-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .notif-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .notif-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .notif-user-bold {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notif-time-tag {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .notif-desc-text {
+            font-size: 11.5px;
+            color: var(--text-main);
+            line-height: 1.35;
+        }
+
+        .notif-meta-sub {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 10.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .notif-status-pill {
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+        .pill-pending { background: var(--pill-orange); color: #f59e0b; }
+        .pill-approved { background: var(--pill-green); color: #10b981; }
+        .pill-rejected { background: var(--pill-red); color: #ef4444; }
+        .pill-blue { background: var(--pill-blue); color: #0284c7; }
+
+        /* Footer Links */
+        .notif-footer-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+        .notif-footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .notif-footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Unified Card Styles */
+        .card-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .card-header-flex {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .card-section-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-link-action {
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+        }
+
+        .card-link-action:hover { opacity: 0.8; }
+
+        /* General Button Styles */
+        .btn-custom {
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-size: 13.5px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-custom-primary {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            box-shadow: 0 4px 14px var(--primary-shadow);
+        }
+
+        .btn-custom-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--primary-shadow);
+        }
+
+        .btn-custom-outline {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-custom-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Form Inputs */
+        .form-label-title {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control-input, .form-control-select, .form-control-textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+            background: var(--input-bg);
+            color: var(--text-main);
+        }
+
+        .form-control-input:focus, .form-control-select:focus, .form-control-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* Modals */
+        .modal-backdrop-wrap {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px 16px;
+            overflow-y: auto;
+        }
+
+        .modal-inner-card {
+            background: var(--modal-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 540px;
+            max-height: calc(100vh - 40px);
+            padding: 28px;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.35);
+            animation: modalPop 0.2s ease-out;
+            overflow-y: auto;
+            position: relative;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-inner-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-inner-card::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        .modal-inner-card::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Top-Right Flash / Toast Notifications Container */
+        .toast-notifications-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 400px;
+            width: calc(100vw - 48px);
+            pointer-events: none;
+        }
+
+        .toast-flash-card {
+            pointer-events: auto;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px 16px 16px;
+            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.18), 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+            color: var(--text-main);
+            overflow: hidden;
+            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast-flash-card.toast-hiding {
+            opacity: 0;
+            transform: translateX(100%) scale(0.95);
+        }
+
+        @keyframes toastSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(80px) scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .toast-flash-card.toast-success {
+            border-left: 4px solid #10b981;
+        }
+        .toast-flash-card.toast-error {
+            border-left: 4px solid #f43f5e;
+        }
+        .toast-flash-card.toast-warning {
+            border-left: 4px solid #f59e0b;
+        }
+        .toast-flash-card.toast-info {
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast-icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .toast-success .toast-icon-badge { background: var(--pill-green); color: #10b981; }
+        .toast-error .toast-icon-badge { background: var(--pill-red); color: #f43f5e; }
+        .toast-warning .toast-icon-badge { background: var(--pill-orange); color: #f59e0b; }
+        .toast-info .toast-icon-badge { background: var(--pill-purple); color: var(--primary); }
+
+        .toast-body-text {
+            flex-grow: 1;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-main);
+            padding-top: 5px;
+        }
+
+        .toast-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+            border-radius: 6px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        .toast-close-btn:hover {
+            color: var(--text-main);
+            background: var(--pill-gray);
+        }
+
+        /* 3-second progress countdown bar */
+        .toast-progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: rgba(124, 93, 250, 0.15);
+        }
+        .toast-progress-fill {
+            height: 100%;
+            width: 100%;
+            animation: toastProgress 3s linear forwards;
+        }
+        .toast-success .toast-progress-fill { background: #10b981; }
+        .toast-error .toast-progress-fill { background: #f43f5e; }
+        .toast-warning .toast-progress-fill { background: #f59e0b; }
+        .toast-info .toast-progress-fill { background: var(--primary); }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-workspace { margin-left: 0; }
+            .mobile-hamburger-btn { display: block; }
+            .content-body { padding: 20px 16px; }
+            .topbar-header { padding: 0 16px; }
+            .top-search-bar { width: 180px; }
+            .top-search-bar:focus-within { width: 220px; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Left Modular Floating Sidebar -->
+    <aside class="sidebar" id="appSidebar">
+        <!-- Module 1: User Profile Header Box -->
+        <a href="{% url 'user_profile' %}" class="sidebar-card profile-module" style="text-decoration: none; color: inherit; display: flex; cursor: pointer;" title="Profile">
+            <div class="avatar-box-wrapper">
+                <div class="avatar-rounded-box" style="overflow: hidden; padding: 0;">
+                    {% if request.user.profile.avatar %}
+                    <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+                    {% else %}
+                    <svg width="34" height="34" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    {% endif %}
+                </div>
+                <div class="camera-badge-btn" title="View Profile">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="profile-user-name">
+                {{ request.user.get_full_name|default:request.user.username|upper }}
+            </div>
+            <div class="profile-user-email">
+                {{ request.user.email|default:"user@company.com" }}
+            </div>
+        </a>
+
+        <!-- Module 2: Primary Navigation -->
+        <div class="sidebar-card">
+            <div class="nav-list">
+                <a href="{% url 'home' %}" class="nav-item-link {% if active_page == 'dashboard' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'status_board' %}" class="nav-item-link {% if active_page == 'status_board' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                    </svg>
+                    <span>Status Board</span>
+                </a>
+                <a href="{% url 'employees_directory' %}" class="nav-item-link {% if active_page == 'employees' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                    <span>Employees</span>
+                </a>
+                <a href="{% url 'teams' %}" class="nav-item-link {% if active_page == 'teams' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span>Teams</span>
+                </a>
+                <a href="{% url 'attendance' %}" class="nav-item-link {% if active_page == 'attendance' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Attendance</span>
+                </a>
+                <a href="{% url 'tasks' %}" class="nav-item-link {% if active_page == 'tasks' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
+                    <span>Daily Task</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Module 3: Applications Section -->
+        <div class="sidebar-card">
+            <div class="nav-section-title">APPLICATIONS</div>
+            <div class="nav-list">
+                <a href="{% url 'leaves' %}" class="nav-item-link {% if active_page == 'leaves' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Leave's</span>
+                </a>
+                <a href="{% url 'permissions' %}" class="nav-item-link {% if active_page == 'app_permissions' or active_page == 'permissions' %}active{% endif %}">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <span>Permissions</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Bottom Settings Module -->
+        <div class="sidebar-footer-box">
+            <div class="settings-popover-menu" id="appSettingsPopover">
+                <a href="{% url 'settings' %}" class="popover-item-btn">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>System Settings</span>
+                </a>
+                <a href="{% url 'logout' %}" class="popover-item-btn logout">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    <span>Sign Out</span>
+                </a>
+            </div>
+
+            <button type="button" class="btn-sidebar-settings {% if active_page == 'settings' %}active{% endif %}" id="btnSidebarSettings" onclick="toggleSettingsMenu()">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>Settings</span>
+                </div>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <div class="main-workspace">
+        <!-- Topbar Header -->
+        <header class="topbar-header">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <button class="mobile-hamburger-btn" onclick="toggleSidebarMenu()" aria-label="Toggle navigation">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="company-brand-title">
+                    ENTERPRISE HRMS PORTAL
+                </div>
+            </div>
+
+            <div class="topbar-actions-right">
+                <!-- Search Employees Bar -->
+                <div class="top-search-bar">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-muted);">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="globalSearchInput" class="top-search-input" placeholder="Search employees, department..." onkeyup="handleGlobalSearch(event)">
+                    <span class="search-shortcut-tag">Ctrl /</span>
+                </div>
+
+                <!-- Check In/Out Action Button -->
+                <form action="{% url 'punch_attendance' %}" method="post" style="display: inline-block;">
+                    {% csrf_token %}
+                    {% if today_attendance and today_attendance.is_punched_in %}
+                        <input type="hidden" name="action" value="punch_out">
+                        <button type="submit" class="btn-check-in-pill" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+                            <span>Check Out</span>
+                        </button>
+                    {% else %}
+                        <input type="hidden" name="action" value="punch_in">
+                        <button type="submit" class="btn-check-in-pill">
+                            <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <span>Check In</span>
+                        </button>
+                    {% endif %}
+                </form>
+
+                <!-- Grid Menu / Quick Apps -->
+                <button type="button" class="icon-action-btn" onclick="openAppsDrawer()" title="Quick Applications">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <!-- Theme Mode Toggle (Moon / Sun) -->
+                <button type="button" class="icon-action-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="themeMoonIcon">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
+                </button>
+
+                <!-- Notifications Bell -->
+                <button type="button" class="icon-action-btn" onclick="toggleNotifications()" id="notificationBellBtn" title="Notifications & Live Activity">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    {% if nav_total_badge_count > 0 %}
+                    <span class="unread-dot-badge" id="navUnreadBadge">{{ nav_total_badge_count }}</span>
+                    {% endif %}
+                </button>
+
+                <!-- User Profile Pill -->
+                <a href="{% url 'user_profile' %}" class="topbar-user-pill" style="text-decoration: none;" title="Open Profile">
+                    <div class="user-initials-circle" style="overflow: hidden; padding: 0;">
+                        {% if request.user.profile.avatar %}
+                        <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                        {{ request.user.first_name|default:request.user.username|slice:":2"|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="user-pill-meta">
+                        <span class="user-pill-name">{{ request.user.get_full_name|default:request.user.username }}</span>
+                        <span class="user-pill-role">{% if request.user.is_superuser %}SUPER ADMIN{% elif request.user.is_staff %}STAFF{% else %}EMPLOYEE{% endif %}</span>
+                    </div>
+                </a>
+            </div>
+        </header>
+
+        <!-- Notification Popover Menu - Enhanced Activity & Leave/Ticket Center -->
+        <div class="notification-dropdown" id="notificationDropdown">
+            <!-- Header -->
+            <div class="notif-header">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--text-main); letter-spacing: 0.5px;">Activity & Notifications</span>
+                    {% if nav_total_badge_count > 0 %}
+                    <span class="notif-badge-pill" id="notifHeaderCount">{{ nav_total_badge_count }} New</span>
+                    {% endif %}
+                </div>
+                <button type="button" class="notif-clear-btn" onclick="markAllNotificationsRead()" title="Mark all as read">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                    <span>Mark all read</span>
+                </button>
+            </div>
+
+            <!-- Filter Categories Tabs -->
+            <div class="notif-tabs-bar">
+                <button type="button" class="notif-tab-chip active" onclick="filterNotifFeed('all', this)">All</button>
+                <button type="button" class="notif-tab-chip" onclick="filterNotifFeed('leaves', this)">Leaves ({{ nav_leave_notifications|length }})</button>
+                <button type="button" class="notif-tab-chip" onclick="filterNotifFeed('tasks', this)">Tasks & Tickets ({{ nav_task_notifications|length }})</button>
+                <button type="button" class="notif-tab-chip" onclick="filterNotifFeed('logs', this)">Live Logs ({{ nav_activity_logs|length }})</button>
+            </div>
+
+            <!-- Scrollable Items Feed -->
+            <div class="notif-items-list" id="notifItemsList">
+                <!-- Leave Notifications -->
+                {% for leave in nav_leave_notifications %}
+                <a href="{{ leave.url }}" class="notif-feed-card notif-card-leave" data-category="leaves">
+                    <div class="notif-avatar-circle" style="background: var(--pill-orange); color: #f59e0b; overflow: hidden; padding: 0;">
+                        {% if leave.avatar_url %}
+                        <img src="{{ leave.avatar_url }}" alt="{{ leave.user_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        {{ leave.user_initials }}
+                        {% endif %}
+                    </div>
+                    <div class="notif-card-body">
+                        <div class="notif-title-row">
+                            <span class="notif-user-bold">{{ leave.user_name }}</span>
+                            <span class="notif-time-tag">{{ leave.time_str }}</span>
+                        </div>
+                        <div class="notif-desc-text">
+                            Applied for <strong>{{ leave.days_count }} day{{ leave.days_count|pluralize }}</strong> ({{ leave.leave_type }})
+                        </div>
+                        <div class="notif-meta-sub">
+                            <span>{{ leave.start_date }} - {{ leave.end_date }}</span>
+                            {% if leave.status == 'approved' %}
+                            <span class="notif-status-pill pill-approved">Approved</span>
+                            {% elif leave.status == 'rejected' %}
+                            <span class="notif-status-pill pill-rejected">Rejected</span>
+                            {% else %}
+                            <span class="notif-status-pill pill-pending">Pending Approval</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+
+                <!-- Task & Ticket Notifications -->
+                {% for task in nav_task_notifications %}
+                <a href="{{ task.url }}" class="notif-feed-card notif-card-task" data-category="tasks">
+                    <div class="notif-avatar-circle" style="background: var(--pill-purple); color: var(--primary); overflow: hidden; padding: 0;">
+                        {% if task.avatar_url %}
+                        <img src="{{ task.avatar_url }}" alt="{{ task.user_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="notif-card-body">
+                        <div class="notif-title-row">
+                            <span class="notif-user-bold">{{ task.title }}</span>
+                            <span class="notif-time-tag">{{ task.time_str }}</span>
+                        </div>
+                        <div class="notif-desc-text">
+                            Assigned to {{ task.user_name }}
+                        </div>
+                        <div class="notif-meta-sub">
+                            <span>{{ task.due_date }}</span>
+                            {% if task.priority == 'urgent' or task.priority == 'high' %}
+                            <span class="notif-status-pill pill-rejected">{{ task.priority|upper }}</span>
+                            {% else %}
+                            <span class="notif-status-pill pill-blue">{{ task.priority|title }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+
+                <!-- Activity / Attendance Logs -->
+                {% for log in nav_activity_logs %}
+                <a href="{{ log.url }}" class="notif-feed-card notif-card-log" data-category="logs">
+                    <div class="notif-avatar-circle" style="background: var(--pill-green); color: #10b981; overflow: hidden; padding: 0;">
+                        {% if log.avatar_url %}
+                        <img src="{{ log.avatar_url }}" alt="{{ log.user_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                        {{ log.user_initials }}
+                        {% endif %}
+                    </div>
+                    <div class="notif-card-body">
+                        <div class="notif-title-row">
+                            <span class="notif-user-bold">{{ log.user_name }}</span>
+                            <span class="notif-time-tag">{{ log.time_str }}</span>
+                        </div>
+                        <div class="notif-desc-text">
+                            {{ log.action }}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+
+                {% if not nav_leave_notifications and not nav_task_notifications and not nav_activity_logs %}
+                <div style="text-align: center; padding: 24px 10px; color: var(--text-muted); font-size: 12.5px;">
+                    No pending notifications or activity logs.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Footer Quick Links -->
+            <div class="notif-footer-links">
+                <a href="{% url 'leaves' %}">Leave Management</a>
+                <span>&bull;</span>
+                <a href="{% url 'tasks' %}">Tasks</a>
+                <span>&bull;</span>
+                <a href="{% url 'status_board' %}">Status Board</a>
+            </div>
+        </div>
+
+        <!-- Top-Right Flash / Toast Notifications Container -->
+        <div class="toast-notifications-container" id="toastContainer">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="toast-flash-card toast-{{ message.tags|default:'info' }}" data-autoclose="true">
+                    <div class="toast-icon-badge">
+                        {% if message.tags == 'error' %}
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {% elif message.tags == 'success' %}
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        {% elif message.tags == 'warning' %}
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        {% else %}
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="toast-body-text">
+                        {{ message }}
+                    </div>
+                    <button type="button" class="toast-close-btn" onclick="dismissToast(this.closest('.toast-flash-card'))" title="Close notification">&times;</button>
+                    <div class="toast-progress-bar">
+                        <div class="toast-progress-fill"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Main Body -->
+        <main class="content-body">
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+
+
+    <!-- Quick Task Modal -->
+    <div class="modal-backdrop-wrap" id="taskModal">
+        <div class="modal-inner-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <h3 style="font-size: 18px; font-weight: 800;">Create Daily Task</h3>
+                <button type="button" style="background: none; border: none; font-size: 22px; cursor: pointer; color: var(--text-muted);" onclick="closeTaskModal()">&times;</button>
+            </div>
+            <form action="{% url 'task_create' %}" method="post">
+                {% csrf_token %}
+                <div style="margin-bottom: 14px;">
+                    <label class="form-label-title">Task Title</label>
+                    <input type="text" name="title" class="form-control-input" placeholder="e.g. Complete attendance dashboard redesign" required autofocus>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label class="form-label-title">Description (Optional)</label>
+                    <textarea name="description" class="form-control-textarea" rows="3" placeholder="Task deliverables, links, notes..."></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+                    <div>
+                        <label class="form-label-title">Priority</label>
+                        <select name="priority" class="form-control-select">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label-title">Due Date</label>
+                        <input type="date" name="due_date" class="form-control-input">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn-custom btn-custom-outline" onclick="closeTaskModal()">Cancel</button>
+                    <button type="submit" class="btn-custom btn-custom-primary">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Handlers -->
+    <script>
+        function toggleSidebarMenu() {
+            document.getElementById('appSidebar').classList.toggle('open');
+        }
+
+        function toggleSettingsMenu() {
+            document.getElementById('appSettingsPopover').classList.toggle('open');
+            document.getElementById('btnSidebarSettings').classList.toggle('active');
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notificationDropdown').classList.toggle('open');
+        }
+
+        function filterNotifFeed(category, btn) {
+            document.querySelectorAll('.notif-tab-chip').forEach(c => c.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            const cards = document.querySelectorAll('.notif-feed-card');
+            cards.forEach(card => {
+                const cat = card.getAttribute('data-category');
+                if (category === 'all' || cat === category) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function markAllNotificationsRead() {
+            const badge = document.getElementById('navUnreadBadge');
+            if (badge) badge.style.display = 'none';
+            const countBadge = document.getElementById('notifHeaderCount');
+            if (countBadge) countBadge.style.display = 'none';
+        }
+
+
+        function openTaskModal() {
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'night' ? 'light' : 'night';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('app-theme', next);
+        }
+
+        function handleGlobalSearch(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (query) {
+                    window.location.href = "{% url 'status_board' %}?q=" + encodeURIComponent(query);
+                }
+            }
+        }
+
+        // Global Shortcut for Search (Ctrl + /)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                e.preventDefault();
+                const sInput = document.getElementById('globalSearchInput');
+                if (sInput) sInput.focus();
+            }
+            if (e.key === 'Escape') {
+                ['profileModal', 'taskModal', 'leaveModal', 'noteModal'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+                const notif = document.getElementById('notificationDropdown');
+                if (notif) notif.classList.remove('open');
+                const pop = document.getElementById('appSettingsPopover');
+                if (pop) pop.classList.remove('open');
+            }
+        });
+
+        // Close dropdowns on outside click
+        window.addEventListener('click', function(event) {
+            const pop = document.getElementById('appSettingsPopover');
+            const setBtn = document.getElementById('btnSidebarSettings');
+            if (pop && setBtn && !setBtn.contains(event.target) && !pop.contains(event.target)) {
+                pop.classList.remove('open');
+                setBtn.classList.remove('active');
+            }
+            const notif = document.getElementById('notificationDropdown');
+            if (notif && !event.target.closest('.icon-action-btn') && !notif.contains(event.target)) {
+                notif.classList.remove('open');
+            }
+            ['profileModal', 'taskModal'].forEach(id => {
+                const modal = document.getElementById(id);
+                if (modal && event.target === modal) modal.style.display = 'none';
+            });
+        });
+
+        // Global Toast & Flash Notification Controller (3 seconds Top-Right auto-dismiss)
+        function dismissToast(toastEl) {
+            if (!toastEl || toastEl.classList.contains('toast-hiding')) return;
+            toastEl.classList.add('toast-hiding');
+            setTimeout(() => {
+                if (toastEl && toastEl.parentNode) {
+                    toastEl.parentNode.removeChild(toastEl);
+                }
+            }, 320);
+        }
+
+        function initAutoCloseToasts() {
+            document.querySelectorAll('.toast-flash-card[data-autoclose="true"]').forEach(toast => {
+                let timer = setTimeout(() => {
+                    dismissToast(toast);
+                }, 3000);
+                
+                // Pause countdown on hover, resume on mouseleave
+                toast.addEventListener('mouseenter', () => clearTimeout(timer));
+                toast.addEventListener('mouseleave', () => {
+                    timer = setTimeout(() => dismissToast(toast), 1500);
+                });
+            });
+        }
+
+        // Global showToast helper for client-side events (clipboard copy, uploads, etc.)
+        window.showToast = function(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const iconSvg = type === 'error' 
+                ? '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+                : (type === 'warning'
+                    ? '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                    : '<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'
+                );
+
+            const toast = document.createElement('div');
+            toast.className = `toast-flash-card toast-${type}`;
+            toast.setAttribute('data-autoclose', 'true');
+            toast.innerHTML = `
+                <div class="toast-icon-badge">
+                    ${iconSvg}
+                </div>
+                <div class="toast-body-text">
+                    ${message}
+                </div>
+                <button type="button" class="toast-close-btn" onclick="dismissToast(this.closest('.toast-flash-card'))" title="Close notification">&times;</button>
+                <div class="toast-progress-bar">
+                    <div class="toast-progress-fill"></div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            let timer = setTimeout(() => {
+                dismissToast(toast);
+            }, 3000);
+
+            toast.addEventListener('mouseenter', () => clearTimeout(timer));
+            toast.addEventListener('mouseleave', () => {
+                timer = setTimeout(() => dismissToast(toast), 1500);
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', initAutoCloseToasts);
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

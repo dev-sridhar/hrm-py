@@ -1,0 +1,707 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Employee Portal - Team Presence & Status Board{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Header Bar */
+    .status-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .status-title-wrap h2 {
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-title-wrap p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+
+    /* Presence Broadcast Banner */
+    .presence-broadcast-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 20px 24px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .presence-current-meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .status-badge-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+    }
+
+    .badge-in_office { background: var(--pill-green); color: #10b981; }
+    .badge-remote { background: var(--pill-blue); color: #3b82f6; }
+    .badge-meeting { background: var(--pill-orange); color: #f59e0b; }
+    .badge-on_leave { background: var(--pill-red); color: #f43f5e; }
+    .badge-out_of_office { background: var(--pill-purple); color: #8b5cf6; }
+
+    .btn-open-status-modal {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border: none;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        box-shadow: 0 4px 14px var(--primary-shadow);
+    }
+
+    .btn-open-status-modal:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px var(--primary-shadow);
+        color: #ffffff;
+    }
+
+    /* Filter Pills & Search */
+    .controls-filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+    }
+
+    .presence-filter-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .presence-pill-btn {
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 12.5px;
+        font-weight: 700;
+        text-decoration: none;
+        color: var(--text-muted);
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .presence-pill-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .presence-pill-btn.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 3px 10px var(--primary-shadow);
+    }
+
+    .presence-search-input {
+        padding: 8px 14px 8px 34px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--input-bg);
+        color: var(--text-main);
+        font-size: 12.5px;
+        font-weight: 600;
+        outline: none;
+        width: 220px;
+        transition: all 0.15s ease;
+    }
+
+    .presence-search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-shadow);
+    }
+
+    /* Team Directory Grid */
+    .team-status-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+        gap: 18px;
+    }
+
+    .team-member-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+        min-height: 160px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        position: relative;
+    }
+
+    .team-member-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: rgba(124, 93, 250, 0.4);
+    }
+
+    .card-top-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .card-user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .member-avatar-box {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .member-avatar-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 14px;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .member-avatar-fallback {
+        width: 100%;
+        height: 100%;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #7c5dfa 0%, #a855f7 100%);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .beacon-dot-indicator {
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        border: 2.5px solid var(--card-bg);
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+    }
+
+    .beacon-in_office { background: #10b981; }
+    .beacon-remote { background: #3b82f6; }
+    .beacon-meeting { background: #f59e0b; }
+    .beacon-on_leave { background: #f43f5e; }
+    .beacon-out_of_office { background: #8b5cf6; }
+
+    .card-actions-dropdown {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-action-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--border);
+        background: var(--pill-gray);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+    }
+
+    .btn-action-icon:hover {
+        background: var(--card-bg);
+        color: var(--primary);
+        border-color: var(--primary);
+        transform: translateY(-1px);
+    }
+
+    .btn-action-icon.btn-delete:hover {
+        color: #f43f5e;
+        border-color: #f43f5e;
+        background: var(--pill-red);
+    }
+
+    .status-msg-bubble {
+        background: var(--pill-gray);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: var(--text-main);
+        line-height: 1.4;
+        font-style: italic;
+        border-left: 3px solid var(--primary);
+    }
+
+    .card-footer-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+        font-size: 11.5px;
+    }
+
+    /* Modal Component Styling */
+    .status-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(6px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 16px;
+    }
+
+    .status-modal-backdrop.active {
+        display: flex;
+    }
+
+    .status-modal-container {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 520px;
+        padding: 26px;
+        box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.35);
+        animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+    }
+
+    @keyframes modalPop {
+        0% { transform: scale(0.95); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header-row h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-close-modal {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-close-modal:hover {
+        background: var(--pill-red);
+        color: #f43f5e;
+        border-color: #f43f5e;
+    }
+
+    .status-options-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .status-option-btn {
+        background: var(--pill-gray);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 8px;
+        color: var(--text-main);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.15s ease;
+        text-align: center;
+    }
+
+    .status-option-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .status-option-btn.selected {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 12px var(--primary-shadow);
+    }
+
+    .modal-input-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .modal-text-input {
+        width: 100%;
+        padding: 11px 14px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--input-bg);
+        color: var(--text-main);
+        font-size: 13px;
+        font-weight: 600;
+        outline: none;
+        box-sizing: border-box;
+        transition: all 0.15s ease;
+        margin-bottom: 20px;
+    }
+
+    .modal-text-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-shadow);
+    }
+
+    .modal-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Header Bar -->
+    <div class="status-header-bar">
+        <div class="status-title-wrap">
+            <h2>
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Team Presence & Status Board
+            </h2>
+            <p>Real-time employee availability, status broadcasts, and work location tracking.</p>
+        </div>
+
+        <button type="button" class="btn-open-status-modal" onclick="openStatusModal('{{ user_status.user.id }}', '{{ user_status.status }}', '{{ user_status.status_message|escapejs }}', '{{ user_status.user.get_full_name|default:user_status.user.username|escapejs }}')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>Update My Status</span>
+        </button>
+    </div>
+
+    <!-- Live Broadcast Status Summary Banner -->
+    <div class="presence-broadcast-panel">
+        <div class="presence-current-meta">
+            <div style="width: 48px; height: 48px; border-radius: 14px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+            </div>
+            <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">Team Presence Broadcast</h3>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <span style="font-size: 11.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Your Active Broadcast:</span>
+                    <span class="status-badge-chip badge-{{ user_status.status }}">
+                        <span class="beacon-dot-indicator beacon-{{ user_status.status }}" style="position: static; border: none; width: 7px; height: 7px;"></span>
+                        {{ user_status.get_status_display }}
+                    </span>
+                </div>
+                <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main);">
+                    {% if user_status.status_message %}"{{ user_status.status_message }}"{% else %}No custom status note set.{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn-custom btn-custom-outline" style="padding: 8px 16px; font-size: 12.5px;" onclick="openStatusModal('{{ user_status.user.id }}', '{{ user_status.status }}', '{{ user_status.status_message|escapejs }}', '{{ user_status.user.get_full_name|default:user_status.user.username|escapejs }}')">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+            <span>Change Status</span>
+        </button>
+    </div>
+
+    <!-- Filter Pills & Search -->
+    <div class="controls-filter-row">
+        <div class="presence-filter-wrap">
+            <a href="?filter=all{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'all' %}active{% endif %}">
+                <span>All</span>
+                <span style="font-size: 10.5px; opacity: 0.85;">({{ total_team_count }})</span>
+            </a>
+            <a href="?filter=in_office{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'in_office' %}active{% endif %}">
+                <span>In Office</span>
+                <span style="font-size: 10.5px; opacity: 0.85;">({{ in_office_count }})</span>
+            </a>
+            <a href="?filter=remote{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'remote' %}active{% endif %}">
+                <span>Remote</span>
+                <span style="font-size: 10.5px; opacity: 0.85;">({{ remote_count }})</span>
+            </a>
+            <a href="?filter=meeting{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'meeting' %}active{% endif %}">
+                <span>Meeting</span>
+                <span style="font-size: 10.5px; opacity: 0.85;">({{ meeting_count }})</span>
+            </a>
+            <a href="?filter=on_leave{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'on_leave' %}active{% endif %}">
+                <span>On Leave</span>
+                <span style="font-size: 10.5px; opacity: 0.85;">({{ on_leave_count }})</span>
+            </a>
+        </div>
+
+        <form method="get" style="position: relative;">
+            <input type="hidden" name="filter" value="{{ selected_filter }}">
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Search members..." class="presence-search-input">
+        </form>
+    </div>
+
+    <!-- Team Presence Cards Grid -->
+    <div class="team-status-grid">
+        {% for st in all_statuses %}
+        <div class="team-member-card">
+            <div>
+                <div class="card-top-header">
+                    <div class="card-user-info">
+                        <div class="member-avatar-box">
+                            {% if st.user.profile.avatar %}
+                            <img src="{{ st.user.profile.avatar.url }}" alt="{{ st.user.get_full_name }}" class="member-avatar-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="member-avatar-fallback" style="display: none;">{{ st.user.first_name|default:st.user.username|slice:":2"|upper }}</div>
+                            {% else %}
+                            <div class="member-avatar-fallback">{{ st.user.first_name|default:st.user.username|slice:":2"|upper }}</div>
+                            {% endif %}
+                            <span class="beacon-dot-indicator beacon-{{ st.status }}" title="{{ st.get_status_display }}"></span>
+                        </div>
+                        <div>
+                            <div style="font-size: 14.5px; font-weight: 800; color: var(--text-main);">
+                                {{ st.user.get_full_name|default:st.user.username }}
+                            </div>
+                            <div style="font-size: 11.5px; color: var(--text-muted);">
+                                {{ st.user.email|default:"employee@company.com" }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit and Delete Actions -->
+                    <div class="card-actions-dropdown">
+                        <button type="button" class="btn-action-icon" title="Edit Status" onclick="openStatusModal('{{ st.user.id }}', '{{ st.status }}', '{{ st.status_message|escapejs }}', '{{ st.user.get_full_name|default:st.user.username|escapejs }}')">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                        </button>
+                        {% if st.status_message %}
+                        <button type="button" class="btn-action-icon btn-delete" title="Clear Status Note" onclick="confirmDeleteStatus('{{ st.user.id }}', '{{ st.user.get_full_name|default:st.user.username|escapejs }}')">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if st.status_message %}
+                <div class="status-msg-bubble" style="margin-top: 12px;">
+                    "{{ st.status_message }}"
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="card-footer-meta">
+                <span style="font-weight: 800; text-transform: uppercase; color: var(--text-muted); font-size: 11px; letter-spacing: 0.3px;">
+                    {{ st.get_status_display }}
+                </span>
+                <span style="color: var(--text-muted); font-size: 11px;">Active today</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card-panel" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+            No team members match this filter.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Status Updation Modal Component -->
+<div class="status-modal-backdrop" id="statusModalBackdrop">
+    <div class="status-modal-container">
+        <div class="modal-header-row">
+            <div>
+                <h3>
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    Update Work Status
+                </h3>
+                <div id="modalTargetUserLabel" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;"></div>
+            </div>
+            <button type="button" class="btn-close-modal" onclick="closeStatusModal()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <form method="post" id="statusModalForm">
+            {% csrf_token %}
+            <input type="hidden" name="target_id" id="modalTargetId" value="">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="status" id="modalStatusInput" value="in_office">
+
+            <label class="modal-input-label">Select Availability State</label>
+            <div class="status-options-grid">
+                <button type="button" class="status-option-btn" data-status="in_office" onclick="setModalStatus('in_office', this)">
+                    In Office
+                </button>
+                <button type="button" class="status-option-btn" data-status="remote" onclick="setModalStatus('remote', this)">
+                    Remote
+                </button>
+                <button type="button" class="status-option-btn" data-status="meeting" onclick="setModalStatus('meeting', this)">
+                    In Meeting
+                </button>
+                <button type="button" class="status-option-btn" data-status="on_leave" onclick="setModalStatus('on_leave', this)">
+                    On Leave
+                </button>
+                <button type="button" class="status-option-btn" data-status="out_of_office" onclick="setModalStatus('out_of_office', this)">
+                    Out of Office
+                </button>
+            </div>
+
+            <label class="modal-input-label" for="modalStatusNote">Custom Status Message</label>
+            <input type="text" name="status_message" id="modalStatusNote" placeholder="Add custom status note (optional)..." class="modal-text-input">
+
+            <div class="modal-actions-row">
+                <button type="button" class="btn-custom btn-custom-outline" style="padding: 9px 18px;" onclick="closeStatusModal()">Cancel</button>
+                <button type="submit" class="btn-custom btn-custom-primary" style="padding: 9px 22px;">Update Status</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Status Confirmation Modal -->
+<div class="status-modal-backdrop" id="deleteModalBackdrop">
+    <div class="status-modal-container" style="max-width: 440px;">
+        <div class="modal-header-row">
+            <h3 style="color: #f43f5e;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Clear Status Note
+            </h3>
+            <button type="button" class="btn-close-modal" onclick="closeDeleteModal()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <p style="font-size: 13.5px; color: var(--text-main); margin-bottom: 20px; line-height: 1.5;">
+            Are you sure you want to clear the broadcast status note for <strong id="deleteUserName"></strong>?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="target_id" id="deleteTargetId" value="">
+            <input type="hidden" name="action" value="delete">
+
+            <div class="modal-actions-row">
+                <button type="button" class="btn-custom btn-custom-outline" style="padding: 9px 18px;" onclick="closeDeleteModal()">Cancel</button>
+                <button type="submit" class="btn-custom" style="background: #f43f5e; color: #ffffff; padding: 9px 20px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer;">Clear Note</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openStatusModal(userId, currentStatus, currentMsg, userName) {
+        document.getElementById('modalTargetId').value = userId || '';
+        document.getElementById('modalTargetUserLabel').textContent = userName ? ('Updating status for: ' + userName) : 'Broadcasting availability';
+        document.getElementById('modalStatusNote').value = currentMsg || '';
+        document.getElementById('modalStatusInput').value = currentStatus || 'in_office';
+
+        // Set selected status button
+        document.querySelectorAll('.status-option-btn').forEach(btn => {
+            if (btn.getAttribute('data-status') === currentStatus) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+
+        document.getElementById('statusModalBackdrop').classList.add('active');
+    }
+
+    function closeStatusModal() {
+        document.getElementById('statusModalBackdrop').classList.remove('active');
+    }
+
+    function setModalStatus(statusVal, btn) {
+        document.querySelectorAll('.status-option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        document.getElementById('modalStatusInput').value = statusVal;
+    }
+
+    function confirmDeleteStatus(userId, userName) {
+        document.getElementById('deleteTargetId').value = userId;
+        document.getElementById('deleteUserName').textContent = userName || 'this user';
+        document.getElementById('deleteModalBackdrop').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModalBackdrop').classList.remove('active');
+    }
+
+    // Close modals when clicking backdrop
+    window.addEventListener('click', function(e) {
+        const statusModal = document.getElementById('statusModalBackdrop');
+        const deleteModal = document.getElementById('deleteModalBackdrop');
+        if (e.target === statusModal) closeStatusModal();
+        if (e.target === deleteModal) closeDeleteModal();
+    });
+</script>
+{% endblock %}

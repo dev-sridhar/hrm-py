@@ -1,0 +1,820 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Employee Portal - Employees Directory & Staff Management{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Directory Header Panel */
+    .directory-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .directory-title-wrap h2 {
+        font-size: 21px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .directory-title-wrap p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-top: 3px;
+    }
+
+    .export-actions-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn-export {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        border-radius: 12px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.18s ease;
+        border: 1px solid transparent;
+        box-shadow: var(--card-shadow);
+    }
+
+    .btn-export-excel {
+        background: #10b981;
+        color: #ffffff;
+    }
+    .btn-export-excel:hover {
+        background: #059669;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-export-pdf {
+        background: #f43f5e;
+        color: #ffffff;
+    }
+    .btn-export-pdf:hover {
+        background: #e11d48;
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+    }
+
+    /* KPI Summary Stats */
+    .kpi-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    @media (max-width: 992px) {
+        .kpi-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+        .kpi-metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    .kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .kpi-card-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .kpi-card-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 8px 0 4px;
+        letter-spacing: -0.5px;
+    }
+
+    .kpi-card-sub {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Controls & Filter Bar */
+    .controls-filter-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 18px 22px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 22px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .filter-pills-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .filter-tab-pill {
+        padding: 7px 15px;
+        border-radius: 12px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .filter-tab-pill:hover {
+        background: var(--card-bg);
+        color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .filter-tab-pill.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 3px 10px var(--primary-shadow);
+    }
+
+    /* Proper Search & State Dropdown Row */
+    .search-and-state-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    /* Proper State Dropdown */
+    .state-dropdown-wrap {
+        position: relative;
+        min-width: 240px;
+    }
+
+    .state-custom-select {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: var(--card-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237c5dfa' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E") no-repeat right 14px center;
+        background-size: 16px 16px;
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 38px 10px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        font-family: inherit;
+    }
+
+    .state-custom-select:hover {
+        border-color: var(--primary);
+    }
+
+    .state-custom-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    /* Proper Search Bar */
+    .proper-search-form {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-grow: 1;
+        max-width: 520px;
+    }
+
+    @media (max-width: 768px) {
+        .proper-search-form { max-width: 100%; width: 100%; }
+        .state-dropdown-wrap { width: 100%; }
+    }
+
+    .proper-search-input-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        background: var(--card-bg);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 0 12px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .proper-search-input-box:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .search-prefix-icon {
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        margin-right: 8px;
+    }
+
+    .proper-search-field {
+        width: 100%;
+        padding: 10px 0;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 13.5px;
+        font-family: inherit;
+        color: var(--text-main);
+    }
+
+    .proper-search-field::placeholder {
+        color: var(--text-light);
+    }
+
+    .search-clear-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s ease;
+    }
+    .search-clear-btn:hover {
+        color: var(--danger);
+    }
+
+    .btn-search-submit {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        box-shadow: 0 3px 10px var(--primary-shadow);
+        font-family: inherit;
+        flex-shrink: 0;
+    }
+
+    .btn-search-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 16px var(--primary-shadow);
+    }
+
+    /* Employees Table */
+    .table-card-container {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+
+    .employees-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .employees-custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    .employees-custom-table th {
+        background: var(--pill-gray);
+        padding: 14px 16px;
+        font-size: 11.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .employees-custom-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+        color: var(--text-main);
+    }
+
+    .employees-custom-table tbody tr:hover {
+        background: var(--row-hover, rgba(124, 93, 250, 0.03));
+    }
+
+    /* Distinct EMP ID Badge */
+    .emp-id-pill {
+        display: inline-block;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--primary);
+        background: var(--pill-purple);
+        padding: 4px 9px;
+        border-radius: 8px;
+        border: 1px solid rgba(124, 93, 250, 0.22);
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+
+    .emp-avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--primary-gradient);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    .emp-meta-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .emp-name-text {
+        font-weight: 800;
+        color: var(--text-main);
+        font-size: 13.5px;
+    }
+
+    /* Clear, Distinct Role Badges */
+    .role-badge-clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        white-space: nowrap;
+    }
+
+    .role-badge-clear.badge-superadmin {
+        background: #7c5dfa;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(124, 93, 250, 0.35);
+    }
+
+    .role-badge-clear.badge-staff {
+        background: #0284c7;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }
+
+    .role-badge-clear.badge-developer {
+        background: #059669;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+    }
+
+    .role-badge-clear.badge-employee {
+        background: #475569;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(71, 85, 105, 0.25);
+    }
+
+    /* Presence Indicators */
+    .presence-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .beacon-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .beacon-in_office { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.6); }
+    .beacon-remote { background: #06b6d4; box-shadow: 0 0 6px rgba(6, 182, 212, 0.6); }
+    .beacon-meeting { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.6); }
+    .beacon-on_leave { background: #8b5cf6; box-shadow: 0 0 6px rgba(139, 92, 246, 0.6); }
+    .beacon-out_of_office { background: #94a3b8; }
+
+    /* Check-in / Check-out Badges */
+    .time-badge-checkin {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #10b981;
+    }
+
+    .time-badge-checkout {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #3b82f6;
+    }
+
+    .time-badge-active {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 800;
+        background: var(--pill-green);
+        color: #10b981;
+        padding: 3px 8px;
+        border-radius: 12px;
+        border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* Pagination Footer */
+    .pagination-footer {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border);
+        background: var(--card-bg);
+    }
+
+    .pagination-info {
+        font-size: 12.5px;
+        color: var(--text-muted);
+    }
+
+    .pagination-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        min-width: 32px;
+        text-align: center;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        background: var(--card-bg);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+</style>
+
+<!-- Top Title & Export Action Group -->
+<div class="directory-header-bar">
+    <div class="directory-title-wrap">
+        <h2>Employee Directory & Staff Roster</h2>
+        <p>Comprehensive organizational personnel directory with live presence monitoring, role clearance, and export utilities.</p>
+    </div>
+
+    <div class="export-actions-group">
+        <!-- Excel Export Button -->
+        <a href="{% url 'employees_export_excel' %}?q={{ search_query }}&role={{ role_filter }}&status={{ status_filter }}&active={{ active_filter }}" class="btn-export btn-export-excel" title="Download Excel Spreadsheet">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3.5 14l-2.5-3.8-2.5 3.8H8l3.7-5.5L8.3 6h2.2l2.5 3.8 2.5-3.8h2.2l-3.7 5.5 3.7 5.5h-2.2z"/>
+            </svg>
+            <span>Export to Excel (.xlsx)</span>
+        </a>
+
+        <!-- PDF Export Button -->
+        <a href="{% url 'employees_export_pdf' %}?q={{ search_query }}&role={{ role_filter }}&status={{ status_filter }}&active={{ active_filter }}" class="btn-export btn-export-pdf" title="Download PDF Document">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5c0 .8-.7 1.5-1.5 1.5H7v2H5.5V6H8c.8 0 1.5.7 1.5 1.5v4zm5 3.5h-3.5V6h3.5c.8 0 1.5.7 1.5 1.5v6c0 .8-.7 1.5-1.5 1.5zm4.5-5.5h-2v2h2v1.5h-2V15H15V6h4v1.5h-2.5v2H19V11zm-10-3.5H7v2.5h1V7.5zm5 1.5h-2v4.5h2V9z"/>
+            </svg>
+            <span>Export to PDF (.pdf)</span>
+        </a>
+    </div>
+</div>
+
+<!-- 4 Top KPI Cards -->
+<div class="kpi-metrics-grid">
+    <div class="kpi-card">
+        <div class="kpi-card-label">
+            <span>Total Staff</span>
+            <span style="color: var(--primary); font-size: 11px; font-weight: 800;">ALL</span>
+        </div>
+        <div class="kpi-card-value">{{ total_count }}</div>
+        <div class="kpi-card-sub">
+            <span style="color: #10b981; font-weight: 700;">{{ active_count }} Active</span> &bull; 100% Verified
+        </div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-card-label">
+            <span>Super Admins</span>
+            <span style="color: #7c5dfa; font-size: 11px; font-weight: 800;">ADMIN</span>
+        </div>
+        <div class="kpi-card-value">{{ superadmin_count }}</div>
+        <div class="kpi-card-sub">Executive clearance & security control</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-card-label">
+            <span>Staff & HR Leads</span>
+            <span style="color: #0284c7; font-size: 11px; font-weight: 800;">STAFF</span>
+        </div>
+        <div class="kpi-card-value">{{ staff_count }}</div>
+        <div class="kpi-card-sub">Operations & people management</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-card-label">
+            <span>Presence Today</span>
+            <span style="color: #10b981; font-size: 11px; font-weight: 800;">LIVE</span>
+        </div>
+        <div class="kpi-card-value">{{ in_office_count }}</div>
+        <div class="kpi-card-sub">
+            <span>{{ remote_count }} Remote &bull; {{ on_leave_count }} On Leave</span>
+        </div>
+    </div>
+</div>
+
+<!-- Proper Controls & Search Bar -->
+<div class="controls-filter-card">
+    <!-- Role Filter Tabs -->
+    <div class="filter-pills-row">
+        <a href="?role=all{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="filter-tab-pill {% if role_filter == 'all' %}active{% endif %}">
+            All Staff ({{ total_count }})
+        </a>
+        <a href="?role=superadmin{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="filter-tab-pill {% if role_filter == 'superadmin' %}active{% endif %}">
+            Super Admins ({{ superadmin_count }})
+        </a>
+        <a href="?role=staff{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="filter-tab-pill {% if role_filter == 'staff' %}active{% endif %}">
+            Staff / HR ({{ staff_count }})
+        </a>
+        <a href="?role=developer{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="filter-tab-pill {% if role_filter == 'developer' %}active{% endif %}">
+            Developers ({{ dev_count }})
+        </a>
+        <a href="?role=employee{% if search_query %}&q={{ search_query }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="filter-tab-pill {% if role_filter == 'employee' %}active{% endif %}">
+            Employees ({{ members_count }})
+        </a>
+    </div>
+
+    <!-- Proper State Dropdown & Proper Search Bar Row -->
+    <div class="search-and-state-row">
+        <!-- Proper States Filter Dropdown -->
+        <form method="get" id="stateFilterForm" class="state-dropdown-wrap">
+            <input type="hidden" name="role" value="{{ role_filter }}">
+            {% if search_query %}
+            <input type="hidden" name="q" value="{{ search_query }}">
+            {% endif %}
+            
+            <select name="status" class="state-custom-select" onchange="document.getElementById('stateFilterForm').submit()" title="Filter by Presence State">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Presence States</option>
+                <option value="in_office" {% if status_filter == 'in_office' %}selected{% endif %}>In Office</option>
+                <option value="remote" {% if status_filter == 'remote' %}selected{% endif %}>Remote</option>
+                <option value="meeting" {% if status_filter == 'meeting' %}selected{% endif %}>In Meeting</option>
+                <option value="on_leave" {% if status_filter == 'on_leave' %}selected{% endif %}>On Leave</option>
+                <option value="out_of_office" {% if status_filter == 'out_of_office' %}selected{% endif %}>Out of Office</option>
+            </select>
+        </form>
+
+        <!-- Proper Search Bar -->
+        <form method="get" class="proper-search-form">
+            <input type="hidden" name="role" value="{{ role_filter }}">
+            <input type="hidden" name="status" value="{{ status_filter }}">
+
+            <div class="proper-search-input-box">
+                <div class="search-prefix-icon">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <input type="text" name="q" id="employeeSearchInput" value="{{ search_query }}" placeholder="Search by name, email, username or status..." class="proper-search-field" autocomplete="off">
+                {% if search_query %}
+                <a href="?role={{ role_filter }}&status={{ status_filter }}" class="search-clear-btn" title="Clear search">&times;</a>
+                {% endif %}
+            </div>
+            <button type="submit" class="btn-search-submit">
+                <span>Search</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Employees Directory Table Card -->
+<div class="table-card-container">
+    <div class="employees-table-wrap">
+        <table class="employees-custom-table">
+            <thead>
+                <tr>
+                    <th style="min-width: 105px; white-space: nowrap;">EMP ID</th>
+                    <th style="min-width: 190px; white-space: nowrap;">Employee</th>
+                    <th style="min-width: 160px; white-space: nowrap;">Email Address</th>
+                    <th style="min-width: 130px; white-space: nowrap;">System Role</th>
+                    <th style="min-width: 140px; white-space: nowrap;">Live Presence</th>
+                    <th style="min-width: 120px; white-space: nowrap;">Joined Date</th>
+                    <th style="min-width: 100px; white-space: nowrap;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for emp in page_obj %}
+                <tr>
+                    <!-- EMP ID Column -->
+                    <td>
+                        <a href="{% url 'employee_profile' emp.id %}" style="text-decoration: none;" title="View Employee Profile">
+                            <span class="emp-id-pill">EMP-{{ emp.id|stringformat:"04d" }}</span>
+                        </a>
+                    </td>
+
+                    <!-- Employee Details Column -->
+                    <td>
+                        <a href="{% url 'employee_profile' emp.id %}" class="emp-meta-cell" style="text-decoration: none; color: inherit;" title="View Employee Profile">
+                            <div class="emp-avatar-circle" style="overflow: hidden; padding: 0;">
+                                {% if emp.profile.avatar %}
+                                <img src="{{ emp.profile.avatar.url }}" alt="{{ emp.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                {{ emp.first_name|default:emp.username|slice:":2"|upper }}
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="emp-name-text">{{ emp.get_full_name|default:emp.username }}</div>
+                                <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 1px;">
+                                    @{{ emp.username }}
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+
+                    <!-- Email Column -->
+                    <td>
+                        <span style="color: var(--text-main); font-size: 12.5px;">{{ emp.email|default:"-" }}</span>
+                    </td>
+
+                    <!-- Clear Role Badge Column -->
+                    <td>
+                        <span class="role-badge-clear {{ emp.role_badge }}">
+                            <span>{{ emp.role_label }}</span>
+                        </span>
+                    </td>
+
+                    <!-- Live Presence Column -->
+                    <td>
+                        <div class="presence-tag">
+                            <span class="beacon-dot beacon-{{ emp.work_status.status|default:'in_office' }}"></span>
+                            <span>{{ emp.work_status.get_status_display|default:"In Office" }}</span>
+                        </div>
+                        {% if emp.work_status.status_message %}
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px; max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ emp.work_status.status_message }}">
+                            "{{ emp.work_status.status_message }}"
+                        </div>
+                        {% endif %}
+                    </td>
+
+                    <!-- Joined Date Column -->
+                    <td>
+                        <span style="font-size: 12px; color: var(--text-muted);">
+                            {{ emp.date_joined|date:"M d, Y" }}
+                        </span>
+                    </td>
+
+                    <!-- Account Status Column -->
+                    <td>
+                        {% if emp.is_active %}
+                        <span style="font-size: 11px; font-weight: 800; background: var(--pill-green); color: #10b981; padding: 4px 10px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                            Active
+                        </span>
+                        {% else %}
+                        <span style="font-size: 11px; font-weight: 800; background: var(--pill-gray); color: var(--text-muted); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border);">
+                            Inactive
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 48px; color: var(--text-muted);">
+                        No employees found matching the specified filters.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="pagination-footer">
+        <div class="pagination-info">
+            Showing <strong>{{ page_obj.start_index|default:0 }} - {{ page_obj.end_index|default:0 }}</strong> of <strong>{{ paginator.count }}</strong> registered employees
+        </div>
+
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination-nav-group">
+            <!-- First Page -->
+            <a href="?page=1{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter != 'all' %}&role={{ role_filter }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="First Page">
+                &laquo;
+            </a>
+
+            <!-- Previous Page -->
+            <a href="?page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter != 'all' %}&role={{ role_filter }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="Previous Page">
+                &lsaquo; Prev
+            </a>
+
+            <!-- Page Number Links -->
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <span class="pagination-btn active">{{ num }}</span>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter != 'all' %}&role={{ role_filter }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Next Page -->
+            <a href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ page_obj.paginator.num_pages }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter != 'all' %}&role={{ role_filter }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Next Page">
+                Next &rsaquo;
+            </a>
+
+            <!-- Last Page -->
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&q={{ search_query }}{% endif %}{% if role_filter != 'all' %}&role={{ role_filter }}{% endif %}{% if status_filter != 'all' %}&status={{ status_filter }}{% endif %}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Last Page">
+                &raquo;
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
