@@ -134,15 +134,10 @@ def home_view(request):
         day_att = Attendance.objects.filter(user=request.user, date=day_date).first()
         day_hours = 0.0
 
-        if day_att and day_att.punch_in:
-            if day_att.punch_out and day_att.duration:
-                sec = int(day_att.duration.total_seconds())
-                weekly_seconds += sec
-                day_hours = round(sec / 3600, 1)
-            elif day_att.is_punched_in and day_date == today:
-                sec = int((timezone.now() - day_att.punch_in).total_seconds())
-                weekly_seconds += max(0, sec)
-                day_hours = round(max(0, sec) / 3600, 1)
+        if day_att and day_att.punch_in and day_att.punch_out and day_att.duration:
+            sec = int(day_att.duration.total_seconds())
+            weekly_seconds += sec
+            day_hours = round(sec / 3600, 1)
 
         percent = min(100, int((day_hours / 8.0) * 100))
         weekly_day_stats.append({
@@ -863,10 +858,10 @@ def attendance_view(request):
             # Punched In -> Present
             stat = "present"
             p_in_formatted = timezone.localtime(att.punch_in).strftime("%I:%M %p")
-            p_out_formatted = timezone.localtime(att.punch_out).strftime("%I:%M %p") if att.punch_out else "Active Now"
+            p_out_formatted = timezone.localtime(att.punch_out).strftime("%I:%M %p") if att.punch_out else ("Active Now" if att.date == today else "Auto Closed")
             duration_str = att.formatted_duration
             notes_str = att.notes or "Biometric shift recorded."
-            is_active_now = att.is_punched_in
+            is_active_now = (att.date == today and att.punch_out is None)
             sort_dt = att.punch_in
             priority = 1 if is_active_now else 2
         elif u.id in approved_leaves:
@@ -1007,13 +1002,26 @@ def punch_attendance_view(request):
     if request.method == "POST":
         action = request.POST.get("action")
         today = timezone.localdate()
+        now = timezone.now()
+
+        # Auto-close any lingering unclosed shifts from previous calendar days prior to 12:00 AM
+        prev_open_att = Attendance.objects.filter(
+            user=request.user,
+            date__lt=today,
+            punch_in__isnull=False,
+            punch_out__isnull=True,
+        ).first()
+        if prev_open_att:
+            prev_end = timezone.make_aware(datetime.combine(prev_open_att.date, time(23, 59, 59)))
+            prev_open_att.punch_out = prev_end
+            prev_open_att.save()
+
+        # Get or create attendance for the current day (after 12:00 AM considered new day)
         attendance, created = Attendance.objects.get_or_create(
             user=request.user,
             date=today,
             defaults={"status": "present", "notes": "Biometric portal entry"},
         )
-
-        now = timezone.now()
 
         if action == "punch_in":
             if not attendance.punch_in:
@@ -1021,7 +1029,13 @@ def punch_attendance_view(request):
                 attendance.status = "present"
                 attendance.notes = "Checked in via Portal"
                 attendance.save()
-                messages.success(request, f"Checked in successfully at {timezone.localtime(now).strftime('%I:%M %p')}. Attendance marked as Present.")
+
+                # Update live presence status
+                user_status, _ = UserStatus.objects.get_or_create(user=request.user)
+                user_status.status = "in_office"
+                user_status.save()
+
+                messages.success(request, f"Checked in successfully at {timezone.localtime(now).strftime('%I:%M %p')}. Attendance marked as Present for {today.strftime('%d %B %Y')}.")
             else:
                 messages.warning(request, "You have already checked in today.")
 
@@ -1030,6 +1044,13 @@ def punch_attendance_view(request):
                 attendance.punch_out = now
                 attendance.status = "present"
                 attendance.save()
+
+                # Update live presence status
+                user_status, _ = UserStatus.objects.get_or_create(user=request.user)
+                if user_status.status == "in_office":
+                    user_status.status = "out_of_office"
+                    user_status.save()
+
                 messages.success(request, f"Checked out successfully at {timezone.localtime(now).strftime('%I:%M %p')}. Total shift duration: {attendance.formatted_duration}.")
             elif not attendance.punch_in:
                 messages.error(request, "You need to check in before checking out.")

@@ -544,21 +544,15 @@
         </div>
 
         <!-- Filter and Search -->
-        <form method="get" style="display: flex; align-items: center; gap: 10px;">
+        <form method="get" style="display: flex; align-items: center; gap: 8px;">
             <input type="hidden" name="tab" value="my_logs">
             <input type="hidden" name="status" value="{{ selected_status }}">
-            <div style="position: relative;">
-                <input type="text" name="q" value="{{ search_query }}" placeholder="Filter dates, notes..." class="form-control-input" style="padding: 7px 12px; font-size: 12.5px; width: 200px;">
-            </div>
-            <button type="submit" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Search</button>
-            {% if selected_status != 'all' or search_query %}
-            <a href="?tab=my_logs" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Clear</a>
-            {% endif %}
+            {% include "accounts/components/search_bar.html" with input_id="attendanceMyLogsSearch" name="q" value=search_query placeholder="Filter dates, notes..." oninput="handleAttendanceMyLogsLiveSearch(this)" onclear="clearAttendanceMyLogsLiveSearch()" max_width="220px" %}
         </form>
     </div>
 
     <div style="overflow-x: auto;">
-        <table class="custom-table">
+        <table class="custom-table" id="attendanceMyLogsTable">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -571,7 +565,11 @@
             </thead>
             <tbody>
                 {% for att in attendances %}
-                <tr>
+                <tr class="att-log-row"
+                    data-att-date="{{ att.date|date:'Y-m-d' }} {{ att.date|date:'D, M d, Y'|lower }}"
+                    data-att-status="{{ att.status|lower }} {{ att.get_status_display|lower }}"
+                    data-att-notes="{{ att.notes|default:''|lower }}"
+                    data-att-duration="{{ att.formatted_duration|lower }}">
                     <td>
                         <div style="font-weight: 800;">{{ att.date|date:"D, M d, Y" }}</div>
                         {% if att.date == today %}
@@ -613,6 +611,11 @@
                     </td>
                 </tr>
                 {% endfor %}
+                <tr id="attendanceMyLogsEmptyRow" style="display: none;">
+                    <td colspan="6" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                        No attendance records found matching this search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -759,13 +762,7 @@
                 <input type="hidden" name="tab" value="daily_team">
                 <input type="hidden" name="daily_date" value="{{ daily_date_str }}">
                 <input type="hidden" name="team_status" value="{{ team_status_filter }}">
-                <div style="position: relative;">
-                    <input type="text" name="team_q" value="{{ team_search_query }}" placeholder="Search employee, dept..." class="form-control-input" style="padding: 7px 12px; font-size: 12.5px; width: 180px;">
-                </div>
-                <button type="submit" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Search</button>
-                {% if team_status_filter != 'all' or team_search_query %}
-                <a href="?tab=daily_team&daily_date={{ daily_date_str }}" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Clear</a>
-                {% endif %}
+                {% include "accounts/components/search_bar.html" with input_id="attendanceDailyTeamSearch" name="team_q" value=team_search_query placeholder="Search employee, dept..." oninput="handleAttendanceDailyTeamLiveSearch(this)" onclear="clearAttendanceDailyTeamLiveSearch()" max_width="200px" %}
             </form>
 
             <a href="{% url 'attendance_export_monthly' %}?month={{ daily_date.month }}&year={{ daily_date.year }}" class="btn-export-excel" style="padding: 7px 13px; font-size: 12px;" title="Download monthly attendance sheet for all staff">
@@ -781,7 +778,7 @@
     </div>
 
     <div style="overflow-x: auto;">
-        <table class="custom-table">
+        <table class="custom-table" id="attendanceDailyTeamTable">
             <thead>
                 <tr>
                     <th style="min-width: 105px;">EMP ID</th>
@@ -796,7 +793,14 @@
             </thead>
             <tbody>
                 {% for r in team_records %}
-                <tr>
+                <tr class="daily-team-row"
+                    data-r-id="{{ r.user_id }}"
+                    data-r-name="{{ r.name|lower }}"
+                    data-r-user="{{ r.username|lower }}"
+                    data-r-dept="{{ r.department|lower }}"
+                    data-r-desig="{{ r.designation|lower }}"
+                    data-r-status="{{ r.status|lower }} {{ r.status_display|lower }}"
+                    data-r-notes="{{ r.notes|default:''|lower }}">
                     <td>
                         <a href="{% url 'employee_profile' r.user_id %}" style="text-decoration: none;">
                             <span class="emp-id-pill">
@@ -858,6 +862,11 @@
                     </td>
                 </tr>
                 {% endfor %}
+                <tr id="attendanceDailyTeamEmptyRow" style="display: none;">
+                    <td colspan="8" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                        No employee attendance records found matching this search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -1014,6 +1023,78 @@
     function closeExportModal() {
         const modal = document.getElementById('exportModal');
         if (modal) modal.style.display = 'none';
+    }
+
+    // Live Attendance Search Filter (My Logs)
+    function handleAttendanceMyLogsLiveSearch(input) {
+        const query = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#attendanceMyLogsTable tbody tr.att-log-row');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const date = row.getAttribute('data-att-date') || '';
+            const status = row.getAttribute('data-att-status') || '';
+            const notes = row.getAttribute('data-att-notes') || '';
+            const duration = row.getAttribute('data-att-duration') || '';
+
+            if (!query || date.includes(query) || status.includes(query) || notes.includes(query) || duration.includes(query)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptyRow = document.getElementById('attendanceMyLogsEmptyRow');
+        if (emptyRow) {
+            emptyRow.style.display = (visibleCount === 0 && query) ? '' : 'none';
+        }
+    }
+
+    function clearAttendanceMyLogsLiveSearch() {
+        const input = document.getElementById('attendanceMyLogsSearch');
+        if (input) {
+            input.value = '';
+            handleAttendanceMyLogsLiveSearch(input);
+            input.focus();
+        }
+    }
+
+    // Live Attendance Search Filter (Daily Team)
+    function handleAttendanceDailyTeamLiveSearch(input) {
+        const query = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#attendanceDailyTeamTable tbody tr.daily-team-row');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const name = row.getAttribute('data-r-name') || '';
+            const user = row.getAttribute('data-r-user') || '';
+            const dept = row.getAttribute('data-r-dept') || '';
+            const desig = row.getAttribute('data-r-desig') || '';
+            const status = row.getAttribute('data-r-status') || '';
+            const notes = row.getAttribute('data-r-notes') || '';
+            const id = row.getAttribute('data-r-id') || '';
+            const empIdStr = `emp-${id.padStart(4, '0')}`;
+
+            if (!query || name.includes(query) || user.includes(query) || dept.includes(query) || desig.includes(query) || status.includes(query) || notes.includes(query) || empIdStr.includes(query)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptyRow = document.getElementById('attendanceDailyTeamEmptyRow');
+        if (emptyRow) {
+            emptyRow.style.display = (visibleCount === 0 && query) ? '' : 'none';
+        }
+    }
+
+    function clearAttendanceDailyTeamLiveSearch() {
+        const input = document.getElementById('attendanceDailyTeamSearch');
+        if (input) {
+            input.value = '';
+            handleAttendanceDailyTeamLiveSearch(input);
+            input.focus();
+        }
     }
 </script>
 

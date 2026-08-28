@@ -210,23 +210,19 @@
         </div>
 
         <!-- Search & Filter Bar -->
-        <form method="get" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <form method="get" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;" onsubmit="return false;">
             <select name="status" class="form-control-select" style="padding: 7px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card-bg); color: var(--text-main);" onchange="this.form.submit()">
                 <option value="all" {% if selected_status == 'all' or not selected_status %}selected{% endif %}>All Statuses</option>
                 <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pending</option>
                 <option value="approved" {% if selected_status == 'approved' %}selected{% endif %}>Approved</option>
                 <option value="rejected" {% if selected_status == 'rejected' %}selected{% endif %}>Rejected</option>
             </select>
-            <input type="text" name="q" value="{{ search_query }}" placeholder="Search reason, type, name..." class="form-control-input" style="padding: 7px 12px; font-size: 12.5px; width: 200px;">
-            <button type="submit" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Search</button>
-            {% if search_query or selected_status != 'all' and selected_status %}
-            <a href="{% url 'leaves' %}" class="btn-custom btn-custom-outline" style="padding: 7px 12px; font-size: 12.5px;">Clear</a>
-            {% endif %}
+            {% include "accounts/components/search_bar.html" with input_id="leavesSearchInput" name="q" value=search_query placeholder="Search reason, type, name..." oninput="handleLeavesLiveSearch(this)" onclear="clearLeavesLiveSearch()" max_width="220px" %}
         </form>
     </div>
 
     <div style="overflow-x: auto;">
-        <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <table class="custom-table" id="leavesTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
             <thead>
                 <tr style="border-bottom: 1.5px solid var(--border);">
                     <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 140px; white-space: nowrap;">Leave Type</th>
@@ -239,7 +235,12 @@
             </thead>
             <tbody>
                 {% for leave in leaves %}
-                <tr style="border-bottom: 1px solid var(--border);">
+                <tr class="leave-table-row"
+                    data-leave-type="{{ leave.get_leave_type_display|lower }}"
+                    data-leave-dates="{{ leave.start_date|date:'M d, Y'|lower }} {{ leave.end_date|date:'M d, Y'|lower }}"
+                    data-leave-reason="{{ leave.reason|default:''|lower }}"
+                    data-leave-status="{{ leave.status|lower }}"
+                    style="border-bottom: 1px solid var(--border);">
                     <td style="padding: 14px; font-weight: 800; color: var(--text-main); white-space: nowrap;">
                         {{ leave.get_leave_type_display }}
                     </td>
@@ -314,10 +315,15 @@
                 {% empty %}
                 <tr>
                     <td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">
-                        No leave applications found. Click <strong>+ Apply for Leave</strong> to submit one.
+                        No leave applications found.
                     </td>
                 </tr>
                 {% endfor %}
+                <tr id="leavesEmptyLiveRow" style="display: none;">
+                    <td colspan="6" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                        No leave applications found matching this search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -463,6 +469,40 @@
     }
     function closeEditLeaveModal() {
         document.getElementById('editLeaveModal').style.display = 'none';
+    }
+
+    // Live Leave Table Search Filter
+    function handleLeavesLiveSearch(input) {
+        const query = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#leavesTable tbody tr.leave-table-row');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const type = row.getAttribute('data-leave-type') || '';
+            const dates = row.getAttribute('data-leave-dates') || '';
+            const reason = row.getAttribute('data-leave-reason') || '';
+            const status = row.getAttribute('data-leave-status') || '';
+
+            if (!query || type.includes(query) || dates.includes(query) || reason.includes(query) || status.includes(query)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptyRow = document.getElementById('leavesEmptyLiveRow');
+        if (emptyRow) {
+            emptyRow.style.display = (visibleCount === 0 && query) ? '' : 'none';
+        }
+    }
+
+    function clearLeavesLiveSearch() {
+        const input = document.getElementById('leavesSearchInput');
+        if (input) {
+            input.value = '';
+            handleLeavesLiveSearch(input);
+            input.focus();
+        }
     }
 </script>
 {% endblock %}

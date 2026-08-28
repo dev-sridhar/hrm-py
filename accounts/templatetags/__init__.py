@@ -1,0 +1,2 @@
+# accounts templatetags package
+

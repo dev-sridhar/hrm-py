@@ -1,0 +1,37 @@
+<!-- Reusable Export Buttons Component -->
+{# Parameters: excel_url, pdf_url, show_excel (default: True), show_pdf (default: True), icon_only (default: True), excel_title, pdf_title, extra_class #}
+<div class="export-actions-group {{ extra_class }}" style="display: flex; align-items: center; gap: 8px;">
+    {% if show_excel|default:True and excel_url %}
+        {% if icon_only|default:True %}
+        <a href="{{ excel_url }}" class="btn-export-icon btn-export-excel" style="width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: #10b981; color: #ffffff; text-decoration: none; border: 1px solid transparent; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); transition: all 0.18s ease;" title="{{ excel_title|default:'Export to Excel (.xlsx)' }}">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3.5 14l-2.5-3.8-2.5 3.8H8l3.7-5.5L8.3 6h2.2l2.5 3.8 2.5-3.8h2.2l-3.7 5.5 3.7 5.5h-2.2z"/>
+            </svg>
+        </a>
+        {% else %}
+        <a href="{{ excel_url }}" class="btn-export btn-export-excel" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; background: #10b981; color: #ffffff; text-decoration: none; transition: all 0.18s ease;" title="{{ excel_title|default:'Export to Excel (.xlsx)' }}">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3.5 14l-2.5-3.8-2.5 3.8H8l3.7-5.5L8.3 6h2.2l2.5 3.8 2.5-3.8h2.2l-3.7 5.5 3.7 5.5h-2.2z"/>
+            </svg>
+            <span>Export Excel</span>
+        </a>
+        {% endif %}
+    {% endif %}
+
+    {% if show_pdf|default:True and pdf_url %}
+        {% if icon_only|default:True %}
+        <a href="{{ pdf_url }}" class="btn-export-icon btn-export-pdf" style="width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: #f43f5e; color: #ffffff; text-decoration: none; border: 1px solid transparent; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08); transition: all 0.18s ease;" title="{{ pdf_title|default:'Export to PDF (.pdf)' }}">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5c0 .8-.7 1.5-1.5 1.5H7v2H5.5V6H8c.8 0 1.5.7 1.5 1.5v4zm5 3.5h-3.5V6h3.5c.8 0 1.5.7 1.5 1.5v6c0 .8-.7 1.5-1.5 1.5zm4.5-5.5h-2v2h2v1.5h-2V15H15V6h4v1.5h-2.5v2H19V11zm-10-3.5H7v2.5h1V7.5zm5 1.5h-2v4.5h2V9z"/>
+            </svg>
+        </a>
+        {% else %}
+        <a href="{{ pdf_url }}" class="btn-export btn-export-pdf" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; background: #f43f5e; color: #ffffff; text-decoration: none; transition: all 0.18s ease;" title="{{ pdf_title|default:'Export to PDF (.pdf)' }}">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9.5 8.5c0 .8-.7 1.5-1.5 1.5H7v2H5.5V6H8c.8 0 1.5.7 1.5 1.5v4zm5 3.5h-3.5V6h3.5c.8 0 1.5.7 1.5 1.5v6c0 .8-.7 1.5-1.5 1.5zm4.5-5.5h-2v2h2v1.5h-2V15H15V6h4v1.5h-2.5v2H19V11zm-10-3.5H7v2.5h1V7.5zm5 1.5h-2v4.5h2V9z"/>
+            </svg>
+            <span>Export PDF</span>
+        </a>
+        {% endif %}
+    {% endif %}
+</div>

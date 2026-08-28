@@ -1,0 +1,31 @@
+<!-- Reusable Unified Action Toolbar Component -->
+{# Parameters: 
+   show_add, add_onclick, add_href, add_title, add_text, add_icon_only
+   show_reset, reset_href, reset_onclick, reset_title, reset_icon_only
+   show_search, search_id, search_name, search_value, search_placeholder, search_oninput, search_onclear, search_max_width
+   show_export, excel_url, pdf_url, show_excel, show_pdf, export_icon_only, export_excel_title, export_pdf_title
+   extra_class, style
+#}
+<div class="universal-action-toolbar {{ extra_class }}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; {{ style }}">
+    <!-- Left Actions Cluster (Add / Reset / Primary Filters) -->
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        {% if show_add %}
+            {% include "accounts/components/btn_add.html" with href=add_href onclick=add_onclick title=add_title text=add_text icon_only=add_icon_only %}
+        {% endif %}
+
+        {% if show_reset %}
+            {% include "accounts/components/btn_reset.html" with href=reset_href onclick=reset_onclick title=reset_title icon_only=reset_icon_only %}
+        {% endif %}
+    </div>
+
+    <!-- Right Actions Cluster (Search & Export) -->
+    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        {% if show_search|default:True %}
+            {% include "accounts/components/search_bar.html" with input_id=search_id name=search_name value=search_value placeholder=search_placeholder oninput=search_oninput onclear=search_onclear max_width=search_max_width %}
+        {% endif %}
+
+        {% if show_export or excel_url or pdf_url %}
+            {% include "accounts/components/export_buttons.html" with excel_url=excel_url pdf_url=pdf_url show_excel=show_excel show_pdf=show_pdf icon_only=export_icon_only excel_title=export_excel_title pdf_title=export_pdf_title %}
+        {% endif %}
+    </div>
+</div>

@@ -297,18 +297,14 @@
         </div>
 
         <!-- Search Bar -->
-        <form method="get" style="display: flex; align-items: center; gap: 8px;">
+        <form method="get" style="display: flex; align-items: center; gap: 8px;" onsubmit="return false;">
             <input type="hidden" name="tab" value="{{ selected_tab|default:'all' }}">
-            <input type="text" name="q" value="{{ search_query }}" placeholder="Search employee, dept, reason..." class="form-control-input" style="padding: 7px 12px; font-size: 12.5px; width: 220px;">
-            <button type="submit" class="btn-custom btn-custom-outline" style="padding: 7px 14px; font-size: 12.5px;">Search</button>
-            {% if search_query %}
-            <a href="{% url 'permissions' %}?tab={{ selected_tab|default:'all' }}" class="btn-custom btn-custom-outline" style="padding: 7px 12px; font-size: 12.5px;">Clear</a>
-            {% endif %}
+            {% include "accounts/components/search_bar.html" with input_id="permissionsSearchInput" name="q" value=search_query placeholder="Search employee, dept, reason..." oninput="handlePermissionsLiveSearch(this)" onclear="clearPermissionsLiveSearch()" max_width="240px" %}
         </form>
     </div>
 
     <div style="overflow-x: auto;">
-        <table class="custom-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <table class="custom-table" id="permissionsTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
             <thead>
                 <tr style="border-bottom: 1.5px solid var(--border);">
                     <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 190px; white-space: nowrap;">Employee</th>
@@ -322,7 +318,15 @@
             </thead>
             <tbody>
                 {% for perm in permissions %}
-                <tr style="border-bottom: 1px solid var(--border);">
+                <tr class="perm-table-row"
+                    data-perm-emp="{{ perm.user.get_full_name|default:perm.user.username|lower }}"
+                    data-perm-user="{{ perm.user.username|lower }}"
+                    data-perm-dept="{{ perm.user.profile.department|default:''|lower }}"
+                    data-perm-type="{{ perm.get_permission_type_display|lower }}"
+                    data-perm-reason="{{ perm.reason|default:''|lower }}"
+                    data-perm-status="{{ perm.status|lower }}"
+                    data-perm-id="emp-{{ perm.user.id|stringformat:'04d' }}"
+                    style="border-bottom: 1px solid var(--border);">
                     <!-- Employee Column -->
                     <td style="padding: 14px;">
                         <div style="display: flex; align-items: center; gap: 10px; min-width: 180px;">
@@ -460,6 +464,11 @@
                     </td>
                 </tr>
                 {% endfor %}
+                <tr id="permissionsEmptyLiveRow" style="display: none;">
+                    <td colspan="7" style="text-align: center; padding: 36px; color: var(--text-muted);">
+                        No permission requests found matching this search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -690,6 +699,43 @@
             // Fallback to regular form submission if network fails
             formEl.submit();
         });
+    }
+
+    // Live Permission Table Search Filter
+    function handlePermissionsLiveSearch(input) {
+        const query = input.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#permissionsTable tbody tr.perm-table-row');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const emp = row.getAttribute('data-perm-emp') || '';
+            const user = row.getAttribute('data-perm-user') || '';
+            const dept = row.getAttribute('data-perm-dept') || '';
+            const type = row.getAttribute('data-perm-type') || '';
+            const reason = row.getAttribute('data-perm-reason') || '';
+            const status = row.getAttribute('data-perm-status') || '';
+            const id = row.getAttribute('data-perm-id') || '';
+
+            if (!query || emp.includes(query) || user.includes(query) || dept.includes(query) || type.includes(query) || reason.includes(query) || status.includes(query) || id.includes(query)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptyRow = document.getElementById('permissionsEmptyLiveRow');
+        if (emptyRow) {
+            emptyRow.style.display = (visibleCount === 0 && query) ? '' : 'none';
+        }
+    }
+
+    function clearPermissionsLiveSearch() {
+        const input = document.getElementById('permissionsSearchInput');
+        if (input) {
+            input.value = '';
+            handlePermissionsLiveSearch(input);
+            input.focus();
+        }
     }
 </script>
 {% endblock %}

@@ -531,14 +531,11 @@
 
         <!-- Search input -->
         <div class="search-row-box">
-            <form method="get" class="teams-search-wrap">
+            <form method="get" onsubmit="return false;" style="width: 100%;">
                 {% if selected_team != 'all' %}
                 <input type="hidden" name="team" value="{{ selected_team }}">
                 {% endif %}
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input type="text" name="q" value="{{ search_query }}" class="teams-search-input" placeholder="Search team members by name, role, email..." oninput="handleClientSearch(this.value)">
+                {% include "accounts/components/search_bar.html" with input_id="teamsSearchInput" name="q" value=search_query placeholder="Search team members by name, role, email..." oninput="handleClientSearch(this.value)" onclear="clearTeamsSearch()" %}
             </form>
         </div>
     </div>
@@ -680,6 +677,15 @@
                 if (tempEmpty) tempEmpty.style.display = 'none';
             }
         });
+    }
+
+    function clearTeamsSearch() {
+        const input = document.getElementById('teamsSearchInput');
+        if (input) {
+            input.value = '';
+            handleClientSearch('');
+            input.focus();
+        }
     }
 </script>
 {% endblock %}

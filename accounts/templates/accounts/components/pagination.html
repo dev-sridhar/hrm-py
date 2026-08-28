@@ -1,0 +1,42 @@
+<!-- Reusable Pagination Bar Component -->
+{# Parameters: page_obj, paginator, item_name (default: "records"), extra_params, extra_class #}
+{% if page_obj and paginator and paginator.num_pages > 1 %}
+<div class="pagination-footer {{ extra_class }}" style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 12px; font-size: 12.5px;">
+    <div class="pagination-info" style="color: var(--text-muted);">
+        Showing <strong>{{ page_obj.start_index|default:0 }} - {{ page_obj.end_index|default:0 }}</strong> of <strong>{{ paginator.count }}</strong> {{ item_name|default:'records' }}
+    </div>
+
+    <div class="pagination-nav-group" style="display: flex; align-items: center; gap: 5px;">
+        <!-- First Page -->
+        <a href="?page=1{{ extra_params }}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="First Page">
+            &laquo;
+        </a>
+
+        <!-- Previous Page -->
+        <a href="?page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}1{% endif %}{{ extra_params }}" class="pagination-btn {% if not page_obj.has_previous %}disabled{% endif %}" title="Previous Page">
+            &lsaquo; Prev
+        </a>
+
+        <!-- Numbered Page Pills -->
+        {% for num in paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="pagination-btn active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <a href="?page={{ num }}{{ extra_params }}" class="pagination-btn">
+                {{ num }}
+            </a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Next Page -->
+        <a href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}{{ paginator.num_pages }}{% endif %}{{ extra_params }}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Next Page">
+            Next &rsaquo;
+        </a>
+
+        <!-- Last Page -->
+        <a href="?page={{ paginator.num_pages }}{{ extra_params }}" class="pagination-btn {% if not page_obj.has_next %}disabled{% endif %}" title="Last Page">
+            &raquo;
+        </a>
+    </div>
+</div>
+{% endif %}

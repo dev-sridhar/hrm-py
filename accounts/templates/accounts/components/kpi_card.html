@@ -1,0 +1,18 @@
+<!-- Reusable KPI Summary Metric Card Component -->
+{# Parameters: title, value, badge_text, badge_color, sub_text, extra_class #}
+<div class="kpi-card {{ extra_class }}" style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 18px 20px; box-shadow: var(--card-shadow); position: relative; overflow: hidden;">
+    <div class="kpi-card-label" style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: space-between;">
+        <span>{{ title }}</span>
+        {% if badge_text %}
+        <span style="color: {{ badge_color|default:'var(--primary)' }}; font-size: 11px; font-weight: 800;">{{ badge_text }}</span>
+        {% endif %}
+    </div>
+    <div class="kpi-card-value" style="font-size: 26px; font-weight: 800; color: var(--text-main); margin: 8px 0 4px; letter-spacing: -0.5px;">
+        {{ value|default:'0' }}
+    </div>
+    {% if sub_text %}
+    <div class="kpi-card-sub" style="font-size: 12px; color: var(--text-muted);">
+        {{ sub_text|safe }}
+    </div>
+    {% endif %}
+</div>

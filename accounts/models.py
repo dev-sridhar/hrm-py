@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from datetime import timedelta
+from datetime import datetime, time, timedelta
 
 UserModel = get_user_model()
 
@@ -45,7 +45,7 @@ class Attendance(models.Model):
 
     @property
     def is_punched_in(self):
-        return self.punch_in is not None and self.punch_out is None
+        return self.punch_in is not None and self.punch_out is None and self.date == timezone.localdate()
 
     @property
     def is_completed(self):
@@ -53,10 +53,9 @@ class Attendance(models.Model):
 
     @property
     def duration(self):
+        # Shift duration is ONLY taken when both check-in and check-out happen in a day
         if self.punch_in and self.punch_out:
-            return self.punch_out - self.punch_in
-        elif self.punch_in:
-            return timezone.now() - self.punch_in
+            return max(timedelta(0), self.punch_out - self.punch_in)
         return timedelta(0)
 
     @property
@@ -65,6 +64,8 @@ class Attendance(models.Model):
 
     @property
     def formatted_duration(self):
+        if not (self.punch_in and self.punch_out):
+            return "0h 0m"
         total_seconds = int(self.duration.total_seconds())
         if total_seconds <= 0:
             return "0h 0m"

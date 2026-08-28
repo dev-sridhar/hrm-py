@@ -501,13 +501,7 @@
             </a>
         </div>
 
-        <div style="position: relative; display: flex; align-items: center;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 12px; pointer-events: none; color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" id="statusLiveSearchInput" value="{{ search_query }}" placeholder="Search members..." class="presence-search-input" style="padding-left: 34px; padding-right: 32px;" oninput="handleMemberLiveSearch(this)">
-            <button type="button" id="clearMemberSearchBtn" onclick="clearMemberLiveSearch()" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px; display: {% if search_query %}flex{% else %}none{% endif %}; align-items: center; justify-content: center;" title="Clear Search">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
+        {% include "accounts/components/search_bar.html" with input_id="statusLiveSearchInput" name="q" value=search_query placeholder="Search members..." oninput="handleMemberLiveSearch(this)" onclear="clearMemberLiveSearch()" max_width="220px" %}
     </div>
 
     <!-- Team Presence Cards Grid -->
