@@ -540,15 +540,7 @@
     <div class="table-controls-bar">
         <div>
             <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main);">Attendance History & Shift Logs</h3>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">Showing {{ page_obj.paginator.count }} attendance shift records.</p>
         </div>
-
-        <!-- Filter and Search -->
-        <form method="get" style="display: flex; align-items: center; gap: 8px;">
-            <input type="hidden" name="tab" value="my_logs">
-            <input type="hidden" name="status" value="{{ selected_status }}">
-            {% include "accounts/components/search_bar.html" with input_id="attendanceMyLogsSearch" name="q" value=search_query placeholder="Filter dates, notes..." oninput="handleAttendanceMyLogsLiveSearch(this)" onclear="clearAttendanceMyLogsLiveSearch()" max_width="220px" %}
-        </form>
     </div>
 
     <div style="overflow-x: auto;">
@@ -751,29 +743,16 @@
     <div class="table-controls-bar">
         <div>
             <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main);">Daily Team Attendance Ledger</h3>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;">
-                Showing {{ team_page_obj.paginator.count }} employee records for {{ daily_date|date:"M d, Y" }}.
-            </p>
         </div>
 
-        <!-- Filter, Search and Export -->
+        <!-- Filter and Search -->
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
             <form method="get" style="display: flex; align-items: center; gap: 8px;">
                 <input type="hidden" name="tab" value="daily_team">
                 <input type="hidden" name="daily_date" value="{{ daily_date_str }}">
                 <input type="hidden" name="team_status" value="{{ team_status_filter }}">
-                {% include "accounts/components/search_bar.html" with input_id="attendanceDailyTeamSearch" name="team_q" value=team_search_query placeholder="Search employee, dept..." oninput="handleAttendanceDailyTeamLiveSearch(this)" onclear="clearAttendanceDailyTeamLiveSearch()" max_width="200px" %}
+                {% include "accounts/components/search_bar.html" with input_id="attendanceDailyTeamSearch" name="team_q" value=team_search_query placeholder="Search employee, dept..." oninput="handleAttendanceDailyTeamLiveSearch(this)" onclear="clearAttendanceDailyTeamLiveSearch()" max_width="720px" style="min-width: 480px;" %}
             </form>
-
-            <a href="{% url 'attendance_export_monthly' %}?month={{ daily_date.month }}&year={{ daily_date.year }}" class="btn-export-excel" style="padding: 7px 13px; font-size: 12px;" title="Download monthly attendance sheet for all staff">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Monthly Excel</span>
-            </a>
-
-            <a href="{% url 'attendance_export_daily' %}?daily_date={{ daily_date_str }}" class="btn-custom btn-custom-outline" style="padding: 7px 13px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700;" title="Download today's attendance ledger">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                <span>Daily Excel</span>
-            </a>
         </div>
     </div>
 

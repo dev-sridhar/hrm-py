@@ -166,7 +166,8 @@
     .search-row-box {
         display: flex;
         align-items: center;
-        gap: 12px;
+        justify-content: flex-end;
+        width: 100%;
     }
 
     .teams-search-wrap {
@@ -529,13 +530,13 @@
             {% endfor %}
         </div>
 
-        <!-- Search input -->
+        <!-- Search input (Minimized 3:1 on right side) -->
         <div class="search-row-box">
-            <form method="get" onsubmit="return false;" style="width: 100%;">
+            <form method="get" onsubmit="return false;" style="max-width: 320px; width: 100%;">
                 {% if selected_team != 'all' %}
                 <input type="hidden" name="team" value="{{ selected_team }}">
                 {% endif %}
-                {% include "accounts/components/search_bar.html" with input_id="teamsSearchInput" name="q" value=search_query placeholder="Search team members by name, role, email..." oninput="handleClientSearch(this.value)" onclear="clearTeamsSearch()" %}
+                {% include "accounts/components/search_bar.html" with input_id="teamsSearchInput" name="q" value=search_query placeholder="Search team members by name, role, email..." oninput="handleClientSearch(this.value)" onclear="clearTeamsSearch()" max_width="320px" %}
             </form>
         </div>
     </div>
