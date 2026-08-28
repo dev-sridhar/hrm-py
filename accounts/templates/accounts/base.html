@@ -22,6 +22,35 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS (Play CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: ['selector', '[data-theme="night"]'],
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            DEFAULT: 'var(--primary)',
+                            hover: 'var(--primary-hover)',
+                            light: 'var(--primary-light)',
+                        },
+                        pill: {
+                            gray: 'var(--pill-gray)',
+                            purple: 'var(--pill-purple)',
+                            green: 'var(--pill-green)',
+                            red: 'var(--pill-red)',
+                            orange: 'var(--pill-orange)',
+                            blue: 'var(--pill-blue)',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
     <style>
         :root {
             --primary: #7c5dfa;

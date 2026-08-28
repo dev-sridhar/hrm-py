@@ -305,9 +305,9 @@ def home_view(request):
         "shift_name": "09:30 AM - 06:30 PM",
     }
 
-    # Dynamic Activities constructed 100% from DB
+    # Dynamic Activities constructed 100% from DB (5+ items)
     recent_activities = []
-    for att in Attendance.objects.select_related("user", "user__profile").order_by("-updated_at")[:3]:
+    for att in Attendance.objects.select_related("user", "user__profile").order_by("-updated_at")[:6]:
         u_name = att.user.get_full_name() or att.user.username
         u_init = "".join([part[0] for part in u_name.split()][:2]).upper() or "EM"
         avatar_url = att.user.profile.avatar.url if (hasattr(att.user, 'profile') and att.user.profile.avatar) else None
@@ -329,9 +329,10 @@ def home_view(request):
             "initials": u_init,
             "avatar_url": avatar_url,
             "status_color": color,
+            "timestamp": att.updated_at if hasattr(att, 'updated_at') and att.updated_at else timezone.now(),
         })
 
-    for lr in all_org_leaves.order_by("-applied_at")[:2]:
+    for lr in all_org_leaves.order_by("-applied_at")[:4]:
         u_name = lr.user.get_full_name() or lr.user.username
         u_init = "".join([part[0] for part in u_name.split()][:2]).upper() or "EM"
         avatar_url = lr.user.profile.avatar.url if (hasattr(lr.user, 'profile') and lr.user.profile.avatar) else None
@@ -341,9 +342,10 @@ def home_view(request):
             "initials": u_init,
             "avatar_url": avatar_url,
             "status_color": "#f59e0b" if lr.status == "pending" else ("#10b981" if lr.status == "approved" else "#f43f5e"),
+            "timestamp": lr.applied_at,
         })
 
-    for t in DailyTask.objects.select_related("user", "user__profile").order_by("-created_at")[:2]:
+    for t in DailyTask.objects.select_related("user", "user__profile").order_by("-created_at")[:4]:
         u_name = t.user.get_full_name() or t.user.username
         u_init = "".join([part[0] for part in u_name.split()][:2]).upper() or "EM"
         avatar_url = t.user.profile.avatar.url if (hasattr(t.user, 'profile') and t.user.profile.avatar) else None
@@ -353,7 +355,11 @@ def home_view(request):
             "initials": u_init,
             "avatar_url": avatar_url,
             "status_color": "#7c5dfa",
+            "timestamp": t.created_at,
         })
+
+    # Sort combined activities by timestamp descending
+    recent_activities.sort(key=lambda x: x.get("timestamp") or timezone.now(), reverse=True)
 
     # Real Upcoming / Active Tasks with Team assignment from DB
     upcoming_tasks = []
@@ -574,6 +580,44 @@ def status_board_view(request):
     today_attendance = Attendance.objects.filter(user=request.user, date=today).first()
     user_status, _ = UserStatus.objects.get_or_create(user=request.user)
 
+    # Date filter parameter
+    date_param = request.GET.get("date", "").strip()
+    if date_param:
+        try:
+            selected_date = datetime.strptime(date_param, "%Y-%m-%d").date()
+        except ValueError:
+            selected_date = today
+    else:
+        selected_date = today
+
+    # Automatically refresh and sync all active users' statuses for TODAY (after 12 AM midnight)
+    active_users = UserModel.objects.filter(is_active=True).select_related("profile")
+    for u in active_users:
+        st, created = UserStatus.objects.get_or_create(user=u)
+        # If the status was updated prior to today (before 12:00 AM midnight), reset to today's live state
+        if created or (st.updated_at and timezone.localtime(st.updated_at).date() < today):
+            # Check if user has an approved leave today
+            approved_leave = LeaveRequest.objects.filter(
+                user=u,
+                status="approved",
+                start_date__lte=today,
+                end_date__gte=today
+            ).first()
+            if approved_leave:
+                st.status = "on_leave"
+                st.status_message = f"On Leave ({approved_leave.get_leave_type_display()})"
+            else:
+                att = Attendance.objects.filter(user=u, date=today).first()
+                if att and att.punch_in and not att.punch_out:
+                    st.status = "in_office"
+                    st.status_message = ""
+                else:
+                    st.status = "in_office"
+                    st.status_message = ""
+            st.save()
+
+    user_status.refresh_from_db()
+
     if request.method == "POST":
         action = request.POST.get("action", "update")
         target_id = request.POST.get("target_id")
@@ -598,33 +642,85 @@ def status_board_view(request):
                 messages.success(request, f"Status updated for {target_status.user.get_full_name() or target_status.user.username}: {target_status.get_status_display()}")
         return redirect("status_board")
 
-    all_statuses = UserStatus.objects.select_related("user", "user__profile").all()
-
-    # Presence Metrics
-    total_team_count = all_statuses.count()
-    in_office_count = all_statuses.filter(status="in_office").count()
-    remote_count = all_statuses.filter(status="remote").count()
-    meeting_count = all_statuses.filter(status="meeting").count()
-    on_leave_count = all_statuses.filter(status="on_leave").count()
-    out_of_office_count = all_statuses.filter(status="out_of_office").count()
-
-    # Filtering & Search
     selected_filter = request.GET.get("filter", "all").strip().lower()
-    filtered_statuses = all_statuses
-    if selected_filter in ["in_office", "remote", "meeting", "on_leave", "out_of_office"]:
-        filtered_statuses = filtered_statuses.filter(status=selected_filter)
-    else:
+    if selected_filter not in ["in_office", "remote", "meeting", "on_leave", "out_of_office"]:
         selected_filter = "all"
-
     search_query = request.GET.get("q", "").strip()
-    if search_query:
-        filtered_statuses = filtered_statuses.filter(
-            Q(user__username__icontains=search_query) |
-            Q(user__first_name__icontains=search_query) |
-            Q(user__last_name__icontains=search_query) |
-            Q(user__email__icontains=search_query) |
-            Q(status_message__icontains=search_query)
-        )
+
+    if selected_date == today:
+        all_statuses = UserStatus.objects.select_related("user", "user__profile").filter(user__is_active=True)
+        total_team_count = all_statuses.count()
+        in_office_count = all_statuses.filter(status="in_office").count()
+        remote_count = all_statuses.filter(status="remote").count()
+        meeting_count = all_statuses.filter(status="meeting").count()
+        on_leave_count = all_statuses.filter(status="on_leave").count()
+        out_of_office_count = all_statuses.filter(status="out_of_office").count()
+
+        filtered_statuses = all_statuses
+        if selected_filter != "all":
+            filtered_statuses = filtered_statuses.filter(status=selected_filter)
+
+        if search_query:
+            filtered_statuses = filtered_statuses.filter(
+                Q(user__username__icontains=search_query) |
+                Q(user__first_name__icontains=search_query) |
+                Q(user__last_name__icontains=search_query) |
+                Q(user__email__icontains=search_query) |
+                Q(status_message__icontains=search_query)
+            )
+    else:
+        # Compute status for historical or future selected_date
+        status_map_choices = dict(UserStatus.STATUS_CHOICES)
+        all_statuses_list = []
+        for u in active_users:
+            leave = LeaveRequest.objects.filter(
+                user=u,
+                status="approved",
+                start_date__lte=selected_date,
+                end_date__gte=selected_date
+            ).first()
+            att = Attendance.objects.filter(user=u, date=selected_date).first()
+            if leave:
+                stat = "on_leave"
+                msg = f"On Leave ({leave.get_leave_type_display()})"
+            elif att and att.punch_in:
+                stat = "in_office"
+                msg = f"Logged {att.formatted_duration}" if att.punch_out else "Active in Office"
+            elif att and att.status == "absent":
+                stat = "out_of_office"
+                msg = "Absent"
+            else:
+                stat = "in_office"
+                msg = ""
+
+            all_statuses_list.append({
+                "user": u,
+                "status": stat,
+                "status_message": msg,
+                "get_status_display": status_map_choices.get(stat, stat.replace("_", " ").title()),
+            })
+
+        total_team_count = len(all_statuses_list)
+        in_office_count = sum(1 for s in all_statuses_list if s["status"] == "in_office")
+        remote_count = sum(1 for s in all_statuses_list if s["status"] == "remote")
+        meeting_count = sum(1 for s in all_statuses_list if s["status"] == "meeting")
+        on_leave_count = sum(1 for s in all_statuses_list if s["status"] == "on_leave")
+        out_of_office_count = sum(1 for s in all_statuses_list if s["status"] == "out_of_office")
+
+        if selected_filter != "all":
+            filtered_statuses = [s for s in all_statuses_list if s["status"] == selected_filter]
+        else:
+            filtered_statuses = all_statuses_list
+
+        if search_query:
+            q_lower = search_query.lower()
+            filtered_statuses = [
+                s for s in filtered_statuses
+                if q_lower in s["user"].username.lower()
+                or q_lower in s["user"].get_full_name().lower()
+                or q_lower in (s["user"].email or "").lower()
+                or q_lower in (s["status_message"] or "").lower()
+            ]
 
     context = {
         "active_page": "status_board",
@@ -639,6 +735,13 @@ def status_board_view(request):
         "selected_filter": selected_filter,
         "search_query": search_query,
         "today_attendance": today_attendance,
+        "today_date": today,
+        "today_date_str": today.strftime("%Y-%m-%d"),
+        "today_date_display": today.strftime("%d %B, %Y"),
+        "selected_date": selected_date,
+        "selected_date_str": selected_date.strftime("%Y-%m-%d"),
+        "selected_date_display": selected_date.strftime("%d %B, %Y"),
+        "is_today": (selected_date == today),
     }
     return render(request, "accounts/status_board.html", context)
 
@@ -941,17 +1044,19 @@ def punch_attendance_view(request):
 def tasks_view(request):
     today = timezone.localdate()
     today_attendance = Attendance.objects.filter(user=request.user, date=today).first()
-    all_tasks = DailyTask.objects.filter(user=request.user)
+    
+    # Base task queryset
+    base_tasks = DailyTask.objects.select_related("user", "user__profile").all()
 
-    total_tasks = all_tasks.count()
-    pending_count = all_tasks.filter(status="pending").count()
-    in_progress_count = all_tasks.filter(status="in_progress").count()
-    completed_count = all_tasks.filter(status="completed").count()
+    total_tasks = base_tasks.count()
+    pending_count = base_tasks.filter(status="pending").count()
+    in_progress_count = base_tasks.filter(status="in_progress").count()
+    completed_count = base_tasks.filter(status="completed").count()
     completion_rate = int((completed_count / total_tasks * 100)) if total_tasks > 0 else 0
 
     # Status Filtering
     selected_status = request.GET.get("status", "all").strip().lower()
-    filtered_qs = all_tasks
+    filtered_qs = base_tasks
 
     if selected_status in ["pending", "in_progress", "completed"]:
         filtered_qs = filtered_qs.filter(status=selected_status)
@@ -962,20 +1067,51 @@ def tasks_view(request):
     search_query = request.GET.get("q", "").strip()
     if search_query:
         filtered_qs = filtered_qs.filter(
-            Q(title__icontains=search_query) | Q(description__icontains=search_query)
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(project__icontains=search_query) |
+            Q(task_type__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(user__username__icontains=search_query) |
+            Q(assigned_by__icontains=search_query)
         )
 
-    # Pagination: 10 tasks per page
-    paginator = Paginator(filtered_qs, 10)
+    # Date Range Filtering (From Date - To Date)
+    start_date_str = request.GET.get("start_date", "").strip()
+    end_date_str = request.GET.get("end_date", "").strip()
+
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            filtered_qs = filtered_qs.filter(Q(due_date__gte=start_date) | Q(date__gte=start_date))
+        except ValueError:
+            pass
+
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            filtered_qs = filtered_qs.filter(Q(due_date__lte=end_date) | Q(date__lte=end_date))
+        except ValueError:
+            pass
+
+    # Order by newest
+    filtered_qs = filtered_qs.order_by("-id")
+
+    # Pagination: 8 tasks per page
+    paginator = Paginator(filtered_qs, 8)
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
+    all_users = UserModel.objects.filter(is_active=True).order_by("first_name", "username")
     task_form = TaskForm()
 
     context = {
         "active_page": "tasks",
         "search_query": search_query,
         "selected_status": selected_status,
+        "start_date": start_date_str,
+        "end_date": end_date_str,
         "page_obj": page_obj,
         "tasks": page_obj.object_list,
         "total_tasks": total_tasks,
@@ -984,6 +1120,7 @@ def tasks_view(request):
         "completed_count": completed_count,
         "completion_rate": completion_rate,
         "task_form": task_form,
+        "all_users": all_users,
         "today_attendance": today_attendance,
     }
     return render(request, "accounts/tasks.html", context)
@@ -992,49 +1129,102 @@ def tasks_view(request):
 @login_required(login_url="login")
 def task_create_view(request):
     if request.method == "POST":
-        if "quick_add" in request.POST:
-            title = request.POST.get("title", "").strip()
-            priority = request.POST.get("priority", "medium")
-            if title:
-                DailyTask.objects.create(
-                    user=request.user,
-                    title=title,
-                    priority=priority,
-                    status="pending",
-                )
-                messages.success(request, f"Task '{title}' created successfully!")
-            else:
-                messages.error(request, "Task title cannot be empty.")
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
+        task_type = request.POST.get("task_type", "dev").strip()
+        project = request.POST.get("project", "HRMS Portal").strip() or "HRMS Portal"
+        priority = request.POST.get("priority", "medium").strip()
+        due_date_str = request.POST.get("due_date", "").strip()
+        status = request.POST.get("status", "pending").strip()
+        assigned_by = request.POST.get("assigned_by", "").strip()
+        user_id = request.POST.get("user_id", "").strip()
+
+        if not assigned_by:
+            assigned_by = request.user.get_full_name() or request.user.username
+
+        assignee = request.user
+        if user_id:
+            try:
+                assignee = UserModel.objects.get(pk=user_id)
+            except UserModel.DoesNotExist:
+                assignee = request.user
+
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                due_date = None
+
+        if title:
+            DailyTask.objects.create(
+                user=assignee,
+                title=title,
+                description=description,
+                task_type=task_type,
+                project=project,
+                assigned_by=assigned_by,
+                priority=priority,
+                due_date=due_date,
+                status=status,
+            )
+            messages.success(request, f"Task '{title}' created successfully!")
         else:
-            form = TaskForm(request.POST)
-            if form.is_valid():
-                task = form.save(commit=False)
-                task.user = request.user
-                task.save()
-                messages.success(request, f"Task '{task.title}' created successfully!")
-            else:
-                messages.error(request, "Please correct the form errors below.")
+            messages.error(request, "Task title cannot be empty.")
+
     next_url = request.META.get("HTTP_REFERER") or "tasks"
     return redirect(next_url)
 
 
 @login_required(login_url="login")
 def task_edit_view(request, pk):
-    task = get_object_or_404(DailyTask, pk=pk, user=request.user)
+    task = get_object_or_404(DailyTask, pk=pk)
     if request.method == "POST":
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
+        title = request.POST.get("title", "").strip()
+        description = request.POST.get("description", "").strip()
+        task_type = request.POST.get("task_type", task.task_type).strip()
+        project = request.POST.get("project", task.project).strip()
+        priority = request.POST.get("priority", task.priority).strip()
+        due_date_str = request.POST.get("due_date", "").strip()
+        status = request.POST.get("status", task.status).strip()
+        assigned_by = request.POST.get("assigned_by", task.assigned_by).strip()
+        user_id = request.POST.get("user_id", "").strip()
+
+        if user_id:
+            try:
+                task.user = UserModel.objects.get(pk=user_id)
+            except UserModel.DoesNotExist:
+                pass
+
+        if title:
+            task.title = title
+            task.description = description
+            task.task_type = task_type
+            task.project = project
+            task.priority = priority
+            task.status = status
+            task.assigned_by = assigned_by
+
+            if due_date_str:
+                try:
+                    task.due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+                except ValueError:
+                    task.due_date = None
+            else:
+                task.due_date = None
+
+            task.save()
             messages.success(request, f"Task '{task.title}' updated successfully!")
         else:
-            messages.error(request, "Failed to update task. Please check form errors.")
+            messages.error(request, "Task title cannot be empty.")
+
     next_url = request.META.get("HTTP_REFERER") or "tasks"
     return redirect(next_url)
 
 
 @login_required(login_url="login")
 def task_update_status_view(request, pk):
-    task = get_object_or_404(DailyTask, pk=pk, user=request.user)
+    task = get_object_or_404(DailyTask, pk=pk)
     if request.method == "POST":
         new_status = request.POST.get("status")
         if new_status in dict(DailyTask.STATUS_CHOICES):
@@ -1047,13 +1237,125 @@ def task_update_status_view(request, pk):
 
 @login_required(login_url="login")
 def task_delete_view(request, pk):
-    task = get_object_or_404(DailyTask, pk=pk, user=request.user)
+    task = get_object_or_404(DailyTask, pk=pk)
     if request.method == "POST":
         task_title = task.title
         task.delete()
         messages.info(request, f"Task '{task_title}' deleted.")
     next_url = request.META.get("HTTP_REFERER") or "tasks"
     return redirect(next_url)
+
+
+@login_required(login_url="login")
+def tasks_export_excel_view(request):
+    base_tasks = DailyTask.objects.select_related("user", "user__profile").all()
+
+    selected_status = request.GET.get("status", "all").strip().lower()
+    if selected_status in ["pending", "in_progress", "completed"]:
+        base_tasks = base_tasks.filter(status=selected_status)
+
+    search_query = request.GET.get("q", "").strip()
+    if search_query:
+        base_tasks = base_tasks.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(project__icontains=search_query) |
+            Q(task_type__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(user__username__icontains=search_query) |
+            Q(assigned_by__icontains=search_query)
+        )
+
+    start_date_str = request.GET.get("start_date", "").strip()
+    end_date_str = request.GET.get("end_date", "").strip()
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+            base_tasks = base_tasks.filter(Q(due_date__gte=start_date) | Q(date__gte=start_date))
+        except ValueError:
+            pass
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+            base_tasks = base_tasks.filter(Q(due_date__lte=end_date) | Q(date__lte=end_date))
+        except ValueError:
+            pass
+
+    base_tasks = base_tasks.order_by("-id")
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Daily Tasks"
+    ws.views.sheetView[0].showGridLines = True
+
+    # Styling
+    title_font = Font(name="Arial", size=14, bold=True, color="7C5DFA")
+    header_font = Font(name="Arial", size=10, bold=True, color="FFFFFF")
+    data_font = Font(name="Arial", size=9, color="1E293B")
+    header_fill = PatternFill(start_color="7C5DFA", end_color="7C5DFA", fill_type="solid")
+    alt_fill = PatternFill(start_color="F8FAFC", end_color="F8FAFC", fill_type="solid")
+    thin_border = Border(
+        left=Side(style="thin", color="E2E8F0"),
+        right=Side(style="thin", color="E2E8F0"),
+        top=Side(style="thin", color="E2E8F0"),
+        bottom=Side(style="thin", color="E2E8F0"),
+    )
+
+    ws.merge_cells("A1:J1")
+    ws["A1"] = f"Daily Tasks Roster - Exported on {timezone.localdate().strftime('%d %B %Y')}"
+    ws["A1"].font = title_font
+
+    headers = [
+        "Task ID", "Type", "Assignee Name", "Emp ID", "Project",
+        "Task Title", "Priority", "Due Date", "Assigned By", "Status"
+    ]
+    ws.append([]) # row 2
+    ws.append(headers) # row 3
+
+    for col_idx in range(1, len(headers) + 1):
+        cell = ws.cell(row=3, column=col_idx)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for row_idx, task in enumerate(base_tasks, start=4):
+        emp_name = task.user.get_full_name() or task.user.username
+        emp_id = f"EMP-{task.user.id:04d}"
+        due_date_formatted = task.due_date.strftime("%d %b, %Y") if task.due_date else "--"
+        row_data = [
+            f"TSK-{task.id:04d}",
+            task.get_task_type_display() if hasattr(task, 'get_task_type_display') else (task.task_type or "Dev"),
+            emp_name,
+            emp_id,
+            task.project or "HRMS Portal",
+            task.title,
+            task.get_priority_display(),
+            due_date_formatted,
+            task.assigned_by or "Admin",
+            task.get_status_display(),
+        ]
+        ws.append(row_data)
+        fill = alt_fill if row_idx % 2 == 0 else PatternFill(fill_type=None)
+        for col_idx in range(1, len(headers) + 1):
+            c = ws.cell(row=row_idx, column=col_idx)
+            c.font = data_font
+            c.border = thin_border
+            if fill.fill_type:
+                c.fill = fill
+
+    col_widths = [12, 16, 22, 14, 18, 34, 12, 14, 20, 14]
+    for i, w in enumerate(col_widths, start=1):
+        col_letter = get_column_letter(i)
+        ws.column_dimensions[col_letter].width = w
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    filename = f"Daily_Tasks_Export_{timezone.localdate().strftime('%Y%m%d')}.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(response)
+    return response
 
 
 @login_required(login_url="login")

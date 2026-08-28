@@ -86,6 +86,15 @@ class DailyTask(models.Model):
         ("completed", "Completed"),
     ]
 
+    TYPE_CHOICES = [
+        ("dev", "Development"),
+        ("support", "Support"),
+        ("design", "Design"),
+        ("qa", "QA / Testing"),
+        ("hr", "HR & Admin"),
+        ("finance", "Finance"),
+    ]
+
     user = models.ForeignKey(
         UserModel,
         on_delete=models.CASCADE,
@@ -93,6 +102,15 @@ class DailyTask(models.Model):
     )
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default="")
+    task_type = models.CharField(
+        max_length=30,
+        choices=TYPE_CHOICES,
+        default="dev",
+        blank=True,
+        null=True,
+    )
+    project = models.CharField(max_length=100, default="HRMS Portal", blank=True, null=True)
+    assigned_by = models.CharField(max_length=100, default="Admin", blank=True, null=True)
     date = models.DateField(default=timezone.localdate)
     due_date = models.DateField(null=True, blank=True)
     priority = models.CharField(
@@ -113,6 +131,14 @@ class DailyTask(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_status_display()}) - {self.user.username}"
+
+    @property
+    def emp_id(self):
+        return f"EMP-{self.user.id:04d}"
+
+    @property
+    def assignee_name(self):
+        return self.user.get_full_name() or self.user.username
 
 
 class LeaveRequest(models.Model):

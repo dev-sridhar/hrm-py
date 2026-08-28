@@ -444,80 +444,80 @@
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
-                Team Presence & Status Board
+                <span>Team Presence & Status Board</span>
+                <span style="font-size: 11px; font-weight: 800; color: #10b981; background: var(--pill-green); border: 1px solid rgba(16, 185, 129, 0.25); padding: 3px 9px; border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+                    {{ selected_date_display }}
+                </span>
             </h2>
             <p>Real-time employee availability, status broadcasts, and work location tracking.</p>
         </div>
 
-        <button type="button" class="btn-open-status-modal" onclick="openStatusModal('{{ user_status.user.id }}', '{{ user_status.status }}', '{{ user_status.status_message|escapejs }}', '{{ user_status.user.get_full_name|default:user_status.user.username|escapejs }}')">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            <span>Update My Status</span>
-        </button>
-    </div>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <!-- Date Filter Next from Update Button -->
+            <form method="get" id="dateFilterForm" style="display: flex; align-items: center; gap: 6px; margin: 0;">
+                <input type="hidden" name="filter" value="{{ selected_filter }}">
+                {% if search_query %}<input type="hidden" name="q" value="{{ search_query }}">{% endif %}
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="date" name="date" id="statusDatePicker" value="{{ selected_date_str }}" onchange="this.form.submit()" class="presence-date-input" style="padding: 8px 12px 8px 32px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--input-bg); color: var(--text-main); font-size: 12.5px; font-weight: 700; outline: none; cursor: pointer;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 10px; pointer-events: none; color: var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                {% if not is_today %}
+                <a href="?filter={{ selected_filter }}{% if search_query %}&q={{ search_query }}{% endif %}" title="Reset to Today" class="presence-pill-btn" style="padding: 7px 12px; font-size: 11.5px;">
+                    <span>Today</span>
+                </a>
+                {% endif %}
+            </form>
 
-    <!-- Live Broadcast Status Summary Banner -->
-    <div class="presence-broadcast-panel">
-        <div class="presence-current-meta">
-            <div style="width: 48px; height: 48px; border-radius: 14px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
-            </div>
-            <div>
-                <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 4px;">Team Presence Broadcast</h3>
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                    <span style="font-size: 11.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px;">Your Active Broadcast:</span>
-                    <span class="status-badge-chip badge-{{ user_status.status }}">
-                        <span class="beacon-dot-indicator beacon-{{ user_status.status }}" style="position: static; border: none; width: 7px; height: 7px;"></span>
-                        {{ user_status.get_status_display }}
-                    </span>
-                </div>
-                <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main);">
-                    {% if user_status.status_message %}"{{ user_status.status_message }}"{% else %}No custom status note set.{% endif %}
-                </div>
-            </div>
+            <button type="button" class="btn-open-status-modal" onclick="openStatusModal('{{ user_status.user.id }}', '{{ user_status.status }}', '{{ user_status.status_message|escapejs }}', '{{ user_status.user.get_full_name|default:user_status.user.username|escapejs }}')">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Update My Status</span>
+            </button>
         </div>
-
-        <button type="button" class="btn-custom btn-custom-outline" style="padding: 8px 16px; font-size: 12.5px;" onclick="openStatusModal('{{ user_status.user.id }}', '{{ user_status.status }}', '{{ user_status.status_message|escapejs }}', '{{ user_status.user.get_full_name|default:user_status.user.username|escapejs }}')">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-            <span>Change Status</span>
-        </button>
     </div>
 
     <!-- Filter Pills & Search -->
     <div class="controls-filter-row">
         <div class="presence-filter-wrap">
-            <a href="?filter=all{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'all' %}active{% endif %}">
+            <a href="?filter=all{% if not is_today %}&date={{ selected_date_str }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'all' %}active{% endif %}">
                 <span>All</span>
                 <span style="font-size: 10.5px; opacity: 0.85;">({{ total_team_count }})</span>
             </a>
-            <a href="?filter=in_office{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'in_office' %}active{% endif %}">
+            <a href="?filter=in_office{% if not is_today %}&date={{ selected_date_str }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'in_office' %}active{% endif %}">
                 <span>In Office</span>
                 <span style="font-size: 10.5px; opacity: 0.85;">({{ in_office_count }})</span>
             </a>
-            <a href="?filter=remote{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'remote' %}active{% endif %}">
+            <a href="?filter=remote{% if not is_today %}&date={{ selected_date_str }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'remote' %}active{% endif %}">
                 <span>Remote</span>
                 <span style="font-size: 10.5px; opacity: 0.85;">({{ remote_count }})</span>
             </a>
-            <a href="?filter=meeting{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'meeting' %}active{% endif %}">
+            <a href="?filter=meeting{% if not is_today %}&date={{ selected_date_str }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'meeting' %}active{% endif %}">
                 <span>Meeting</span>
                 <span style="font-size: 10.5px; opacity: 0.85;">({{ meeting_count }})</span>
             </a>
-            <a href="?filter=on_leave{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'on_leave' %}active{% endif %}">
+            <a href="?filter=on_leave{% if not is_today %}&date={{ selected_date_str }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="presence-pill-btn {% if selected_filter == 'on_leave' %}active{% endif %}">
                 <span>On Leave</span>
                 <span style="font-size: 10.5px; opacity: 0.85;">({{ on_leave_count }})</span>
             </a>
         </div>
 
-        <form method="get" style="position: relative;">
-            <input type="hidden" name="filter" value="{{ selected_filter }}">
-            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            <input type="text" name="q" value="{{ search_query }}" placeholder="Search members..." class="presence-search-input">
-        </form>
+        <div style="position: relative; display: flex; align-items: center;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 12px; pointer-events: none; color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="statusLiveSearchInput" value="{{ search_query }}" placeholder="Search members..." class="presence-search-input" style="padding-left: 34px; padding-right: 32px;" oninput="handleMemberLiveSearch(this)">
+            <button type="button" id="clearMemberSearchBtn" onclick="clearMemberLiveSearch()" style="position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px; display: {% if search_query %}flex{% else %}none{% endif %}; align-items: center; justify-content: center;" title="Clear Search">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
     </div>
 
     <!-- Team Presence Cards Grid -->
-    <div class="team-status-grid">
+    <div class="team-status-grid" id="teamStatusGrid">
         {% for st in all_statuses %}
-        <div class="team-member-card">
+        <div class="team-member-card"
+             data-member-name="{{ st.user.get_full_name|default:st.user.username|lower }}"
+             data-member-email="{{ st.user.email|default:''|lower }}"
+             data-member-msg="{{ st.status_message|default:''|lower }}"
+             data-member-status="{{ st.status|lower }}">
             <div>
                 <div class="card-top-header">
                     <div class="card-user-info">
@@ -564,7 +564,7 @@
                 <span style="font-weight: 800; text-transform: uppercase; color: var(--text-muted); font-size: 11px; letter-spacing: 0.3px;">
                     {{ st.get_status_display }}
                 </span>
-                <span style="color: var(--text-muted); font-size: 11px;">Active today</span>
+                <span style="color: var(--text-muted); font-size: 11px;">{% if is_today %}Active today{% else %}{{ selected_date_display }}{% endif %}</span>
             </div>
         </div>
         {% empty %}
@@ -572,6 +572,9 @@
             No team members match this filter.
         </div>
         {% endfor %}
+        <div id="liveSearchEmptyNotice" class="card-panel" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted); display: none;">
+            No team members match this search.
+        </div>
     </div>
 </div>
 
@@ -696,12 +699,72 @@
         document.getElementById('deleteModalBackdrop').classList.remove('active');
     }
 
-    // Close modals when clicking backdrop
-    window.addEventListener('click', function(e) {
-        const statusModal = document.getElementById('statusModalBackdrop');
-        const deleteModal = document.getElementById('deleteModalBackdrop');
-        if (e.target === statusModal) closeStatusModal();
-        if (e.target === deleteModal) closeDeleteModal();
+    // Live Member Search Filter with Instant Client-Side Feedback
+    function handleMemberLiveSearch(input) {
+        const query = input.value.trim().toLowerCase();
+        const clearBtn = document.getElementById('clearMemberSearchBtn');
+        if (clearBtn) {
+            clearBtn.style.display = query ? 'flex' : 'none';
+        }
+
+        const cards = document.querySelectorAll('#teamStatusGrid .team-member-card');
+        let visibleCount = 0;
+        cards.forEach(card => {
+            const name = card.getAttribute('data-member-name') || '';
+            const email = card.getAttribute('data-member-email') || '';
+            const msg = card.getAttribute('data-member-msg') || '';
+            const status = card.getAttribute('data-member-status') || '';
+
+            if (!query || name.includes(query) || email.includes(query) || msg.includes(query) || status.includes(query)) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        const emptyNotice = document.getElementById('liveSearchEmptyNotice');
+        if (emptyNotice) {
+            emptyNotice.style.display = (visibleCount === 0 && query) ? 'block' : 'none';
+        }
+    }
+
+    function clearMemberLiveSearch() {
+        const input = document.getElementById('statusLiveSearchInput');
+        if (input) {
+            input.value = '';
+            handleMemberLiveSearch(input);
+            input.focus();
+        }
+    }
+
+    // Auto-refresh after 12:00 AM midnight to fetch new day's live data
+    const loadedDateStr = '{{ today_date|date:"Y-m-d" }}';
+
+    function scheduleMidnightAutoRefresh() {
+        const now = new Date();
+        const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 2); // 12:00:02 AM next day
+        const msRemaining = midnight.getTime() - now.getTime();
+        if (msRemaining > 0) {
+            setTimeout(function() {
+                window.location.reload();
+            }, msRemaining);
+        }
+    }
+    scheduleMidnightAutoRefresh();
+
+    // Check date transition when tab/window gains visibility
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            const todayNow = new Date();
+            const year = todayNow.getFullYear();
+            const month = String(todayNow.getMonth() + 1).padStart(2, '0');
+            const day = String(todayNow.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+            if (loadedDateStr && todayStr !== loadedDateStr) {
+                window.location.reload();
+            }
+        }
     });
 </script>
 {% endblock %}

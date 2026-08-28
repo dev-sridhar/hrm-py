@@ -151,7 +151,17 @@ class RegisterForm(forms.Form):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = DailyTask
-        fields = ["title", "description", "priority", "due_date", "status"]
+        fields = [
+            "title",
+            "description",
+            "task_type",
+            "project",
+            "user",
+            "priority",
+            "due_date",
+            "status",
+            "assigned_by",
+        ]
         widgets = {
             "title": forms.TextInput(
                 attrs={
@@ -167,11 +177,29 @@ class TaskForm(forms.ModelForm):
                     "rows": 3,
                 }
             ),
+            "task_type": forms.Select(
+                attrs={"class": "dash-form-select"}
+            ),
+            "project": forms.TextInput(
+                attrs={
+                    "class": "dash-form-input",
+                    "placeholder": "e.g., HRMS Portal",
+                }
+            ),
+            "user": forms.Select(
+                attrs={"class": "dash-form-select"}
+            ),
             "priority": forms.Select(
                 attrs={"class": "dash-form-select"}
             ),
             "status": forms.Select(
                 attrs={"class": "dash-form-select"}
+            ),
+            "assigned_by": forms.TextInput(
+                attrs={
+                    "class": "dash-form-input",
+                    "placeholder": "e.g., Admin",
+                }
             ),
             "due_date": forms.DateInput(
                 attrs={"class": "dash-form-input", "type": "date"}

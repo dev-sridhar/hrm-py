@@ -35,6 +35,7 @@ urlpatterns = [
     path("tasks/<int:pk>/edit/", views.task_edit_view, name="task_edit"),
     path("tasks/<int:pk>/status/", views.task_update_status_view, name="task_update_status"),
     path("tasks/<int:pk>/delete/", views.task_delete_view, name="task_delete"),
+    path("tasks/export/excel/", views.tasks_export_excel_view, name="tasks_export_excel"),
 
     # Applications - Leaves & Permissions
     path("applications/leaves/", views.leaves_view, name="leaves"),

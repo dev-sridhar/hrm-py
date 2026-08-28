@@ -126,7 +126,7 @@ class FullPortalAndTaskTests(TestCase):
         # Render & Filter
         get_resp = self.client.get(reverse("status_board"))
         self.assertEqual(get_resp.status_code, 200)
-        self.assertContains(get_resp, "Team Presence Broadcast")
+        self.assertContains(get_resp, "Team Presence & Status Board")
         self.assertContains(get_resp, "Working from Bangalore hub")
 
         filter_resp = self.client.get(reverse("status_board") + "?filter=remote")
