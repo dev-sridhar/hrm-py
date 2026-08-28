@@ -442,12 +442,12 @@ def home_view(request):
 
     # Real Upcoming Govt & National Public Holidays
     upcoming_holidays = [
-        {"name": "Ganesh Chaturthi", "date": "14 Sep, 2026", "day": "Govt Public Holiday"},
-        {"name": "Gandhi Jayanti", "date": "02 Oct, 2026", "day": "National Gazetted Holiday"},
-        {"name": "Maha Navami / Dussehra", "date": "20 Oct, 2026", "day": "Govt Public Holiday"},
-        {"name": "Diwali / Deepavali", "date": "08 Nov, 2026", "day": "Govt Public Holiday"},
-        {"name": "Guru Nanak Jayanti", "date": "24 Nov, 2026", "day": "Gazetted Holiday"},
-        {"name": "Christmas Day", "date": "25 Dec, 2026", "day": "Govt Public Holiday"},
+        {"name": "Ganesh Chaturthi", "date": "14 Sep, 2026", "short_date": "14 Sep", "day": "Govt Public Holiday"},
+        {"name": "Gandhi Jayanti", "date": "02 Oct, 2026", "short_date": "02 Oct", "day": "National Gazetted Holiday"},
+        {"name": "Maha Navami / Dussehra", "date": "20 Oct, 2026", "short_date": "20 Oct", "day": "Govt Public Holiday"},
+        {"name": "Diwali / Deepavali", "date": "08 Nov, 2026", "short_date": "08 Nov", "day": "Govt Public Holiday"},
+        {"name": "Guru Nanak Jayanti", "date": "24 Nov, 2026", "short_date": "24 Nov", "day": "Gazetted Holiday"},
+        {"name": "Christmas Day", "date": "25 Dec, 2026", "short_date": "25 Dec", "day": "Govt Public Holiday"},
     ]
 
     context = {

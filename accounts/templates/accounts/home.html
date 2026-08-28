@@ -591,7 +591,7 @@
         border-color: var(--primary);
     }
 
-    /* Upcoming List Summary Rows */
+    /* Upcoming List Summary Rows & Chips */
     .upcoming-summary-rows {
         display: flex;
         flex-direction: column;
@@ -606,19 +606,41 @@
         background: var(--pill-gray);
         border-radius: 14px;
         border: 1px solid var(--border);
+        transition: all 0.15s ease;
+        min-height: 52px;
+        box-sizing: border-box;
+    }
+
+    button.upcoming-row-item:hover,
+    a.upcoming-row-item:hover,
+    div.upcoming-row-item[onclick]:hover {
+        border-color: var(--primary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .upcoming-left-info {
         display: flex;
         align-items: center;
         gap: 12px;
+        flex-grow: 1;
+        min-width: 0;
     }
 
     .upcoming-badge-pill {
         font-size: 11px;
         font-weight: 800;
-        padding: 4px 10px;
+        padding: 5px 12px;
         border-radius: 20px;
+        min-width: 80px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        flex-shrink: 0;
+        margin-left: 12px;
+        box-sizing: border-box;
+        white-space: nowrap;
     }
 </style>
 
@@ -1120,21 +1142,31 @@
                 <div class="card-header-flex">
                     <h3 class="card-section-title">6. RECENT ACTIVITIES</h3>
                 </div>
-                <div class="activity-feed-list" style="margin-bottom: 12px;">
-                    {% for act in recent_activities|slice:":6" %}
-                    <div class="activity-feed-item">
-                        <div class="activity-avatar" style="overflow: hidden; padding: 0;">
-                            {% if act.avatar_url %}
-                            <img src="{{ act.avatar_url }}" alt="{{ act.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            {% else %}
-                            {{ act.initials }}
-                            {% endif %}
+                <div class="upcoming-summary-rows" style="margin-bottom: 12px;">
+                    {% for act in recent_activities|slice:":4" %}
+                    <div class="upcoming-row-item">
+                        <div class="upcoming-left-info" style="min-width: 0;">
+                            <div class="activity-avatar" style="overflow: hidden; padding: 0; flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px;">
+                                {% if act.avatar_url %}
+                                <img src="{{ act.avatar_url }}" alt="{{ act.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div style="width: 100%; height: 100%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">{{ act.initials }}</div>
+                                {% endif %}
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ act.title }}</div>
+                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">{{ act.time }}</div>
+                            </div>
                         </div>
-                        <div style="flex-grow: 1;">
-                            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); line-height: 1.3;">{{ act.title }}</div>
-                            <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 1px;">{{ act.time }}</div>
-                        </div>
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ act.status_color }}; margin-top: 4px;"></span>
+                        {% if "checked in" in act.title %}
+                        <span class="upcoming-badge-pill" style="background: var(--pill-green); color: #10b981; flex-shrink: 0;">Check In</span>
+                        {% elif "checked out" in act.title %}
+                        <span class="upcoming-badge-pill" style="background: var(--pill-blue); color: #3b82f6; flex-shrink: 0;">Check Out</span>
+                        {% elif "requested" in act.title %}
+                        <span class="upcoming-badge-pill" style="background: var(--pill-orange); color: #f59e0b; flex-shrink: 0;">Leave</span>
+                        {% else %}
+                        <span class="upcoming-badge-pill" style="background: var(--pill-purple); color: var(--primary); flex-shrink: 0;">Task</span>
+                        {% endif %}
                     </div>
                     {% empty %}
                     <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
@@ -1161,35 +1193,27 @@
                 </div>
 
                 <!-- Tab Content: Upcoming Tasks -->
-                <div id="tabContentTasks" class="activity-feed-list" style="margin-bottom: 12px;">
-                    {% for t in upcoming_tasks %}
-                    <div class="activity-feed-item">
-                        <div class="activity-avatar" style="overflow: hidden; padding: 0;">
-                            {% if t.avatar_url %}
-                            <img src="{{ t.avatar_url }}" alt="{{ t.user_name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            {% else %}
-                            <div style="width: 100%; height: 100%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">{{ t.user_initials }}</div>
-                            {% endif %}
-                        </div>
-                        <div style="flex-grow: 1; min-width: 0;">
-                            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ t.title }}">
-                                {{ t.title }}
+                <div id="tabContentTasks" class="upcoming-summary-rows" style="margin-bottom: 12px; display: flex;">
+                    {% for t in upcoming_tasks|slice:":4" %}
+                    <div class="upcoming-row-item">
+                        <div class="upcoming-left-info" style="min-width: 0;">
+                            <div class="activity-avatar" style="overflow: hidden; padding: 0; flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px;">
+                                {% if t.avatar_url %}
+                                <img src="{{ t.avatar_url }}" alt="{{ t.user_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div style="width: 100%; height: 100%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">{{ t.user_initials }}</div>
+                                {% endif %}
                             </div>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 1px;">
-                                <span style="font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: var(--primary); background: var(--pill-purple); padding: 1px 5px; border-radius: 4px;">
-                                    {{ t.team }}
-                                </span>
-                                <span style="font-size: 10.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                    {{ t.user_name }}
-                                </span>
+                            <div style="min-width: 0;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ t.title }}">
+                                    {{ t.title }}
+                                </div>
+                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">
+                                    {{ t.user_name }} &bull; {{ t.team }}
+                                </div>
                             </div>
                         </div>
-                        <div style="text-align: right; flex-shrink: 0;">
-                            <div style="font-size: 11px; font-weight: 700; color: var(--text-main);">{{ t.date }}</div>
-                            <span style="font-size: 9px; font-weight: 800; text-transform: uppercase; background: {{ t.priority_bg }}; color: {{ t.priority_color }}; padding: 1px 5px; border-radius: 4px;">
-                                {{ t.priority }}
-                            </span>
-                        </div>
+                        <span class="upcoming-badge-pill" style="background: {{ t.priority_bg }}; color: {{ t.priority_color }}; flex-shrink: 0;">{{ t.priority }}</span>
                     </div>
                     {% empty %}
                     <div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 12px;">No upcoming tasks found.</div>
@@ -1197,24 +1221,23 @@
                 </div>
 
                 <!-- Tab Content: Upcoming Birthdays -->
-                <div id="tabContentBirthdays" class="activity-feed-list" style="margin-bottom: 12px; display: none;">
-                    {% for b in upcoming_birthdays %}
-                    <div class="activity-feed-item">
-                        <div class="activity-avatar" style="overflow: hidden; padding: 0;">
-                            {% if b.avatar_url %}
-                            <img src="{{ b.avatar_url }}" alt="{{ b.name }}" style="width: 100%; height: 100%; object-fit: cover;">
-                            {% else %}
-                            <div style="width: 100%; height: 100%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">{{ b.initials }}</div>
-                            {% endif %}
+                <div id="tabContentBirthdays" class="upcoming-summary-rows" style="margin-bottom: 12px; display: none;">
+                    {% for b in upcoming_birthdays|slice:":4" %}
+                    <div class="upcoming-row-item">
+                        <div class="upcoming-left-info" style="min-width: 0;">
+                            <div class="activity-avatar" style="overflow: hidden; padding: 0; flex-shrink: 0; width: 32px; height: 32px; border-radius: 10px;">
+                                {% if b.avatar_url %}
+                                <img src="{{ b.avatar_url }}" alt="{{ b.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                {% else %}
+                                <div style="width: 100%; height: 100%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px;">{{ b.initials }}</div>
+                                {% endif %}
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ b.name }}</div>
+                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">{{ b.role }}</div>
+                            </div>
                         </div>
-                        <div style="flex-grow: 1; min-width: 0;">
-                            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ b.name }}</div>
-                            <div style="font-size: 10.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ b.role }}</div>
-                        </div>
-                        <div style="text-align: right; flex-shrink: 0;">
-                            <div style="font-size: 11px; font-weight: 800; color: var(--primary);">{{ b.date }}</div>
-                            <div style="font-size: 9.5px; font-weight: 700; color: var(--text-muted);">{{ b.when }}</div>
-                        </div>
+                        <span class="upcoming-badge-pill" style="background: var(--pill-purple); color: var(--primary); flex-shrink: 0;">{{ b.short_date }}</span>
                     </div>
                     {% empty %}
                     <div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 12px;">No upcoming birthdays found.</div>
@@ -1222,17 +1245,19 @@
                 </div>
 
                 <!-- Tab Content: Holidays -->
-                <div id="tabContentHolidays" class="activity-feed-list" style="margin-bottom: 12px; display: none;">
-                    {% for h in upcoming_holidays %}
-                    <div class="activity-feed-item">
-                        <div class="activity-avatar" style="background: var(--pill-green); color: var(--success); font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center;">
-                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <div id="tabContentHolidays" class="upcoming-summary-rows" style="margin-bottom: 12px; display: none;">
+                    {% for h in upcoming_holidays|slice:":4" %}
+                    <div class="upcoming-row-item">
+                        <div class="upcoming-left-info" style="min-width: 0;">
+                            <div class="activity-avatar" style="background: var(--pill-green); color: var(--success); width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ h.name }}</div>
+                                <div style="font-size: 10px; font-weight: 800; color: var(--success); text-transform: uppercase;">{{ h.day }}</div>
+                            </div>
                         </div>
-                        <div style="flex-grow: 1; min-width: 0;">
-                            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ h.name }}</div>
-                            <div style="font-size: 10.5px; color: var(--success); font-weight: 700;">{{ h.day }}</div>
-                        </div>
-                        <span style="font-size: 11px; font-weight: 800; color: var(--text-main); flex-shrink: 0;">{{ h.date }}</span>
+                        <span class="upcoming-badge-pill" style="background: var(--pill-green); color: var(--success); flex-shrink: 0;">{{ h.short_date|default:h.date }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -1389,45 +1414,47 @@
     <!-- Section 5: Quick Actions, Recent Activity & Summary (3 Columns) -->
     <div class="grid-3-col">
         <!-- 6. QUICK ACTIONS -->
-        <div class="card-panel">
-            <div class="card-header-flex">
-                <h3 class="card-section-title">6. QUICK ACTIONS</h3>
-            </div>
-            <div class="quick-actions-2x2">
-                <!-- Action 1: Check In/Out -->
-                <form action="{% url 'punch_attendance' %}" method="post" style="display: contents;">
-                    {% csrf_token %}
-                    {% if today_attendance and today_attendance.is_punched_in %}
-                    <input type="hidden" name="action" value="punch_out">
-                    <button type="submit" class="quick-action-card-btn" style="border-color: rgba(244, 63, 94, 0.35);">
-                        <div class="action-icon-pill" style="background: #fee2e2; color: #ef4444; font-size: 11px; font-weight: 800;">OUT</div>
-                        <span>Check Out</span>
+        <div class="card-panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="card-header-flex">
+                    <h3 class="card-section-title">6. QUICK ACTIONS</h3>
+                </div>
+                <div class="quick-actions-2x2">
+                    <!-- Action 1: Check In/Out -->
+                    <form action="{% url 'punch_attendance' %}" method="post" style="display: contents;">
+                        {% csrf_token %}
+                        {% if today_attendance and today_attendance.is_punched_in %}
+                        <input type="hidden" name="action" value="punch_out">
+                        <button type="submit" class="quick-action-card-btn" style="border-color: rgba(244, 63, 94, 0.35);">
+                            <div class="action-icon-pill" style="background: #fee2e2; color: #ef4444; font-size: 11px; font-weight: 800;">OUT</div>
+                            <span>Check Out</span>
+                        </button>
+                        {% else %}
+                        <input type="hidden" name="action" value="punch_in">
+                        <button type="submit" class="quick-action-card-btn">
+                            <div class="action-icon-pill" style="background: var(--pill-green); color: #10b981; font-size: 11px; font-weight: 800;">IN</div>
+                            <span>Check In</span>
+                        </button>
+                        {% endif %}
+                    </form>
+                    <!-- Action 2: Apply Leave -->
+                    <button type="button" class="quick-action-card-btn" style="border-color: rgba(124, 93, 250, 0.35);" onclick="openLeaveModal()">
+                        <div class="action-icon-pill" style="background: var(--pill-purple); color: var(--primary); font-size: 11px; font-weight: 800;">LV</div>
+                        <span>Apply Leave</span>
                     </button>
-                    {% else %}
-                    <input type="hidden" name="action" value="punch_in">
-                    <button type="submit" class="quick-action-card-btn">
-                        <div class="action-icon-pill" style="background: var(--pill-green); color: #10b981; font-size: 11px; font-weight: 800;">IN</div>
-                        <span>Check In</span>
-                    </button>
-                    {% endif %}
-                </form>
-                <!-- Action 2: Apply Leave -->
-                <button type="button" class="quick-action-card-btn" style="border-color: rgba(124, 93, 250, 0.35);" onclick="openLeaveModal()">
-                    <div class="action-icon-pill" style="background: var(--pill-purple); color: var(--primary); font-size: 11px; font-weight: 800;">LV</div>
-                    <span>Apply Leave</span>
-                </button>
-                <!-- Action 3: Tasks -->
-                <a href="{% url 'tasks' %}" class="quick-action-card-btn">
-                    <div class="action-icon-pill" style="background: var(--pill-purple); color: #c084fc; font-size: 11px; font-weight: 800;">TSK</div>
-                    <span>Tasks</span>
-                </a>
-                <!-- Action 4: Permissions -->
-                <a href="{% url 'permissions' %}" class="quick-action-card-btn">
-                    <div class="action-icon-pill" style="background: var(--pill-orange); color: #f59e0b; font-size: 11px; font-weight: 800;">PRM</div>
-                    <span>Permissions</span>
-                </a>
+                    <!-- Action 3: Tasks -->
+                    <a href="{% url 'tasks' %}" class="quick-action-card-btn">
+                        <div class="action-icon-pill" style="background: var(--pill-purple); color: #c084fc; font-size: 11px; font-weight: 800;">TSK</div>
+                        <span>Tasks</span>
+                    </a>
+                    <!-- Action 4: Permissions -->
+                    <a href="{% url 'permissions' %}" class="quick-action-card-btn">
+                        <div class="action-icon-pill" style="background: var(--pill-orange); color: #f59e0b; font-size: 11px; font-weight: 800;">PRM</div>
+                        <span>Permissions</span>
+                    </a>
+                </div>
             </div>
-            <button type="button" class="btn-full-width-soft" onclick="window.location.href='{% url 'attendance' %}'">
+            <button type="button" class="btn-full-width-soft" onclick="window.location.href='{% url 'attendance' %}'" style="margin-top: 10px;">
                 Attendance History
             </button>
         </div>
@@ -1438,23 +1465,31 @@
                 <h3 class="card-section-title">7. RECENT LOGS</h3>
                 <a href="{% url 'status_board' %}" class="card-link-action">View All</a>
             </div>
-            <div class="activity-feed-list" style="margin-bottom: 14px;">
+            <div class="upcoming-summary-rows">
                 {% for act in recent_activities|slice:":4" %}
-                <div class="activity-feed-item">
-                    <div class="activity-avatar">{{ act.initials }}</div>
-                    <div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--text-main);">{{ act.title }}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">{{ act.time }}</div>
+                <div class="upcoming-row-item">
+                    <div class="upcoming-left-info" style="min-width: 0;">
+                        <span style="font-size: 11px; font-weight: 800; color: {{ act.status_color|default:'var(--primary)' }}; flex-shrink: 0;">{{ act.initials }}</span>
+                        <div style="min-width: 0;">
+                            <div style="font-size: 12px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ act.title }}</div>
+                            <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">{{ act.time }}</div>
+                        </div>
                     </div>
+                    {% if "checked in" in act.title %}
+                    <span class="upcoming-badge-pill" style="background: var(--pill-green); color: #10b981; flex-shrink: 0;">Check In</span>
+                    {% elif "checked out" in act.title %}
+                    <span class="upcoming-badge-pill" style="background: var(--pill-red); color: #ef4444; flex-shrink: 0;">Check Out</span>
+                    {% elif "requested" in act.title %}
+                    <span class="upcoming-badge-pill" style="background: var(--pill-orange); color: #f59e0b; flex-shrink: 0;">Leave</span>
+                    {% else %}
+                    <span class="upcoming-badge-pill" style="background: var(--pill-purple); color: var(--primary); flex-shrink: 0;">Task</span>
+                    {% endif %}
                 </div>
                 {% empty %}
                 <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px;">
                     No log records available.
                 </div>
                 {% endfor %}
-            </div>
-            <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; text-align: center;">
-                Live Database Activity
             </div>
         </div>
 
@@ -1572,9 +1607,9 @@
         const birthdaysTab = document.getElementById('tabContentBirthdays');
         const holidaysTab = document.getElementById('tabContentHolidays');
         
-        if (tasksTab) tasksTab.style.display = (tabName === 'tasks') ? 'block' : 'none';
-        if (birthdaysTab) birthdaysTab.style.display = (tabName === 'birthdays') ? 'block' : 'none';
-        if (holidaysTab) holidaysTab.style.display = (tabName === 'holidays') ? 'block' : 'none';
+        if (tasksTab) tasksTab.style.display = (tabName === 'tasks') ? 'flex' : 'none';
+        if (birthdaysTab) birthdaysTab.style.display = (tabName === 'birthdays') ? 'flex' : 'none';
+        if (holidaysTab) holidaysTab.style.display = (tabName === 'holidays') ? 'flex' : 'none';
     }
 
     function switchPerfTab(tabName, btn) {
