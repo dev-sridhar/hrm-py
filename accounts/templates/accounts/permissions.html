@@ -71,8 +71,7 @@
         align-items: center;
         gap: 8px;
         margin-bottom: 16px;
-        overflow-x: auto;
-        padding-bottom: 4px;
+        flex-wrap: wrap;
     }
 
     .perm-tab-pill {
@@ -236,7 +235,7 @@
         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
         </svg>
-        <span>+ Request Permission</span>
+        <span>Request Permission</span>
     </button>
 </div>
 
@@ -299,21 +298,21 @@
         <!-- Search Bar -->
         <form method="get" style="display: flex; align-items: center; gap: 8px;" onsubmit="return false;">
             <input type="hidden" name="tab" value="{{ selected_tab|default:'all' }}">
-            {% include "accounts/components/search_bar.html" with input_id="permissionsSearchInput" name="q" value=search_query placeholder="Search employee, dept, reason..." oninput="handlePermissionsLiveSearch(this)" onclear="clearPermissionsLiveSearch()" max_width="240px" %}
+            {% include "accounts/components/search_bar.html" with input_id="permissionsSearchInput" name="q" value=search_query placeholder="Search employee, dept, reason..." oninput="handlePermissionsLiveSearch(this)" onclear="clearPermissionsLiveSearch()" max_width="540px" style="min-width: 400px;" %}
         </form>
     </div>
 
-    <div style="overflow-x: auto;">
+    <div>
         <table class="custom-table" id="permissionsTable" style="width: 100%; border-collapse: collapse; font-size: 13px;">
             <thead>
                 <tr style="border-bottom: 1.5px solid var(--border);">
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 190px; white-space: nowrap;">Employee</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 140px; white-space: nowrap;">Permission Type</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 145px; white-space: nowrap;">Date & Timings</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 100px; white-space: nowrap;">Duration</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 200px;">Reason & Purpose</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; min-width: 115px; white-space: nowrap;">Status</th>
-                    <th style="padding: 12px 14px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: right; min-width: 120px; white-space: nowrap;">Actions</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left;">Employee</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; white-space: nowrap;">Permission Type</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; white-space: nowrap;">Date & Timings</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: center; white-space: nowrap;">Duration</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left;">Reason & Purpose</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: left; white-space: nowrap;">Status</th>
+                    <th style="padding: 12px 10px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: var(--text-muted); text-align: right; white-space: nowrap;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -328,9 +327,9 @@
                     data-perm-id="emp-{{ perm.user.id|stringformat:'04d' }}"
                     style="border-bottom: 1px solid var(--border);">
                     <!-- Employee Column -->
-                    <td style="padding: 14px;">
-                        <div style="display: flex; align-items: center; gap: 10px; min-width: 180px;">
-                            <div style="width: 34px; height: 34px; border-radius: 10px; background: var(--pill-purple); color: var(--primary); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                    <td style="padding: 12px 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 32px; height: 32px; border-radius: 9px; background: var(--pill-purple); color: var(--primary); font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden;">
                                 {% if perm.user.profile.avatar %}
                                 <img src="{{ perm.user.profile.avatar.url }}" alt="{{ perm.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                 {% else %}
@@ -338,10 +337,10 @@
                                 {% endif %}
                             </div>
                             <div>
-                                <div style="font-weight: 800; color: var(--text-main); font-size: 13px; white-space: nowrap;">
+                                <div style="font-weight: 800; color: var(--text-main); font-size: 12.5px; white-space: nowrap;">
                                     {{ perm.user.get_full_name|default:perm.user.username }}
                                 </div>
-                                <div style="font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                <div style="font-size: 10.5px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; white-space: nowrap;">
                                     <span>EMP-{{ perm.user.id|stringformat:"04d" }}</span>
                                     <span>&bull;</span>
                                     <span>{{ perm.user.profile.department|default:"Engineering" }}</span>
@@ -351,7 +350,7 @@
                     </td>
 
                     <!-- Permission Type -->
-                    <td style="padding: 14px; white-space: nowrap;">
+                    <td style="padding: 12px 10px; white-space: nowrap;">
                         {% if perm.permission_type == 'late_entry' %}
                         <span class="perm-type-badge perm-type-late">Late Entry</span>
                         {% elif perm.permission_type == 'early_exit' %}
@@ -366,9 +365,9 @@
                     </td>
 
                     <!-- Date & Timings -->
-                    <td style="padding: 14px; white-space: nowrap;">
-                        <div style="font-weight: 700; color: var(--text-main);">{{ perm.date|date:"M d, Y" }}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">
+                    <td style="padding: 12px 10px; white-space: nowrap;">
+                        <div style="font-weight: 700; color: var(--text-main); font-size: 12px;">{{ perm.date|date:"M d, Y" }}</div>
+                        <div style="font-size: 10.5px; color: var(--text-muted);">
                             {% if perm.start_time and perm.end_time %}
                             {{ perm.start_time|time:"h:i A" }} &rarr; {{ perm.end_time|time:"h:i A" }}
                             {% else %}
@@ -378,19 +377,21 @@
                     </td>
 
                     <!-- Duration (Fixed text-wrap) -->
-                    <td style="padding: 14px; white-space: nowrap;">
+                    <td style="padding: 12px 10px; text-align: center; white-space: nowrap;">
                         <span class="perm-duration-badge">
                             {{ perm.duration_hours }} hrs
                         </span>
                     </td>
 
                     <!-- Reason -->
-                    <td style="padding: 14px; max-width: 260px; color: var(--text-muted); font-size: 12.5px;">
-                        {{ perm.reason }}
+                    <td style="padding: 12px 10px; color: var(--text-muted); font-size: 12px; max-width: 200px;">
+                        <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ perm.reason }}">
+                            {{ perm.reason }}
+                        </div>
                     </td>
 
                     <!-- Status -->
-                    <td style="padding: 14px; white-space: nowrap;">
+                    <td style="padding: 12px 10px; white-space: nowrap;">
                         <div id="permStatusBadge_{{ perm.id }}">
                             {% if perm.status == 'approved' %}
                             <span style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; background: var(--pill-green); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); white-space: nowrap;">
@@ -412,29 +413,31 @@
                     </td>
 
                     <!-- Actions (Clear approval actions once decided, but KEEP Edit & Delete accessible) -->
-                    <td style="padding: 14px; text-align: right; white-space: nowrap;">
+                    <td style="padding: 12px 10px; text-align: right; white-space: nowrap;">
                         <div class="crud-action-group" id="permActionBox_{{ perm.id }}" style="justify-content: flex-end; white-space: nowrap;">
                             <!-- Admin / Staff Quick Status Toggles (Only when pending) -->
-                            {% if perm.status == 'pending' and request.user.is_superuser or perm.status == 'pending' and request.user.is_staff %}
-                            <form action="{% url 'permission_status_update' perm.id %}" method="post" style="display: inline;" onsubmit="handlePermissionStatusAction(event, this, '{{ perm.id }}', 'approved')">
-                                {% csrf_token %}
-                                <input type="hidden" name="status" value="approved">
-                                <button type="submit" class="btn-action-icon approve" title="Approve Permission">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </button>
-                            </form>
+                            {% if perm.status == 'pending' %}
+                                {% if request.user.is_superuser or request.user.is_staff %}
+                                <form action="{% url 'permission_status_update' perm.id %}" method="post" style="display: inline;" onsubmit="handlePermissionStatusAction(event, this, '{{ perm.id }}', 'approved')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="approved">
+                                    <button type="submit" class="btn-action-icon approve" title="Approve Permission">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                </form>
 
-                            <form action="{% url 'permission_status_update' perm.id %}" method="post" style="display: inline;" onsubmit="handlePermissionStatusAction(event, this, '{{ perm.id }}', 'rejected')">
-                                {% csrf_token %}
-                                <input type="hidden" name="status" value="rejected">
-                                <button type="submit" class="btn-action-icon danger" title="Reject Permission">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </button>
-                            </form>
+                                <form action="{% url 'permission_status_update' perm.id %}" method="post" style="display: inline;" onsubmit="handlePermissionStatusAction(event, this, '{{ perm.id }}', 'rejected')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="rejected">
+                                    <button type="submit" class="btn-action-icon danger" title="Reject Permission">
+                                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                                {% endif %}
                             {% endif %}
 
                             <!-- Edit Permission (Always available for owner/admin) -->

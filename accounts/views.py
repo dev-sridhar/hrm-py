@@ -775,39 +775,242 @@ def attendance_view(request):
         "pending_leave": pending_leave,
     }
 
-    # Week vs Month Stats for Attendance Overview
+    # --- Week vs Month Stats for Attendance Overview with Period Comparison & Late Tracking ---
     start_of_week = today - timedelta(days=today.weekday())
     week_qs = all_attendances.filter(date__gte=start_of_week, date__lte=today)
     week_present = week_qs.filter(status="present").count()
     week_absent = week_qs.filter(status="absent").count()
     week_leave = week_qs.filter(status__in=["leave", "lop"]).count()
-    week_total_days = max(1, (today - start_of_week).days + 1)
-    week_pct = min(100, round((week_present / max(1, week_total_days)) * 100))
+    week_late = sum(1 for att in week_qs if att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
+    
+    # Working days passed this week (Mon-Sat, Sunday is Week-Off)
+    week_working_days = sum(1 for i in range((today - start_of_week).days + 1) if (start_of_week + timedelta(days=i)).weekday() < 6)
+    week_working_days = max(1, week_working_days)
+    week_pct = min(100, round((week_present / week_working_days) * 100))
 
+    # Previous Week comparison (6 working days Mon-Sat)
+    start_of_prev_week = start_of_week - timedelta(days=7)
+    end_of_prev_week = start_of_week - timedelta(days=1)
+    prev_week_qs = all_attendances.filter(date__gte=start_of_prev_week, date__lte=end_of_prev_week)
+    prev_week_present = prev_week_qs.filter(status="present").count()
+    prev_week_pct = min(100, round((prev_week_present / 6) * 100))
+    week_diff = week_pct - prev_week_pct
+    week_diff_str = f"+{week_diff}%" if week_diff > 0 else (f"{week_diff}%" if week_diff < 0 else "0%")
+
+    # Month Stats
     start_of_month = today.replace(day=1)
     month_qs = all_attendances.filter(date__gte=start_of_month, date__lte=today)
     month_present = month_qs.filter(status="present").count()
     month_absent = month_qs.filter(status="absent").count()
     month_leave = month_qs.filter(status__in=["leave", "lop"]).count()
-    month_total_days = max(1, (today - start_of_month).days + 1)
-    month_pct = min(100, round((month_present / max(1, month_total_days)) * 100))
+    month_late = sum(1 for att in month_qs if att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
+    
+    # Working days in month up to today (Mon-Sat, Sunday is Week-Off)
+    month_working_days = sum(1 for i in range((today - start_of_month).days + 1) if (start_of_month + timedelta(days=i)).weekday() < 6)
+    month_working_days = max(1, month_working_days)
+    month_pct = min(100, round((month_present / month_working_days) * 100))
+
+    # Previous Month comparison
+    last_day_prev_month = start_of_month - timedelta(days=1)
+    start_of_prev_month = last_day_prev_month.replace(day=1)
+    prev_month_qs = all_attendances.filter(date__gte=start_of_prev_month, date__lte=last_day_prev_month)
+    prev_month_present = prev_month_qs.filter(status="present").count()
+    prev_month_working = max(1, sum(1 for i in range((last_day_prev_month - start_of_prev_month).days + 1) if (start_of_prev_month + timedelta(days=i)).weekday() < 6))
+    prev_month_pct = min(100, round((prev_month_present / prev_month_working) * 100))
+    month_diff = month_pct - prev_month_pct
+    month_diff_str = f"+{month_diff}%" if month_diff > 0 else (f"{month_diff}%" if month_diff < 0 else "0%")
 
     overview_stats = {
         "week": {
             "present_days": week_present,
             "absent_days": week_absent,
             "leave_days": week_leave,
+            "late_days": week_late,
             "pct": week_pct,
-            "total_days": week_total_days,
+            "prev_pct": prev_week_pct,
+            "diff_str": week_diff_str,
+            "diff_is_pos": (week_diff >= 0),
+            "total_days": (today - start_of_week).days + 1,
         },
         "month": {
             "present_days": month_present,
             "absent_days": month_absent,
             "leave_days": month_leave,
+            "late_days": month_late,
             "pct": month_pct,
-            "total_days": month_total_days,
+            "prev_pct": prev_month_pct,
+            "diff_str": month_diff_str,
+            "diff_is_pos": (month_diff >= 0),
+            "total_days": (today - start_of_month).days + 1,
         }
     }
+
+    # 7-Day Visual Spline Line Graph Data (Full-Width Responsive Grid: 500x155)
+    week_points = []
+    day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    xs = [50, 118, 186, 254, 322, 390, 458]
+    for i in range(7):
+        d = start_of_week + timedelta(days=i)
+        x = xs[i]
+        att = all_attendances.filter(date=d).first()
+        leave = LeaveRequest.objects.filter(user=request.user, start_date__lte=d, end_date__gte=d, status="approved").first()
+        
+        # Tooltip data values
+        p_in_str = timezone.localtime(att.punch_in).strftime("%I:%M %p") if att and att.punch_in else "--:--"
+        p_out_str = timezone.localtime(att.punch_out).strftime("%I:%M %p") if att and att.punch_out else ("Active Now" if att and att.is_punched_in else "--:--")
+        dur_str = att.formatted_duration if att else "0h 0m"
+
+        if d.weekday() == 6:
+            # Sunday is always Week Off
+            y = 20 if week_pct >= 80 else (78 if week_pct >= 50 else 135)
+            status_type = "weekend"
+            label = "Sunday (Week Off)"
+            color = "#94a3b8"  # Grey
+            is_non_working = True
+            p_in_str = "--:--"
+            p_out_str = "--:--"
+            dur_str = "Week Off"
+        elif d > today:
+            # Future / Upcoming day
+            y = 20 if week_pct >= 80 else (78 if week_pct >= 50 else 135)
+            status_type = "upcoming"
+            label = "Upcoming Day"
+            color = "#94a3b8"  # Grey
+            is_non_working = True
+        else:
+            # Mon-Sat Working days
+            is_non_working = False
+            if att and att.status == "present":
+                y = 20
+                status_type = "present"
+                is_late = (att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
+                label = "Present (Late Arrival)" if is_late else "Present (On-Time)"
+                color = "#10b981"  # Green
+            elif leave or (att and att.status in ["leave", "lop"]):
+                y = 78
+                status_type = "leave"
+                label = f"Approved Leave ({leave.get_leave_type_display() if leave else 'PTO'})"
+                color = "#f59e0b"  # Orange
+            else:
+                y = 135
+                status_type = "absent"
+                label = "Absent (Unexcused)"
+                color = "#f43f5e"  # Red
+
+        week_points.append({
+            "day": day_names[i],
+            "date_short": d.strftime("%b %d"),
+            "date_full": d.strftime("%A, %b %d, %Y"),
+            "x": x,
+            "y": y,
+            "status_type": status_type,
+            "label": label,
+            "color": color,
+            "punch_in": p_in_str,
+            "punch_out": p_out_str,
+            "duration": dur_str,
+            "is_today": (d == today),
+            "is_non_working": is_non_working,
+            "is_sunday": (d.weekday() == 6),
+        })
+
+    # Spline Path generation for week
+    week_path_d = f"M {week_points[0]['x']},{week_points[0]['y']}"
+    for i in range(len(week_points) - 1):
+        p0 = week_points[i]
+        p1 = week_points[i+1]
+        cp1x = round(p0['x'] + (p1['x'] - p0['x']) / 2, 1)
+        cp1y = p0['y']
+        cp2x = round(p0['x'] + (p1['x'] - p0['x']) / 2, 1)
+        cp2y = p1['y']
+        week_path_d += f" C {cp1x},{cp1y} {cp2x},{cp2y} {p1['x']},{p1['y']}"
+    week_area_d = f"{week_path_d} L {week_points[-1]['x']},135 L {week_points[0]['x']},135 Z"
+
+    # Entire Month Visual Spline Line Graph Data (All Days in the Month)
+    _, num_days_in_month = calendar.monthrange(today.year, today.month)
+    month_points = []
+    x_start = 45
+    x_end = 475
+    x_step = (x_end - x_start) / max(1, num_days_in_month - 1)
+    
+    # Calculate step interval for X-axis labels (e.g. 1st, 5th, 10th, 15th, 20th, 25th, and last day)
+    label_days = {1, 5, 10, 15, 20, 25, num_days_in_month}
+
+    for day_num in range(1, num_days_in_month + 1):
+        d = start_of_month.replace(day=day_num)
+        x = round(x_start + (day_num - 1) * x_step, 1)
+        att = all_attendances.filter(date=d).first()
+        leave = LeaveRequest.objects.filter(user=request.user, start_date__lte=d, end_date__gte=d, status="approved").first()
+
+        p_in_str = timezone.localtime(att.punch_in).strftime("%I:%M %p") if att and att.punch_in else "--:--"
+        p_out_str = timezone.localtime(att.punch_out).strftime("%I:%M %p") if att and att.punch_out else ("Active Now" if att and att.is_punched_in else "--:--")
+        dur_str = att.formatted_duration if att else "0h 0m"
+
+        if d.weekday() == 6:
+            # Sunday is always Week Off
+            y = 20 if month_pct >= 80 else (78 if month_pct >= 50 else 135)
+            status_type = "weekend"
+            label = "Sunday (Week Off)"
+            color = "#94a3b8"  # Grey
+            is_non_working = True
+            p_in_str = "--:--"
+            p_out_str = "--:--"
+            dur_str = "Week Off"
+        elif d > today:
+            y = 20 if month_pct >= 80 else (78 if month_pct >= 50 else 135)
+            status_type = "upcoming"
+            label = "Upcoming Day"
+            color = "#94a3b8"  # Grey
+            is_non_working = True
+        else:
+            # Mon-Sat Working days
+            is_non_working = False
+            if att and att.status == "present":
+                y = 20
+                status_type = "present"
+                is_late = (att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
+                label = "Present (Late Arrival)" if is_late else "Present (On-Time)"
+                color = "#10b981"  # Green
+            elif leave or (att and att.status in ["leave", "lop"]):
+                y = 78
+                status_type = "leave"
+                label = f"Approved Leave ({leave.get_leave_type_display() if leave else 'PTO'})"
+                color = "#f59e0b"  # Orange
+            else:
+                y = 135
+                status_type = "absent"
+                label = "Absent (Unexcused)"
+                color = "#f43f5e"  # Red
+
+        month_points.append({
+            "day_num": day_num,
+            "day": str(day_num),
+            "date_short": d.strftime("%b %d"),
+            "date_full": d.strftime("%A, %b %d, %Y"),
+            "x": x,
+            "y": y,
+            "status_type": status_type,
+            "label": label,
+            "color": color,
+            "punch_in": p_in_str,
+            "punch_out": p_out_str,
+            "duration": dur_str,
+            "is_today": (d == today),
+            "is_non_working": is_non_working,
+            "is_sunday": (d.weekday() == 6),
+            "show_x_label": (day_num in label_days),
+        })
+
+    month_path_d = f"M {month_points[0]['x']},{month_points[0]['y']}"
+    for i in range(len(month_points) - 1):
+        p0 = month_points[i]
+        p1 = month_points[i+1]
+        cp1x = round(p0['x'] + (p1['x'] - p0['x']) / 2, 1)
+        cp1y = p0['y']
+        cp2x = round(p0['x'] + (p1['x'] - p0['x']) / 2, 1)
+        cp2y = p1['y']
+        month_path_d += f" C {cp1x},{cp1y} {cp2x},{cp2y} {p1['x']},{p1['y']}"
+    month_area_d = f"{month_path_d} L {month_points[-1]['x']},135 L {month_points[0]['x']},135 Z"
 
     # --- 1. My Attendance History & Shift Logs ---
     my_attendances = all_attendances
@@ -968,6 +1171,12 @@ def attendance_view(request):
         "overview_stats": overview_stats,
         "week_stats": overview_stats["week"],
         "month_stats": overview_stats["month"],
+        "week_points": week_points,
+        "week_path_d": week_path_d,
+        "week_area_d": week_area_d,
+        "month_points": month_points,
+        "month_path_d": month_path_d,
+        "month_area_d": month_area_d,
         # Personal Logs
         "page_obj": my_page_obj,
         "attendances": my_page_obj.object_list,
@@ -1403,13 +1612,26 @@ def leaves_view(request):
         "total_remaining": (12 - casual_used) + (8 - sick_used) + (15 - annual_used),
     }
 
-    # Filters and Search
-    status_filter = request.GET.get("status", "all").strip().lower()
+    # Tab and Search Filters
+    selected_tab = request.GET.get("tab", "").strip().lower()
+    status_filter = request.GET.get("status", "").strip().lower()
+    if not selected_tab and status_filter:
+        selected_tab = status_filter
+    if not selected_tab:
+        selected_tab = "all"
+
     search_query = request.GET.get("q", "").strip()
 
-    filtered_leaves = base_leaves
-    if status_filter in ["pending", "approved", "rejected"]:
-        filtered_leaves = filtered_leaves.filter(status=status_filter)
+    if selected_tab == "my":
+        filtered_leaves = base_leaves.filter(user=request.user)
+    elif selected_tab == "pending":
+        filtered_leaves = base_leaves.filter(status="pending")
+    elif selected_tab == "approved":
+        filtered_leaves = base_leaves.filter(status="approved")
+    elif selected_tab == "rejected":
+        filtered_leaves = base_leaves.filter(status="rejected")
+    else:
+        filtered_leaves = base_leaves
 
     if search_query:
         filtered_leaves = filtered_leaves.filter(
@@ -1436,11 +1658,17 @@ def leaves_view(request):
         "form": form,
         "leave_balances": leave_balances,
         "today_attendance": today_attendance,
-        "selected_status": status_filter,
+        "selected_tab": selected_tab,
+        "selected_status": selected_tab,
         "search_query": search_query,
+        "total_leaves_count": base_leaves.count(),
         "total_count": base_leaves.count(),
+        "my_total": base_leaves.filter(user=request.user).count(),
+        "pending_total": base_leaves.filter(status="pending").count(),
         "pending_count": base_leaves.filter(status="pending").count(),
+        "approved_total": base_leaves.filter(status="approved").count(),
         "approved_count": base_leaves.filter(status="approved").count(),
+        "rejected_total": base_leaves.filter(status="rejected").count(),
         "rejected_count": base_leaves.filter(status="rejected").count(),
     }
     return render(request, "accounts/leaves.html", context)
