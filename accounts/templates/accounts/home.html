@@ -1329,8 +1329,12 @@
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
                 <div style="display: flex; align-items: center; gap: 14px;">
                     <div style="position: relative;">
-                        <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
-                            {{ request.user.first_name|default:request.user.username|slice:":2"|upper }}
+                        <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; overflow: hidden; padding: 0;">
+                            {% if request.user.profile.avatar %}
+                                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.get_full_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                {{ request.user.first_name|default:request.user.username|slice:":2"|upper }}
+                            {% endif %}
                         </div>
                         <span style="position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: #10b981; border-radius: 50%; border: 2px solid var(--card-bg);"></span>
                     </div>

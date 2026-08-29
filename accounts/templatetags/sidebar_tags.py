@@ -29,6 +29,10 @@ def render_sidebar(context, active_page=None):
             current_active = "leaves"
         elif url_name in ["permissions", "permission_request", "permission_edit", "permission_delete"]:
             current_active = "permissions"
+        elif url_name == "holidays":
+            current_active = "holidays"
+        elif url_name == "payroll":
+            current_active = "payroll"
         elif url_name == "status_board":
             current_active = "status_board"
         elif url_name in ["settings", "user_profile"]:

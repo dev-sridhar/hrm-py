@@ -1,0 +1,1235 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Enterprise HRMS - Holiday Calendar{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Top Header Bar */
+    .holidays-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+        flex-wrap: wrap;
+        gap: 14px;
+    }
+
+    .holiday-header-title h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .holiday-header-title p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 2px 0 0;
+    }
+
+    .holiday-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .year-select-container {
+        position: relative;
+    }
+
+    .year-select-pill {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.15s ease;
+        user-select: none;
+    }
+
+    .year-select-pill:hover {
+        border-color: var(--primary);
+    }
+
+    .year-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        right: 0;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+        padding: 6px;
+        min-width: 130px;
+        max-height: 220px;
+        overflow-y: auto;
+        display: none;
+        flex-direction: column;
+        gap: 2px;
+        z-index: 120;
+        animation: popoverFade 0.15s ease-out;
+    }
+
+    .year-dropdown-menu.open {
+        display: flex;
+    }
+
+    .year-option-item {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: left;
+        background: none;
+        border: none;
+        color: var(--text-main);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .year-option-item:hover {
+        background: rgba(124, 93, 250, 0.08);
+        color: var(--primary);
+    }
+
+    .year-option-item.active {
+        background: var(--primary);
+        color: #ffffff;
+        font-weight: 800;
+    }
+
+    .btn-add-holiday {
+        background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 8px 18px;
+        font-size: 13px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(225, 29, 72, 0.35);
+        transition: all 0.15s ease;
+    }
+
+    .btn-add-holiday:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(225, 29, 72, 0.45);
+    }
+
+    /* 4 Top KPI Cards Grid - Minimized & Compact */
+    .holiday-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .holiday-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    @media (max-width: 580px) {
+        .holiday-kpi-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .holiday-kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 14px;
+        padding: 12px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .holiday-kpi-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .kpi-info-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kpi-title-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.5px;
+    }
+
+    .kpi-count-num {
+        font-size: 21px;
+        font-weight: 900;
+        color: var(--text-main);
+        margin: 2px 0 1px;
+        line-height: 1.15;
+    }
+
+    .kpi-sub-text {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .kpi-icon-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .kpi-icon-circle svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .kpi-icon-purple {
+        background: rgba(124, 93, 250, 0.12);
+        color: #7c5dfa;
+    }
+    .kpi-icon-green {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+    }
+    .kpi-icon-orange {
+        background: rgba(249, 115, 22, 0.12);
+        color: #f97316;
+    }
+    .kpi-icon-blue {
+        background: rgba(59, 130, 246, 0.12);
+        color: #3b82f6;
+    }
+
+    /* Main Split Section: Calendar Left, Upcoming Right */
+    .holiday-main-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+        .holiday-main-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Left Card: Calendar View */
+    .calendar-card-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .calendar-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .month-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .current-month-heading {
+        font-size: 15px;
+        font-weight: 900;
+        color: var(--text-main);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .month-nav-btn {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-muted);
+        transition: all 0.15s ease;
+    }
+
+    .month-nav-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .view-mode-pill-group {
+        display: flex;
+        align-items: center;
+        background: rgba(148, 163, 184, 0.1);
+        padding: 3px;
+        border-radius: 20px;
+        gap: 2px;
+    }
+
+    .view-tab-btn {
+        border: none;
+        background: none;
+        padding: 5px 14px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .view-tab-btn.active {
+        background: #e11d48;
+        color: white;
+        box-shadow: 0 2px 8px rgba(225, 29, 72, 0.35);
+    }
+
+    /* Month Calendar Grid Table */
+    .calendar-matrix {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    .calendar-matrix th {
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        padding: 10px 4px;
+        letter-spacing: 0.5px;
+    }
+
+    .calendar-matrix td {
+        padding: 8px 4px;
+        vertical-align: middle;
+    }
+
+    .day-cell {
+        width: 36px;
+        height: 36px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-main);
+        position: relative;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .day-cell.other-month {
+        color: rgba(148, 163, 184, 0.45);
+        cursor: default;
+    }
+
+    .day-cell:not(.other-month):hover {
+        background: rgba(124, 93, 250, 0.1);
+    }
+
+    .day-cell.highlight-selected {
+        background: #10b981 !important;
+        color: white !important;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    }
+
+    .holiday-dot-indicator {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 2px;
+    }
+
+    .dot-green { background: #10b981; }
+    .dot-purple { background: #7c5dfa; }
+    .dot-orange { background: #f97316; }
+    .dot-red { background: #e11d48; }
+
+    /* Right Card: Upcoming Holidays List */
+    .upcoming-card-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 22px;
+        box-shadow: var(--card-shadow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .upcoming-heading-title {
+        font-size: 13.5px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--text-main);
+        letter-spacing: 0.5px;
+        margin-bottom: 18px;
+    }
+
+    .holiday-item-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--border);
+        gap: 12px;
+        transition: transform 0.15s ease;
+    }
+
+    .holiday-item-row:last-child {
+        border-bottom: none;
+    }
+
+    .holiday-item-row:hover {
+        transform: translateX(3px);
+    }
+
+    .holiday-date-col {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .date-box-chip {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        border: 1.5px solid transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        flex-shrink: 0;
+    }
+
+    .date-box-chip .chip-month {
+        font-size: 9px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }
+
+    .date-box-chip .chip-day {
+        font-size: 15px;
+        font-weight: 900;
+    }
+
+    .box-green {
+        border-color: rgba(16, 185, 129, 0.4);
+        background: rgba(16, 185, 129, 0.08);
+        color: #10b981;
+    }
+    .box-orange {
+        border-color: rgba(249, 115, 22, 0.4);
+        background: rgba(249, 115, 22, 0.08);
+        color: #f97316;
+    }
+    .box-purple {
+        border-color: rgba(124, 93, 250, 0.4);
+        background: rgba(124, 93, 250, 0.08);
+        color: #7c5dfa;
+    }
+    .box-blue {
+        border-color: rgba(59, 130, 246, 0.4);
+        background: rgba(59, 130, 246, 0.08);
+        color: #3b82f6;
+    }
+    .box-red {
+        border-color: rgba(225, 29, 72, 0.4);
+        background: rgba(225, 29, 72, 0.08);
+        color: #e11d48;
+    }
+
+    .holiday-meta-info {
+        min-width: 0;
+    }
+
+    .holiday-name-text {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .holiday-date-text {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
+    .holiday-type-pill {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .pill-public {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+    }
+    .pill-optional {
+        background: rgba(249, 115, 22, 0.12);
+        color: #f97316;
+    }
+    .pill-company {
+        background: rgba(59, 130, 246, 0.12);
+        color: #3b82f6;
+    }
+
+    .view-all-link {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: color 0.15s ease;
+    }
+
+    .view-all-link:hover {
+        color: var(--primary);
+    }
+
+    /* List View Panel - Minimized Sleek Threads */
+    #holidayListViewContainer {
+        display: none;
+    }
+
+    .list-row-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 6px 14px;
+        margin-bottom: 5px;
+        display: grid;
+        grid-template-columns: 85px 1fr 130px 95px;
+        align-items: center;
+        gap: 12px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .list-row-card:hover {
+        transform: translateX(2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .list-date-chip {
+        width: 32px;
+        height: 32px;
+        border-radius: 7px;
+    }
+
+    .list-date-chip .chip-month {
+        font-size: 7.5px;
+        margin-bottom: 1px;
+    }
+
+    .list-date-chip .chip-day {
+        font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .list-row-card {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+    }
+
+    /* Professional Pagination Footer */
+    .pagination-footer {
+        padding: 14px 4px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border);
+        margin-top: 14px;
+    }
+
+    .pagination-info {
+        font-size: 12.5px;
+        color: var(--text-muted);
+    }
+
+    .pagination-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        padding: 5px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        min-width: 32px;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(124, 93, 250, 0.3);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Add Holiday Modal */
+    .holiday-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .holiday-modal-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 480px;
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-form-group {
+        margin-bottom: 14px;
+    }
+
+    .modal-form-label {
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .modal-form-input {
+        width: 100%;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: var(--text-main);
+        box-sizing: border-box;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .modal-form-input:focus {
+        border-color: var(--primary);
+    }
+</style>
+
+<!-- Top Header Bar -->
+<div class="holidays-header-bar">
+    <div class="holiday-header-title">
+        <h2>Holiday Calendar</h2>
+        <p>Manage company holidays, public holidays and optional holidays.</p>
+    </div>
+    <div class="holiday-header-actions">
+        <!-- Interactive Year Selector Dropdown -->
+        <div class="year-select-container">
+            <button type="button" class="year-select-pill" id="yearSelectBtn" onclick="toggleYearDropdown(event)">
+                <span id="selectedYearDisplay">{{ current_year }}</span>
+                <svg id="yearSelectChevron" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="transition: transform 0.2s ease;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            <!-- Dropdown Options -->
+            <div class="year-dropdown-menu" id="yearDropdownMenu">
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2023)"><span>2023</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2024)"><span>2024</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2025)"><span>2025</span></button>
+                <button type="button" class="year-option-item active" onclick="selectHolidayYear(2026)"><span>2026</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2027)"><span>2027</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2028)"><span>2028</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2029)"><span>2029</span></button>
+                <button type="button" class="year-option-item" onclick="selectHolidayYear(2030)"><span>2030</span></button>
+            </div>
+        </div>
+
+        <!-- Add Holiday Button -->
+        <button type="button" class="btn-add-holiday" onclick="openAddHolidayModal()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Add Holiday</span>
+        </button>
+    </div>
+</div>
+
+<!-- 4 Top KPI Summary Cards -->
+<div class="holiday-kpi-grid">
+    <!-- 1. Total Holidays -->
+    <div class="holiday-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">TOTAL HOLIDAYS</span>
+            <span class="kpi-count-num" style="color: #7c5dfa;">{{ total_holidays }}</span>
+            <span class="kpi-sub-text">In {{ current_year }}</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-purple">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 2. Company Holidays -->
+    <div class="holiday-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">COMPANY HOLIDAYS</span>
+            <span class="kpi-count-num" style="color: #10b981;">{{ company_count }}</span>
+            <span class="kpi-sub-text">Official Holidays</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-green">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 3. Public Holidays -->
+    <div class="holiday-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">PUBLIC HOLIDAYS</span>
+            <span class="kpi-count-num" style="color: #f97316;">{{ public_count }}</span>
+            <span class="kpi-sub-text">Government Holidays</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-orange">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 4. Optional Holidays -->
+    <div class="holiday-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">OPTIONAL HOLIDAYS</span>
+            <span class="kpi-count-num" style="color: #3b82f6;">{{ optional_count }}</span>
+            <span class="kpi-sub-text">Employee Optional</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-blue">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Main Split: Interactive Calendar Left, Upcoming Holidays Right -->
+<div class="holiday-main-grid" id="holidayMainGrid">
+    <!-- Left Card: Monthly Interactive Calendar View -->
+    <div class="calendar-card-panel">
+        <div class="calendar-panel-header">
+            <div class="month-nav-group">
+                <div class="current-month-heading" id="currentMonthLabel">AUGUST 2026</div>
+                <button type="button" class="month-nav-btn" onclick="navigateMonth(-1)" title="Previous Month">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button type="button" class="month-nav-btn" onclick="navigateMonth(1)" title="Next Month">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <!-- View Switcher -->
+            <div class="view-mode-pill-group">
+                <button type="button" class="view-tab-btn active" id="btnViewMonth" onclick="switchViewMode('month')">Month</button>
+                <button type="button" class="view-tab-btn" id="btnViewList" onclick="switchViewMode('list')">List</button>
+                <button type="button" class="view-tab-btn" id="btnViewCalendar" onclick="switchViewMode('calendar')">Calendar</button>
+            </div>
+        </div>
+
+        <!-- Monthly Days Matrix Table -->
+        <table class="calendar-matrix" id="calendarMatrixTable">
+            <thead>
+                <tr>
+                    <th>SUN</th>
+                    <th>MON</th>
+                    <th>TUE</th>
+                    <th>WED</th>
+                    <th>THU</th>
+                    <th>FRI</th>
+                    <th>SAT</th>
+                </tr>
+            </thead>
+            <tbody id="calendarGridBody">
+                <!-- Dynamically Populated via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Right Card: Upcoming Holidays List -->
+    <div class="upcoming-card-panel">
+        <div>
+            <div class="upcoming-heading-title">UPCOMING HOLIDAYS</div>
+            <div id="upcomingHolidaysList">
+                {% for h in highlight_upcoming %}
+                <div class="holiday-item-row">
+                    <div class="holiday-date-col">
+                        <div class="date-box-chip {% if h.color == 'green' %}box-green{% elif h.color == 'orange' %}box-orange{% elif h.color == 'purple' %}box-purple{% elif h.color == 'red' %}box-red{% else %}box-blue{% endif %}">
+                            <span class="chip-month">{{ h.month_abbr }}</span>
+                            <span class="chip-day">{{ h.day_num }}</span>
+                        </div>
+                        <div class="holiday-meta-info">
+                            <div class="holiday-name-text">{{ h.name }}</div>
+                            <div class="holiday-date-text">{{ h.full_date }}</div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="holiday-type-pill {% if h.category == 'Public Holiday' %}pill-public{% elif h.category == 'Optional Holiday' %}pill-optional{% else %}pill-company{% endif %}">
+                            {{ h.category }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div style="border-top: 1px dashed var(--border); padding-top: 10px; margin-top: 14px;">
+            <a class="view-all-link" onclick="switchViewMode('list')">
+                <span>View All Holidays</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Full List View Section (Toggled via List Tab) -->
+<div id="holidayListViewContainer" class="calendar-card-panel" style="margin-top: 0;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">All Declared Holidays ({{ total_holidays }})</h3>
+        <button type="button" class="btn-custom btn-custom-outline" style="padding: 6px 14px; font-size: 12px; border-radius: 20px;" onclick="switchViewMode('month')">
+            Back to Calendar View
+        </button>
+    </div>
+
+    <!-- Paginated Rows Wrapper -->
+    <div id="holidayListRowsContainer">
+        {% for h in holidays %}
+        <div class="list-row-card" data-index="{{ forloop.counter0 }}">
+            <!-- 1. Compact Date Chip & Weekday -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="date-box-chip list-date-chip {% if h.category == 'Public Holiday' %}box-green{% elif h.category == 'Optional Holiday' %}box-orange{% elif h.color == 'red' %}box-red{% else %}box-purple{% endif %}">
+                    <span class="chip-month">{{ h.month_abbr }}</span>
+                    <span class="chip-day">{{ h.day_num }}</span>
+                </div>
+                <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">
+                    {{ h.day_name|slice:":3" }}
+                </span>
+            </div>
+
+            <!-- 2. Name & Description -->
+            <div style="min-width: 0;">
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ h.name }}</div>
+                <div style="font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px;">{{ h.description }}</div>
+            </div>
+
+            <!-- 3. Category Pill -->
+            <div>
+                <span class="holiday-type-pill {% if h.category == 'Public Holiday' %}pill-public{% elif h.category == 'Optional Holiday' %}pill-optional{% else %}pill-company{% endif %}" style="padding: 3px 9px; font-size: 10.5px;">
+                    {{ h.category }}
+                </span>
+            </div>
+
+            <!-- 4. Status -->
+            <div style="text-align: right;">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">
+                    {{ h.badge_text }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="pagination-footer" id="holidayListPagination">
+        <div class="pagination-info" id="holidayPaginationInfo">
+            Showing <strong>1</strong> to <strong>6</strong> of <strong>{{ total_holidays }}</strong> holidays
+        </div>
+        <div class="pagination-nav-group" id="holidayPaginationNav">
+            <!-- Populated via JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Add Holiday Modal -->
+<div class="holiday-modal-backdrop" id="addHolidayModal">
+    <div class="holiday-modal-box">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin: 0;">Add New Holiday</h3>
+            <button type="button" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);" onclick="closeAddHolidayModal()">&times;</button>
+        </div>
+        <form onsubmit="handleAddHolidaySubmit(event)">
+            <div class="modal-form-group">
+                <label class="modal-form-label">Holiday Title</label>
+                <input type="text" id="holidayTitleInput" class="modal-form-input" placeholder="e.g. Founders Day Celebration" required>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-form-label">Holiday Date</label>
+                <input type="date" id="holidayDateInput" class="modal-form-input" value="2026-08-15" required>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-form-label">Holiday Category</label>
+                <select id="holidayCategoryInput" class="modal-form-input" required>
+                    <option value="Company Holiday">Company Holiday</option>
+                    <option value="Public Holiday">Public Holiday</option>
+                    <option value="Optional Holiday">Optional Holiday</option>
+                </select>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-form-label">Description (Optional)</label>
+                <textarea id="holidayDescInput" class="modal-form-input" rows="2" placeholder="Brief note about the holiday..."></textarea>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn-custom btn-custom-outline" style="border-radius: 10px; padding: 8px 16px;" onclick="closeAddHolidayModal()">Cancel</button>
+                <button type="submit" class="btn-add-holiday" style="border-radius: 10px; padding: 8px 18px;">Save Holiday</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const ALL_HOLIDAYS = {{ holidays_json|safe }};
+    let currentYear = 2026;
+    let currentMonth = 7; // 0-indexed: 7 = August
+
+    const MONTH_NAMES = [
+        "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
+        "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"
+    ];
+
+    let listCurrentPage = 1;
+    const listItemsPerPage = 6;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderCalendarGrid(currentYear, currentMonth);
+        renderHolidayListPagination(1);
+    });
+
+    function renderCalendarGrid(year, month) {
+        const monthLabel = document.getElementById("currentMonthLabel");
+        if (monthLabel) {
+            monthLabel.textContent = `${MONTH_NAMES[month]} ${year}`;
+        }
+
+        const firstDayIndex = new Date(year, month, 1).getDay(); // 0 = Sun, 1 = Mon ...
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevMonthDays = new Date(year, month, 0).getDate();
+
+        const tbody = document.getElementById("calendarGridBody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        let dayCount = 1;
+        let nextMonthDay = 1;
+        let prevMonthStart = prevMonthDays - firstDayIndex + 1;
+
+        // Render 5 or 6 rows
+        for (let row = 0; row < 6; row++) {
+            if (dayCount > daysInMonth) break;
+            const tr = document.createElement("tr");
+
+            for (let col = 0; col < 7; col++) {
+                const td = document.createElement("td");
+                const dayCell = document.createElement("div");
+                dayCell.className = "day-cell";
+
+                if (row === 0 && col < firstDayIndex) {
+                    // Previous month trailing day
+                    dayCell.classList.add("other-month");
+                    dayCell.textContent = prevMonthStart + col;
+                } else if (dayCount > daysInMonth) {
+                    // Next month leading day
+                    dayCell.classList.add("other-month");
+                    dayCell.textContent = nextMonthDay++;
+                } else {
+                    // Current month day
+                    const currentDayNum = dayCount;
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDayNum).padStart(2, '0')}`;
+                    dayCell.textContent = currentDayNum;
+
+                    // Check if day has holiday
+                    const holiday = ALL_HOLIDAYS.find(h => h.date === dateStr);
+                    if (holiday) {
+                        const dot = document.createElement("span");
+                        dot.className = `holiday-dot-indicator dot-${holiday.color || 'green'}`;
+                        dayCell.appendChild(dot);
+                        dayCell.title = `${holiday.name} (${holiday.category})`;
+                    }
+
+                    // Highlight Day 17 in green circle like reference screenshot
+                    if (month === 7 && currentDayNum === 17) {
+                        dayCell.classList.add("highlight-selected");
+                    }
+
+                    dayCell.onclick = () => {
+                        document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('highlight-selected'));
+                        dayCell.classList.add('highlight-selected');
+                    };
+
+                    dayCount++;
+                }
+
+                td.appendChild(dayCell);
+                tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+        }
+    }
+
+    function navigateMonth(direction) {
+        currentMonth += direction;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        const yearDisplay = document.getElementById("selectedYearDisplay");
+        if (yearDisplay) yearDisplay.textContent = currentYear;
+        renderCalendarGrid(currentYear, currentMonth);
+    }
+
+    function renderHolidayListPagination(page = 1) {
+        listCurrentPage = page;
+        const rows = document.querySelectorAll("#holidayListRowsContainer .list-row-card");
+        const totalItems = rows.length;
+        const totalPages = Math.ceil(totalItems / listItemsPerPage) || 1;
+
+        if (listCurrentPage > totalPages) listCurrentPage = totalPages;
+        if (listCurrentPage < 1) listCurrentPage = 1;
+
+        const startIndex = (listCurrentPage - 1) * listItemsPerPage;
+        const endIndex = Math.min(startIndex + listItemsPerPage, totalItems);
+
+        rows.forEach((row, idx) => {
+            if (idx >= startIndex && idx < endIndex) {
+                row.style.display = "grid";
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Update info text
+        const infoEl = document.getElementById("holidayPaginationInfo");
+        if (infoEl) {
+            infoEl.innerHTML = `Showing <strong>${totalItems ? startIndex + 1 : 0}</strong> to <strong>${endIndex}</strong> of <strong>${totalItems}</strong> holidays`;
+        }
+
+        // Build navigation buttons
+        const navEl = document.getElementById("holidayPaginationNav");
+        if (navEl) {
+            navEl.innerHTML = "";
+
+            // Previous Button
+            const prevBtn = document.createElement("button");
+            prevBtn.type = "button";
+            prevBtn.className = `pagination-btn ${listCurrentPage === 1 ? 'disabled' : ''}`;
+            prevBtn.innerHTML = `&laquo;`;
+            prevBtn.title = "Previous Page";
+            prevBtn.onclick = () => renderHolidayListPagination(listCurrentPage - 1);
+            navEl.appendChild(prevBtn);
+
+            // Numbered Page Buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement("button");
+                pageBtn.type = "button";
+                pageBtn.className = `pagination-btn ${i === listCurrentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => renderHolidayListPagination(i);
+                navEl.appendChild(pageBtn);
+            }
+
+            // Next Button
+            const nextBtn = document.createElement("button");
+            nextBtn.type = "button";
+            nextBtn.className = `pagination-btn ${listCurrentPage === totalPages ? 'disabled' : ''}`;
+            nextBtn.innerHTML = `&raquo;`;
+            nextBtn.title = "Next Page";
+            nextBtn.onclick = () => renderHolidayListPagination(listCurrentPage + 1);
+            navEl.appendChild(nextBtn);
+        }
+    }
+
+    function switchViewMode(mode) {
+        const mainGrid = document.getElementById("holidayMainGrid");
+        const listContainer = document.getElementById("holidayListViewContainer");
+        const btnMonth = document.getElementById("btnViewMonth");
+        const btnList = document.getElementById("btnViewList");
+        const btnCal = document.getElementById("btnViewCalendar");
+
+        [btnMonth, btnList, btnCal].forEach(b => b.classList.remove("active"));
+
+        if (mode === "list") {
+            mainGrid.style.display = "none";
+            listContainer.style.display = "block";
+            btnList.classList.add("active");
+            renderHolidayListPagination(listCurrentPage);
+        } else if (mode === "month" || mode === "calendar") {
+            mainGrid.style.display = "grid";
+            listContainer.style.display = "none";
+            if (mode === "month") btnMonth.classList.add("active");
+            if (mode === "calendar") btnCal.classList.add("active");
+        }
+    }
+
+    function toggleYearDropdown(event) {
+        if (event) event.stopPropagation();
+        const menu = document.getElementById("yearDropdownMenu");
+        const chevron = document.getElementById("yearSelectChevron");
+        const isOpen = menu.classList.contains("open");
+
+        if (isOpen) {
+            menu.classList.remove("open");
+            if (chevron) chevron.style.transform = "rotate(0deg)";
+        } else {
+            menu.classList.add("open");
+            if (chevron) chevron.style.transform = "rotate(180deg)";
+        }
+    }
+
+    function selectHolidayYear(year) {
+        currentYear = year;
+        document.getElementById("selectedYearDisplay").textContent = year;
+
+        // Update all year options active state
+        document.querySelectorAll("#yearDropdownMenu .year-option-item").forEach(item => {
+            const yr = parseInt(item.textContent.trim());
+            if (yr === year) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+
+        // Update KPI subtext
+        const kpiSub = document.querySelector(".holiday-kpi-card .kpi-sub-text");
+        if (kpiSub) kpiSub.textContent = `In ${year}`;
+
+        // Close dropdown
+        const menu = document.getElementById("yearDropdownMenu");
+        const chevron = document.getElementById("yearSelectChevron");
+        if (menu) menu.classList.remove("open");
+        if (chevron) chevron.style.transform = "rotate(0deg)";
+
+        // Re-render calendar matrix for new year
+        renderCalendarGrid(currentYear, currentMonth);
+    }
+
+    // Close year dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+        const container = document.querySelector(".year-select-container");
+        const menu = document.getElementById("yearDropdownMenu");
+        const chevron = document.getElementById("yearSelectChevron");
+        if (container && !container.contains(e.target) && menu) {
+            menu.classList.remove("open");
+            if (chevron) chevron.style.transform = "rotate(0deg)";
+        }
+    });
+
+    function openAddHolidayModal() {
+        document.getElementById("addHolidayModal").style.display = "flex";
+    }
+
+    function closeAddHolidayModal() {
+        document.getElementById("addHolidayModal").style.display = "none";
+    }
+
+    function handleAddHolidaySubmit(e) {
+        e.preventDefault();
+        const title = document.getElementById("holidayTitleInput").value;
+        const dateVal = document.getElementById("holidayDateInput").value;
+        const category = document.getElementById("holidayCategoryInput").value;
+
+        ALL_HOLIDAYS.push({
+            name: title,
+            date: dateVal,
+            category: category,
+            color: category === "Public Holiday" ? "green" : (category === "Optional Holiday" ? "orange" : "purple"),
+            description: "Custom added company holiday."
+        });
+
+        renderCalendarGrid(currentYear, currentMonth);
+        closeAddHolidayModal();
+    }
+</script>
+{% endblock %}

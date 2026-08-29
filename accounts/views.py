@@ -3297,3 +3297,149 @@ def employees_export_pdf_view(request):
     return response
 
 
+@login_required
+def holidays_view(request):
+    today = timezone.localdate()
+    current_year = 2026
+
+    # 24 Structured Holidays for 2026 matching Company (12), Public (10), Optional (2)
+    holidays_list = [
+        {"name": "New Year's Day", "date": date(2026, 1, 1), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Global celebration marking the start of the year."},
+        {"name": "Makar Sankranti / Pongal", "date": date(2026, 1, 14), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Harvest festival celebrated across India."},
+        {"name": "Republic Day", "date": date(2026, 1, 26), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Honoring the Constitution of India."},
+        {"name": "Maha Shivaratri", "date": date(2026, 2, 16), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Hindu festival honouring Shiva."},
+        {"name": "Holi (Festival of Colours)", "date": date(2026, 3, 4), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Spring festival of colours."},
+        {"name": "Ugadi / Gudi Padwa", "date": date(2026, 3, 19), "category": "Optional Holiday", "type": "Optional Holiday", "color": "orange", "description": "Traditional New Year day for Deccan region."},
+        {"name": "Eid al-Fitr (Ramzan)", "date": date(2026, 3, 21), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Islamic festival celebrating end of Ramadan."},
+        {"name": "Good Friday", "date": date(2026, 4, 3), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Christian commemoration of crucifixion of Jesus."},
+        {"name": "Ambedkar Jayanti", "date": date(2026, 4, 14), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Dr. B. R. Ambedkar birthday commemoration."},
+        {"name": "Labour Day / May Day", "date": date(2026, 5, 1), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "International Workers' Day."},
+        {"name": "Buddha Purnima", "date": date(2026, 5, 31), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Commemorating birth of Gautama Buddha."},
+        {"name": "Bakrid / Eid al-Adha", "date": date(2026, 5, 27), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Feast of the Sacrifice."},
+        {"name": "Muharram", "date": date(2026, 6, 26), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Islamic New Year and remembrance."},
+        {"name": "Independence Day", "date": date(2026, 8, 15), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "National Independence Day."},
+        {"name": "Janmashtami", "date": date(2026, 8, 17), "category": "Optional Holiday", "type": "Optional Holiday", "color": "orange", "description": "Birth celebration of Lord Krishna."},
+        {"name": "Onam (Thiruvonam)", "date": date(2026, 8, 29), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Harvest festival of Kerala."},
+        {"name": "Teachers' Day", "date": date(2026, 9, 5), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "National observance celebrating educators."},
+        {"name": "Ganesh Chaturthi", "date": date(2026, 9, 2), "category": "Company Holiday", "type": "Company Holiday", "color": "red", "description": "Festival celebrating arrival of Ganesha."},
+        {"name": "Gandhi Jayanti", "date": date(2026, 10, 2), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Mahatma Gandhi birthday."},
+        {"name": "Maha Navami / Dussehra", "date": date(2026, 10, 20), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Vijayadashami celebration of victory."},
+        {"name": "Diwali (Deepavali)", "date": date(2026, 11, 8), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Festival of Lights."},
+        {"name": "Govardhan Puja", "date": date(2026, 11, 9), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Post-Diwali celebration."},
+        {"name": "Guru Nanak Jayanti", "date": date(2026, 11, 24), "category": "Public Holiday", "type": "Public Holiday", "color": "green", "description": "Birth anniversary of Guru Nanak Dev Ji."},
+        {"name": "Christmas Day", "date": date(2026, 12, 25), "category": "Company Holiday", "type": "Company Holiday", "color": "purple", "description": "Celebration of the birth of Jesus Christ."},
+    ]
+
+    total_holidays = len(holidays_list)
+    company_count = len([h for h in holidays_list if h["category"] == "Company Holiday"])
+    public_count = len([h for h in holidays_list if h["category"] == "Public Holiday"])
+    optional_count = len([h for h in holidays_list if h["category"] == "Optional Holiday"])
+
+    upcoming_holidays = []
+    past_holidays = []
+
+    for h in holidays_list:
+        h_date = h["date"]
+        h["formatted_date"] = h_date.strftime("%A, %d %B %Y")
+        h["day_name"] = h_date.strftime("%A")
+        h["month_name"] = h_date.strftime("%B")
+        h["month_abbr"] = h_date.strftime("%b").upper()
+        h["day_num"] = h_date.strftime("%d")
+        h["iso_date"] = h_date.strftime("%Y-%m-%d")
+        days_diff = (h_date - today).days
+        h["days_diff"] = days_diff
+
+        if days_diff < 0:
+            h["status"] = "past"
+            h["badge_text"] = "Completed"
+            past_holidays.append(h)
+        elif days_diff == 0:
+            h["status"] = "today"
+            h["badge_text"] = "Today"
+            upcoming_holidays.append(h)
+        else:
+            h["status"] = "upcoming"
+            h["badge_text"] = f"In {days_diff} Days" if days_diff > 1 else "Tomorrow"
+            upcoming_holidays.append(h)
+
+    # Highlighted upcoming list (e.g. next 5-6 upcoming holidays starting from August 2026)
+    highlight_upcoming = [
+        {"month_abbr": "AUG", "day_num": "15", "name": "Independence Day", "full_date": "Saturday, 15 August 2026", "category": "Public Holiday", "color": "green"},
+        {"month_abbr": "AUG", "day_num": "17", "name": "Janmashtami", "full_date": "Monday, 17 August 2026", "category": "Optional Holiday", "color": "orange"},
+        {"month_abbr": "AUG", "day_num": "29", "name": "Onam", "full_date": "Saturday, 29 August 2026", "category": "Company Holiday", "color": "purple"},
+        {"month_abbr": "SEP", "day_num": "05", "name": "Teachers' Day", "full_date": "Saturday, 05 September 2026", "category": "Public Holiday", "color": "green"},
+        {"month_abbr": "SEP", "day_num": "02", "name": "Ganesh Chaturthi", "full_date": "Wednesday, 02 September 2026", "category": "Company Holiday", "color": "red"},
+    ]
+
+    import json
+    holidays_json = json.dumps([
+        {
+            "name": h["name"],
+            "date": h["iso_date"],
+            "category": h["category"],
+            "color": h["color"],
+            "description": h["description"],
+            "full_date": h["formatted_date"],
+            "month_abbr": h["month_abbr"],
+            "day_num": h["day_num"]
+        }
+        for h in holidays_list
+    ])
+
+    context = {
+        "active_page": "holidays",
+        "holidays": holidays_list,
+        "holidays_json": holidays_json,
+        "upcoming_holidays": upcoming_holidays,
+        "highlight_upcoming": highlight_upcoming,
+        "total_holidays": total_holidays,
+        "company_count": company_count,
+        "public_count": public_count,
+        "optional_count": optional_count,
+        "current_year": current_year,
+    }
+    return render(request, "accounts/holidays.html", context)
+
+
+@login_required
+def payroll_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+    today = timezone.localdate()
+
+    # Generate recent 6 payslips based on employee profile salary
+    payslips = []
+    month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+    for i in range(6):
+        m_idx = (today.month - 1 - i) % 12
+        y = today.year if (today.month - 1 - i) >= 0 else (today.year - 1)
+        m_name = month_names[m_idx]
+
+        payslips.append({
+            "slip_id": f"PAY-{y}{m_idx+1:02d}-{request.user.id:04d}",
+            "month": m_name,
+            "year": y,
+            "period": f"{m_name} {y}",
+            "payment_date": f"28th {m_name} {y}",
+            "gross": profile.gross_monthly,
+            "deductions": profile.total_deductions_monthly,
+            "net_pay": profile.net_monthly,
+            "status": "Paid",
+            "working_days": 26,
+            "paid_days": 26,
+        })
+
+    context = {
+        "active_page": "payroll",
+        "profile": profile,
+        "payslips": payslips,
+        "latest_payslip": payslips[0] if payslips else None,
+        "annual_ctc": profile.ctc_annual,
+        "gross_monthly": profile.gross_monthly,
+        "net_monthly": profile.net_monthly,
+        "total_deductions": profile.total_deductions_monthly,
+    }
+    return render(request, "accounts/payroll.html", context)
+
+
+

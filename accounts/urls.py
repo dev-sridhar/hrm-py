@@ -37,7 +37,7 @@ urlpatterns = [
     path("tasks/<int:pk>/delete/", views.task_delete_view, name="task_delete"),
     path("tasks/export/excel/", views.tasks_export_excel_view, name="tasks_export_excel"),
 
-    # Applications - Leaves & Permissions
+    # Applications - Leaves, Permissions, Holidays & Payroll
     path("applications/leaves/", views.leaves_view, name="leaves"),
     path("applications/leaves/apply/", views.leave_apply_view, name="leave_apply"),
     path("applications/leaves/<int:pk>/status/", views.leave_status_update_view, name="leave_status_update"),
@@ -48,4 +48,6 @@ urlpatterns = [
     path("applications/permissions/<int:pk>/status/", views.permission_status_update_view, name="permission_status_update"),
     path("applications/permissions/<int:pk>/edit/", views.permission_edit_view, name="permission_edit"),
     path("applications/permissions/<int:pk>/delete/", views.permission_delete_view, name="permission_delete"),
+    path("applications/holidays/", views.holidays_view, name="holidays"),
+    path("applications/payroll/", views.payroll_view, name="payroll"),
 ]
