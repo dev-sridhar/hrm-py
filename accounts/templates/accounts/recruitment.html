@@ -1,0 +1,1118 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Recruitment Overview - Enterprise HRMS{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Top Tabs & Period Bar */
+    .recruit-top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .recruit-nav-pills {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--card-bg);
+        padding: 5px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
+
+    .recruit-pill-btn {
+        background: transparent;
+        border: none;
+        padding: 7px 16px;
+        border-radius: 9px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .recruit-pill-btn:hover {
+        color: var(--text-main);
+        background: var(--pill-gray);
+    }
+
+    .recruit-pill-btn.active {
+        background: #7c3aed;
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(124, 58, 237, 0.28);
+    }
+
+    .recruit-period-btn {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 8px 16px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-main);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .recruit-period-btn:hover {
+        border-color: #7c3aed;
+        background: var(--pill-gray);
+    }
+
+    /* 5 Top KPI Cards Grid */
+    .recruit-5kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .recruit-kpi-box {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .recruit-kpi-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .recruit-kpi-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .recruit-kpi-content h4 {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin: 0 0 3px;
+        white-space: nowrap;
+    }
+
+    .recruit-kpi-content .kpi-main-val {
+        font-size: 22px;
+        font-weight: 900;
+        line-height: 1.1;
+        margin-bottom: 3px;
+    }
+
+    .recruit-kpi-content .kpi-growth-text {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+    }
+
+    /* Middle 3 Analytics Columns */
+    .recruit-3cols-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .recruit-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .recruit-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    .recruit-panel-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* Candidates Pipeline Funnel */
+    .funnel-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 190px;
+    }
+
+    .funnel-svg-box {
+        flex: 1;
+        max-width: 170px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .funnel-legend-box {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        flex: 1;
+    }
+
+    .funnel-legend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11.5px;
+        font-weight: 700;
+    }
+
+    .funnel-legend-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+    }
+
+    .funnel-legend-pct {
+        color: var(--text-main);
+        font-weight: 800;
+    }
+
+    /* Openings by Department Donut */
+    .donut-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 190px;
+    }
+
+    .donut-chart-box {
+        position: relative;
+        width: 125px;
+        height: 125px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .donut-center-info {
+        position: absolute;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .donut-center-num {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--text-main);
+        line-height: 1;
+    }
+
+    .donut-center-lbl {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    .dept-legend-box {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        flex: 1;
+    }
+
+    .dept-legend-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11.5px;
+    }
+
+    .dept-legend-name {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .dept-legend-count {
+        color: var(--text-main);
+        font-weight: 800;
+    }
+
+    /* Time to Hire Line Chart */
+    .time-to-hire-stat {
+        margin-bottom: 10px;
+    }
+
+    .time-to-hire-val {
+        font-size: 22px;
+        font-weight: 900;
+        color: #7c3aed;
+        line-height: 1.1;
+    }
+
+    .time-to-hire-sub {
+        font-size: 11px;
+        font-weight: 700;
+        color: #10b981;
+        margin-top: 3px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Bottom 2 Columns Grid */
+    .recruit-bottom-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.15fr;
+        gap: 18px;
+    }
+
+    /* Recent Jobs Table */
+    .jobs-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 12.5px;
+    }
+
+    .jobs-table th {
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .jobs-table td {
+        padding: 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-main);
+        vertical-align: middle;
+    }
+
+    .jobs-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .jobs-table tr:hover td {
+        background: rgba(0,0,0,0.012);
+    }
+
+    .job-title-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .job-icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .job-main-title {
+        font-weight: 800;
+        color: var(--text-main);
+        font-size: 12.5px;
+    }
+
+    .job-sub-code {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .status-badge-pill {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+
+    .status-open {
+        background: #ecfdf5;
+        color: #10b981;
+        border: 1px solid #d1fae5;
+    }
+
+    .status-reviewing {
+        background: #fffbeb;
+        color: #f59e0b;
+        border: 1px solid #fef3c7;
+    }
+
+    .action-icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .action-icon-btn:hover {
+        background: var(--pill-gray);
+        color: #7c3aed;
+    }
+
+    /* Upcoming Interviews List */
+    .interview-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .interview-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        transition: all 0.15s ease;
+    }
+
+    .interview-item:hover {
+        background: var(--card-bg);
+        border-color: #7c3aed;
+    }
+
+    .interview-date-box {
+        text-align: center;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 6px 10px;
+        min-width: 44px;
+        flex-shrink: 0;
+    }
+
+    .interview-date-month {
+        font-size: 9.5px;
+        font-weight: 800;
+        color: #7c3aed;
+        text-transform: uppercase;
+        line-height: 1;
+    }
+
+    .interview-date-day {
+        font-size: 15px;
+        font-weight: 900;
+        color: var(--text-main);
+        line-height: 1.1;
+        margin-top: 2px;
+    }
+
+    .interview-info {
+        flex: 1;
+        margin-left: 12px;
+    }
+
+    .interview-name {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    .interview-role {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+
+    .interview-time-box {
+        text-align: right;
+    }
+
+    .interview-time {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    .interview-round {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #7c3aed;
+        font-size: 12.5px;
+        font-weight: 800;
+        text-decoration: none;
+        margin-top: 14px;
+        transition: gap 0.15s ease;
+    }
+
+    .view-all-link:hover {
+        gap: 9px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .recruit-5kpi-grid { grid-template-columns: repeat(3, 1fr); }
+        .recruit-3cols-grid { grid-template-columns: 1fr; }
+        .recruit-bottom-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .recruit-5kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+        .recruit-5kpi-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<!-- Top Nav Pills & Period Selector -->
+<div class="recruit-top-bar">
+    <div class="recruit-nav-pills">
+        <button type="button" class="recruit-pill-btn active" onclick="switchRecruitTab('overview', this)">Overview</button>
+        <button type="button" class="recruit-pill-btn" onclick="switchRecruitTab('jobs', this)">Job Openings</button>
+        <button type="button" class="recruit-pill-btn" onclick="switchRecruitTab('candidates', this)">Candidates</button>
+        <button type="button" class="recruit-pill-btn" onclick="switchRecruitTab('interviews', this)">Interviews</button>
+        <button type="button" class="recruit-pill-btn" onclick="switchRecruitTab('offers', this)">Offers</button>
+        <button type="button" class="recruit-pill-btn" onclick="switchRecruitTab('hired', this)">Hired</button>
+    </div>
+
+    <div>
+        <button type="button" class="recruit-period-btn" onclick="togglePeriodDropdown()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span id="recruitPeriodLabel">This Year (2026)</span>
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- 5 Top KPI Cards Grid -->
+<div class="recruit-5kpi-grid">
+    <!-- Total Job Openings -->
+    <div class="recruit-kpi-box">
+        <div class="recruit-kpi-avatar" style="background: #f5f3ff; color: #7c3aed;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+        </div>
+        <div class="recruit-kpi-content">
+            <h4>Total Job Openings</h4>
+            <div class="kpi-main-val" style="color: #7c3aed;">{{ kpi_metrics.total_jobs }}</div>
+            <div class="kpi-growth-text">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span>{{ kpi_metrics.total_jobs_growth }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Candidates -->
+    <div class="recruit-kpi-box">
+        <div class="recruit-kpi-avatar" style="background: #eff6ff; color: #2563eb;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+        </div>
+        <div class="recruit-kpi-content">
+            <h4>Total Candidates</h4>
+            <div class="kpi-main-val" style="color: #2563eb;">{{ kpi_metrics.total_candidates }}</div>
+            <div class="kpi-growth-text">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span>{{ kpi_metrics.total_candidates_growth }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interviews Scheduled -->
+    <div class="recruit-kpi-box">
+        <div class="recruit-kpi-avatar" style="background: #ecfdf5; color: #10b981;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path>
+            </svg>
+        </div>
+        <div class="recruit-kpi-content">
+            <h4>Interviews Scheduled</h4>
+            <div class="kpi-main-val" style="color: #10b981;">{{ kpi_metrics.interviews_scheduled }}</div>
+            <div class="kpi-growth-text">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span>{{ kpi_metrics.interviews_growth }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offers Extended -->
+    <div class="recruit-kpi-box">
+        <div class="recruit-kpi-avatar" style="background: #fffbeb; color: #f59e0b;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+        </div>
+        <div class="recruit-kpi-content">
+            <h4>Offers Extended</h4>
+            <div class="kpi-main-val" style="color: #f59e0b;">{{ kpi_metrics.offers_extended }}</div>
+            <div class="kpi-growth-text">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span>{{ kpi_metrics.offers_growth }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hired -->
+    <div class="recruit-kpi-box">
+        <div class="recruit-kpi-avatar" style="background: #fff1f2; color: #e11d48;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+        </div>
+        <div class="recruit-kpi-content">
+            <h4>Hired</h4>
+            <div class="kpi-main-val" style="color: #e11d48;">{{ kpi_metrics.hired }}</div>
+            <div class="kpi-growth-text">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                <span>{{ kpi_metrics.hired_growth }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Middle 3 Analytics Columns -->
+<div class="recruit-3cols-grid">
+    <!-- Card 1: Candidates Pipeline -->
+    <div class="recruit-panel">
+        <div class="recruit-panel-header">
+            <h3 class="recruit-panel-title">Candidates Pipeline</h3>
+        </div>
+        <div class="funnel-container">
+            <div class="funnel-svg-box">
+                <svg width="160" height="190" viewBox="0 0 160 190">
+                    <!-- Stage 1: Applied (Purple) -->
+                    <polygon points="10,5 150,5 136,39 24,39" fill="#6366f1" rx="4" />
+                    <text x="80" y="20" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle" font-family="inherit">256</text>
+                    <text x="80" y="32" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle" opacity="0.9" font-family="inherit">Applied</text>
+
+                    <!-- Stage 2: Screening (Blue) -->
+                    <polygon points="25,43 135,43 122,77 38,77" fill="#3b82f6" />
+                    <text x="80" y="58" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle" font-family="inherit">128</text>
+                    <text x="80" y="70" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle" opacity="0.9" font-family="inherit">Screening</text>
+
+                    <!-- Stage 3: Interview (Teal/Cyan) -->
+                    <polygon points="39,81 121,81 109,115 51,115" fill="#06b6d4" />
+                    <text x="80" y="96" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle" font-family="inherit">42</text>
+                    <text x="80" y="108" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle" opacity="0.9" font-family="inherit">Interview</text>
+
+                    <!-- Stage 4: Offered (Amber) -->
+                    <polygon points="52,119 108,119 97,151 63,151" fill="#f59e0b" />
+                    <text x="80" y="133" fill="#ffffff" font-size="11" font-weight="900" text-anchor="middle" font-family="inherit">11</text>
+                    <text x="80" y="145" fill="#ffffff" font-size="8.5" font-weight="700" text-anchor="middle" opacity="0.9" font-family="inherit">Offered</text>
+
+                    <!-- Stage 5: Hired (Rose/Red) -->
+                    <polygon points="64,155 96,155 88,185 72,185" fill="#e11d48" />
+                    <text x="80" y="169" fill="#ffffff" font-size="10" font-weight="900" text-anchor="middle" font-family="inherit">8</text>
+                    <text x="80" y="179" fill="#ffffff" font-size="7.5" font-weight="700" text-anchor="middle" opacity="0.9" font-family="inherit">Hired</text>
+                </svg>
+            </div>
+
+            <div class="funnel-legend-box">
+                {% for st in pipeline_stages %}
+                <div class="funnel-legend-row">
+                    <div class="funnel-legend-name">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ st.color }}; display: inline-block;"></span>
+                        <span>{{ st.name }}</span>
+                    </div>
+                    <span class="funnel-legend-pct">{{ st.percent }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Openings by Department -->
+    <div class="recruit-panel">
+        <div class="recruit-panel-header">
+            <h3 class="recruit-panel-title">Openings by Department</h3>
+        </div>
+        <div class="donut-container">
+            <div class="donut-chart-box">
+                <svg width="125" height="125" viewBox="0 0 140 140">
+                    <circle cx="70" cy="70" r="53.5" fill="none" stroke="var(--border)" stroke-width="17" />
+                    {% for dp in dept_openings %}
+                    <circle cx="70" cy="70" r="53.5" fill="none" stroke="{{ dp.color }}" stroke-width="17"
+                            stroke-dasharray="{{ dp.dasharray }}" stroke-dashoffset="{{ dp.dashoffset }}"
+                            stroke-linecap="round" transform="rotate(-90 70 70)" />
+                    {% endfor %}
+                </svg>
+                <div class="donut-center-info">
+                    <div class="donut-center-num">18</div>
+                    <div class="donut-center-lbl">Total</div>
+                </div>
+            </div>
+
+            <div class="dept-legend-box">
+                {% for dp in dept_openings %}
+                <div class="dept-legend-row">
+                    <div class="dept-legend-name">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: {{ dp.color }}; display: inline-block;"></span>
+                        <span>{{ dp.name }}</span>
+                    </div>
+                    <span class="dept-legend-count">{{ dp.count }} ({{ dp.percent }})</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Time to Hire (Avg) -->
+    <div class="recruit-panel">
+        <div class="recruit-panel-header">
+            <h3 class="recruit-panel-title">Time to Hire (Avg)</h3>
+            <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                Monthly
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+        </div>
+        <div class="time-to-hire-stat">
+            <div class="time-to-hire-val">28 <span style="font-size: 14px; font-weight: 700; color: var(--text-muted);">Days</span></div>
+            <div class="time-to-hire-sub">
+                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                <span>6 days from last year</span>
+            </div>
+        </div>
+
+        <!-- Monthly Line Chart SVG -->
+        <div style="width: 100%; overflow: hidden; margin-top: 10px;">
+            <svg width="100%" height="105" viewBox="0 0 560 145" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="timeHireGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.25" />
+                        <stop offset="100%" stop-color="#7c3aed" stop-opacity="0.0" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Gradient Fill Area -->
+                <path d="M 35,72 L 80,50 L 125,86 L 170,100 L 215,107 L 260,114 L 305,100 L 350,93 L 395,100 L 440,107 L 485,114 L 530,121 L 530,135 L 35,135 Z" fill="url(#timeHireGradient)" />
+
+                <!-- Trend Line -->
+                <path d="M 35,72 L 80,50 L 125,86 L 170,100 L 215,107 L 260,114 L 305,100 L 350,93 L 395,100 L 440,107 L 485,114 L 530,121" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+
+                <!-- Nodes & Values -->
+                <g>
+                    <!-- Jan -->
+                    <circle cx="35" cy="72" r="3.5" fill="#7c3aed" />
+                    <text x="35" y="60" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">32</text>
+                    <text x="35" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Jan</text>
+
+                    <!-- Feb -->
+                    <circle cx="80" cy="50" r="3.5" fill="#7c3aed" />
+                    <text x="80" y="38" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">35</text>
+                    <text x="80" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Feb</text>
+
+                    <!-- Mar -->
+                    <circle cx="125" cy="86" r="3.5" fill="#7c3aed" />
+                    <text x="125" y="74" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">30</text>
+                    <text x="125" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Mar</text>
+
+                    <!-- Apr -->
+                    <circle cx="170" cy="100" r="3.5" fill="#7c3aed" />
+                    <text x="170" y="88" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">28</text>
+                    <text x="170" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Apr</text>
+
+                    <!-- May -->
+                    <circle cx="215" cy="107" r="3.5" fill="#7c3aed" />
+                    <text x="215" y="95" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">27</text>
+                    <text x="215" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">May</text>
+
+                    <!-- Jun -->
+                    <circle cx="260" cy="114" r="3.5" fill="#7c3aed" />
+                    <text x="260" y="102" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">26</text>
+                    <text x="260" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Jun</text>
+
+                    <!-- Jul -->
+                    <circle cx="305" cy="100" r="3.5" fill="#7c3aed" />
+                    <text x="305" y="88" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">28</text>
+                    <text x="305" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Jul</text>
+
+                    <!-- Aug -->
+                    <circle cx="350" cy="93" r="3.5" fill="#7c3aed" />
+                    <text x="350" y="81" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">29</text>
+                    <text x="350" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Aug</text>
+
+                    <!-- Sep -->
+                    <circle cx="395" cy="100" r="3.5" fill="#7c3aed" />
+                    <text x="395" y="88" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">28</text>
+                    <text x="395" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Sep</text>
+
+                    <!-- Oct -->
+                    <circle cx="440" cy="107" r="3.5" fill="#7c3aed" />
+                    <text x="440" y="95" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">27</text>
+                    <text x="440" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Oct</text>
+
+                    <!-- Nov -->
+                    <circle cx="485" cy="114" r="3.5" fill="#7c3aed" />
+                    <text x="485" y="102" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">26</text>
+                    <text x="485" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Nov</text>
+
+                    <!-- Dec -->
+                    <circle cx="530" cy="121" r="3.5" fill="#7c3aed" />
+                    <text x="530" y="109" fill="var(--text-main)" font-size="10" font-weight="800" text-anchor="middle" font-family="inherit">25</text>
+                    <text x="530" y="142" fill="var(--text-muted)" font-size="9.5" font-weight="700" text-anchor="middle" font-family="inherit">Dec</text>
+                </g>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom 2 Columns Grid -->
+<div class="recruit-bottom-grid">
+    <!-- Left: Recent Job Openings Table -->
+    <div class="recruit-panel">
+        <div class="recruit-panel-header">
+            <h3 class="recruit-panel-title">Recent Job Openings</h3>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="jobs-table">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Department</th>
+                        <th>Location</th>
+                        <th>Openings</th>
+                        <th>Applied</th>
+                        <th>Status</th>
+                        <th>Posted On</th>
+                        <th style="text-align: center;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in recent_jobs %}
+                    <tr>
+                        <td>
+                            <div class="job-title-wrapper">
+                                <div class="job-icon-box" style="background: {{ job.icon_bg }}; color: {{ job.icon_color }};">
+                                    {% if job.icon_type == 'code' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    {% elif job.icon_type == 'palette' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4 5 5 0 015-5h4a2 2 0 002-2 3 3 0 013-3 2 2 0 012 2v1a5 5 0 01-5 5H9a2 2 0 00-2 2v2a1 1 0 01-1 1z"></path></svg>
+                                    {% elif job.icon_type == 'user' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    {% elif job.icon_type == 'layers' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                                    {% else %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <div class="job-main-title">{{ job.title }}</div>
+                                    <div class="job-sub-code">{{ job.id }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ job.department }}</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 4px; color: var(--text-muted); font-size: 11.5px; font-weight: 700;">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span>{{ job.location }}</span>
+                            </div>
+                        </td>
+                        <td><span style="font-weight: 800;">{{ job.openings }}</span></td>
+                        <td><span style="font-weight: 800;">{{ job.applied }}</span></td>
+                        <td><span class="status-badge-pill {{ job.status_class }}">{{ job.status }}</span></td>
+                        <td><span style="color: var(--text-muted); font-size: 11.5px; font-weight: 700;">{{ job.posted_on }}</span></td>
+                        <td>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                <button type="button" class="action-icon-btn" title="View Job Details" onclick="showJobDetails('{{ job.title|escapejs }}', '{{ job.id|escapejs }}', '{{ job.department|escapejs }}', '{{ job.location|escapejs }}', '{{ job.openings }}', '{{ job.applied }}', '{{ job.status }}', '{{ job.posted_on }}')">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                                <button type="button" class="action-icon-btn" title="More Options" onclick="showToast('Job requisition {{ job.id }} options ready.', 'info')">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="javascript:void(0)" class="view-all-link" onclick="showToast('Loading full Job Openings catalog...', 'info')">
+            <span>View All Job Openings</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+    </div>
+
+    <!-- Right: Upcoming Interviews -->
+    <div class="recruit-panel">
+        <div class="recruit-panel-header">
+            <h3 class="recruit-panel-title">Upcoming Interviews</h3>
+            <button type="button" class="recruit-period-btn" style="padding: 6px 12px; font-size: 11.5px; border-radius: 9px; color: #7c3aed; border-color: #ede9fe; background: #f5f3ff;" onclick="openCalendarModal()">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <span>View Calendar</span>
+            </button>
+        </div>
+
+        <div class="interview-list">
+            {% for itw in upcoming_interviews %}
+            <div class="interview-item">
+                <div class="interview-date-box">
+                    <div class="interview-date-month">{{ itw.month }}</div>
+                    <div class="interview-date-day">{{ itw.day }}</div>
+                </div>
+                <div class="interview-info">
+                    <div class="interview-name">{{ itw.candidate_name }}</div>
+                    <div class="interview-role">{{ itw.role }}</div>
+                </div>
+                <div class="interview-time-box">
+                    <div class="interview-time">{{ itw.time }}</div>
+                    <div class="interview-round">{{ itw.round }}</div>
+                </div>
+                <button type="button" class="action-icon-btn" style="margin-left: 6px;" title="Interview Details" onclick="showInterviewDetails('{{ itw.candidate_name|escapejs }}', '{{ itw.role|escapejs }}', '{{ itw.month }} {{ itw.day }}, 2026', '{{ itw.time }}', '{{ itw.round }}')">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a href="javascript:void(0)" class="view-all-link" onclick="openCalendarModal()">
+            <span>View All Interviews</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+    </div>
+</div>
+
+<!-- Modal: Job Details -->
+<div id="jobDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 440px; max-width: 90%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Job Position Details</h3>
+            <button type="button" onclick="closeJobDetailModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Position</span>
+                <span id="dtlJobTitle" style="font-weight: 800; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Job Requisition ID</span>
+                <span id="dtlJobCode" style="font-weight: 800; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Department</span>
+                <span id="dtlJobDept" style="font-weight: 700; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Work Location</span>
+                <span id="dtlJobLoc" style="font-weight: 700; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Open Positions</span>
+                <span id="dtlJobOpenings" style="font-weight: 800; color: #7c3aed;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Active Applicants</span>
+                <span id="dtlJobApplied" style="font-weight: 800; color: #2563eb;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Current Status</span>
+                <span id="dtlJobStatus" style="font-weight: 800; color: #10b981;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-bottom: 4px;">
+                <span style="color: var(--text-muted);">Posted Date</span>
+                <span id="dtlJobPosted" style="font-weight: 700; color: var(--text-main);"></span>
+            </div>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button" class="recruit-period-btn" onclick="closeJobDetailModal()" style="background: #7c3aed; color: #ffffff; border: none;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Interview Details -->
+<div id="interviewDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 420px; max-width: 90%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Scheduled Interview</h3>
+            <button type="button" onclick="closeInterviewDetailModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Candidate</span>
+                <span id="dtlItwCandidate" style="font-weight: 800; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Target Role</span>
+                <span id="dtlItwRole" style="font-weight: 700; color: var(--text-main);"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 8px;">
+                <span style="color: var(--text-muted);">Date & Time</span>
+                <span id="dtlItwDateTime" style="font-weight: 800; color: #7c3aed;"></span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding-bottom: 4px;">
+                <span style="color: var(--text-muted);">Interview Format</span>
+                <span id="dtlItwRound" style="font-weight: 800; color: #10b981;"></span>
+            </div>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button" class="recruit-period-btn" onclick="closeInterviewDetailModal()" style="background: #7c3aed; color: #ffffff; border: none;">Done</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Calendar Schedule -->
+<div id="calendarModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 90%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Recruitment Interview Calendar</h3>
+            <button type="button" onclick="closeCalendarModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px;">
+            <div style="background: var(--pill-gray); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 800; color: var(--text-main);">May 20, 2026 &bull; 10:00 AM</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Arun Kumar (Technical Round - Python Lead)</div>
+                </div>
+                <span class="status-badge-pill status-open">Confirmed</span>
+            </div>
+            <div style="background: var(--pill-gray); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 800; color: var(--text-main);">May 20, 2026 &bull; 11:30 AM</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Priya Sharma (Design Round - UI/UX)</div>
+                </div>
+                <span class="status-badge-pill status-open">Confirmed</span>
+            </div>
+            <div style="background: var(--pill-gray); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 800; color: var(--text-main);">May 21, 2026 &bull; 02:00 PM</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Vikram Singh (HR Interview - Product Manager)</div>
+                </div>
+                <span class="status-badge-pill status-open">Confirmed</span>
+            </div>
+            <div style="background: var(--pill-gray); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="font-weight: 800; color: var(--text-main);">May 21, 2026 &bull; 03:30 PM</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted);">Sneha Reddy (HR Round - HR Executive)</div>
+                </div>
+                <span class="status-badge-pill status-open">Confirmed</span>
+            </div>
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button" class="recruit-period-btn" onclick="closeCalendarModal()" style="background: #7c3aed; color: #ffffff; border: none;">Close Calendar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchRecruitTab(tabName, btn) {
+        document.querySelectorAll('.recruit-pill-btn').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        if (btn) {
+            btn.classList.add('active');
+        }
+        if (typeof window.showToast === 'function') {
+            window.showToast('Switched to ' + tabName.toUpperCase() + ' recruitment view.', 'info');
+        }
+    }
+
+    function togglePeriodDropdown() {
+        var lbl = document.getElementById('recruitPeriodLabel');
+        if (lbl.textContent === 'This Year (2026)') {
+            lbl.textContent = 'Q3 2026';
+        } else if (lbl.textContent === 'Q3 2026') {
+            lbl.textContent = 'All Time';
+        } else {
+            lbl.textContent = 'This Year (2026)';
+        }
+        if (typeof window.showToast === 'function') {
+            window.showToast('Recruitment period filtered to ' + lbl.textContent, 'info');
+        }
+    }
+
+    function showJobDetails(title, code, dept, loc, openings, applied, status, posted) {
+        document.getElementById('dtlJobTitle').textContent = title;
+        document.getElementById('dtlJobCode').textContent = code;
+        document.getElementById('dtlJobDept').textContent = dept;
+        document.getElementById('dtlJobLoc').textContent = loc;
+        document.getElementById('dtlJobOpenings').textContent = openings + ' Positions';
+        document.getElementById('dtlJobApplied').textContent = applied + ' Candidates';
+        document.getElementById('dtlJobStatus').textContent = status;
+        document.getElementById('dtlJobPosted').textContent = posted;
+        document.getElementById('jobDetailModal').style.display = 'flex';
+    }
+
+    function closeJobDetailModal() {
+        document.getElementById('jobDetailModal').style.display = 'none';
+    }
+
+    function showInterviewDetails(cand, role, date, time, round) {
+        document.getElementById('dtlItwCandidate').textContent = cand;
+        document.getElementById('dtlItwRole').textContent = role;
+        document.getElementById('dtlItwDateTime').textContent = date + ' at ' + time;
+        document.getElementById('dtlItwRound').textContent = round;
+        document.getElementById('interviewDetailModal').style.display = 'flex';
+    }
+
+    function closeInterviewDetailModal() {
+        document.getElementById('interviewDetailModal').style.display = 'none';
+    }
+
+    function openCalendarModal() {
+        document.getElementById('calendarModal').style.display = 'flex';
+    }
+
+    function closeCalendarModal() {
+        document.getElementById('calendarModal').style.display = 'none';
+    }
+</script>
+{% endblock %}

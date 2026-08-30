@@ -3843,3 +3843,1332 @@ def performance_view(request):
         **perf_data,
     }
     return render(request, "accounts/performance.html", context)
+
+
+def get_recruitment_data():
+    """
+    Centralized Recruitment & Talent Acquisition service.
+    Matches exact visual dataset and metrics from the executive recruitment design.
+    """
+    kpi_metrics = {
+        "total_jobs": 18,
+        "total_jobs_growth": "+12% from last year",
+        "total_candidates": 256,
+        "total_candidates_growth": "+18% from last year",
+        "interviews_scheduled": 42,
+        "interviews_growth": "+8% from last year",
+        "offers_extended": 11,
+        "offers_growth": "+10% from last year",
+        "hired": 8,
+        "hired_growth": "+14% from last year",
+        "avg_time_to_hire": 28,
+        "time_to_hire_diff": "-6 days from last year",
+    }
+
+    pipeline_stages = [
+        {"name": "Applied", "count": 256, "percent": "100%", "color": "#6366f1"},
+        {"name": "Screening", "count": 128, "percent": "50%", "color": "#3b82f6"},
+        {"name": "Interview", "count": 42, "percent": "16.4%", "color": "#06b6d4"},
+        {"name": "Offered", "count": 11, "percent": "4.3%", "color": "#f59e0b"},
+        {"name": "Hired", "count": 8, "percent": "3.1%", "color": "#e11d48"},
+    ]
+
+    dept_openings = [
+        {"name": "Engineering", "count": 7, "percent": "38.9%", "color": "#3b82f6", "dasharray": "130.6 205.1", "dashoffset": "0"},
+        {"name": "Product", "count": 4, "percent": "22.2%", "color": "#10b981", "dasharray": "74.6 261.1", "dashoffset": "-130.6"},
+        {"name": "Design", "count": 3, "percent": "16.7%", "color": "#f59e0b", "dasharray": "56.0 279.7", "dashoffset": "-205.2"},
+        {"name": "Marketing", "count": 2, "percent": "11.1%", "color": "#f97316", "dasharray": "37.3 298.4", "dashoffset": "-261.2"},
+        {"name": "Human Resources", "count": 1, "percent": "5.6%", "color": "#8b5cf6", "dasharray": "18.6 317.1", "dashoffset": "-298.5"},
+        {"name": "Finance", "count": 1, "percent": "5.6%", "color": "#ec4899", "dasharray": "18.6 317.1", "dashoffset": "-317.1"},
+    ]
+
+    monthly_time_to_hire = [
+        {"month": "Jan", "days": 32, "x": 35, "y": 72},
+        {"month": "Feb", "days": 35, "x": 80, "y": 50},
+        {"month": "Mar", "days": 30, "x": 125, "y": 86},
+        {"month": "Apr", "days": 28, "x": 170, "y": 100},
+        {"month": "May", "days": 27, "x": 215, "y": 107},
+        {"month": "Jun", "days": 26, "x": 260, "y": 114},
+        {"month": "Jul", "days": 28, "x": 305, "y": 100},
+        {"month": "Aug", "days": 29, "x": 350, "y": 93},
+        {"month": "Sep", "days": 28, "x": 395, "y": 100},
+        {"month": "Oct", "days": 27, "x": 440, "y": 107},
+        {"month": "Nov", "days": 26, "x": 485, "y": 114},
+        {"month": "Dec", "days": 25, "x": 530, "y": 121},
+    ]
+
+    recent_jobs = [
+        {
+            "id": "EMP-2026-001",
+            "title": "Senior Python Developer",
+            "department": "Engineering",
+            "location": "Chennai, India",
+            "openings": 3,
+            "applied": 45,
+            "status": "Open",
+            "status_class": "status-open",
+            "posted_on": "May 15, 2026",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "code",
+        },
+        {
+            "id": "EMP-2026-002",
+            "title": "UI/UX Designer",
+            "department": "Design",
+            "location": "Bangalore, India",
+            "openings": 2,
+            "applied": 28,
+            "status": "Open",
+            "status_class": "status-open",
+            "posted_on": "May 12, 2026",
+            "icon_bg": "#fdf2f8",
+            "icon_color": "#db2777",
+            "icon_type": "palette",
+        },
+        {
+            "id": "EMP-2026-003",
+            "title": "HR Executive",
+            "department": "Human Resources",
+            "location": "Chennai, India",
+            "openings": 1,
+            "applied": 16,
+            "status": "Reviewing",
+            "status_class": "status-reviewing",
+            "posted_on": "May 10, 2026",
+            "icon_bg": "#fff1f2",
+            "icon_color": "#e11d48",
+            "icon_type": "user",
+        },
+        {
+            "id": "EMP-2026-004",
+            "title": "Product Manager",
+            "department": "Product",
+            "location": "Bangalore, India",
+            "openings": 2,
+            "applied": 34,
+            "status": "Open",
+            "status_class": "status-open",
+            "posted_on": "May 08, 2026",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#2563eb",
+            "icon_type": "layers",
+        },
+        {
+            "id": "EMP-2026-005",
+            "title": "Digital Marketing Specialist",
+            "department": "Marketing",
+            "location": "Chennai, India",
+            "openings": 2,
+            "applied": 22,
+            "status": "Reviewing",
+            "status_class": "status-reviewing",
+            "posted_on": "May 05, 2026",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#d97706",
+            "icon_type": "speaker",
+        },
+    ]
+
+    upcoming_interviews = [
+        {
+            "month": "MAY",
+            "day": "20",
+            "candidate_name": "Arun Kumar",
+            "role": "Senior Python Developer",
+            "time": "10:00 AM",
+            "round": "Technical Round",
+        },
+        {
+            "month": "MAY",
+            "day": "20",
+            "candidate_name": "Priya Sharma",
+            "role": "UI/UX Designer",
+            "time": "11:30 AM",
+            "round": "Design Round",
+        },
+        {
+            "month": "MAY",
+            "day": "21",
+            "candidate_name": "Vikram Singh",
+            "role": "Product Manager",
+            "time": "02:00 PM",
+            "round": "HR Interview",
+        },
+        {
+            "month": "MAY",
+            "day": "21",
+            "candidate_name": "Sneha Reddy",
+            "role": "HR Executive",
+            "time": "03:30 PM",
+            "round": "HR Round",
+        },
+    ]
+
+    return {
+        "kpi_metrics": kpi_metrics,
+        "pipeline_stages": pipeline_stages,
+        "dept_openings": dept_openings,
+        "monthly_time_to_hire": monthly_time_to_hire,
+        "recent_jobs": recent_jobs,
+        "upcoming_interviews": upcoming_interviews,
+    }
+
+
+@login_required
+def recruitment_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        action_type = request.POST.get("action_type", "add_candidate")
+
+        if action_type == "post_job":
+            title = request.POST.get("job_title", "Software Engineer").strip()
+            dept = request.POST.get("department", "Engineering").strip()
+            openings = request.POST.get("openings", "1").strip()
+            msg = f"Job opening for {title} ({dept}, {openings} Openings) posted successfully."
+        else:
+            name = request.POST.get("candidate_name", "Candidate").strip()
+            role = request.POST.get("applied_role", "Developer").strip()
+            stage = request.POST.get("pipeline_stage", "Applied").strip()
+            msg = f"Candidate profile for {name} ({role} - {stage}) registered successfully."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("recruitment")
+
+    recruitment_data = get_recruitment_data()
+    context = {
+        "active_page": "recruitment",
+        "profile": profile,
+        **recruitment_data,
+    }
+    return render(request, "accounts/recruitment.html", context)
+
+
+# -------------------------------------------------------------------------
+# Management Modules: Announcements, Documents, Assets & Expenses
+# -------------------------------------------------------------------------
+
+@login_required
+def announcements_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        title = request.POST.get("title", "New Announcement").strip()
+        category = request.POST.get("category", "General").strip()
+        priority = request.POST.get("priority", "Normal").strip()
+        msg = f"Announcement '{title}' ({category} - {priority}) published to organization feed."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("announcements")
+
+    kpi_metrics = {
+        "total": 28,
+        "growth": "+15% from last month",
+        "active": 12,
+        "this_month": 7,
+        "departments": 6,
+    }
+
+    featured = {
+        "tag": "FEATURED",
+        "title": "Annual Company Summit 2026",
+        "description": "Get ready for our biggest annual event! Join us for 2 days of inspiration, learning, and celebration.",
+        "dates": "May 25 - May 26, 2026",
+        "time": "09:00 AM - 05:00 PM",
+        "location": "Grand Convention Center",
+        "slide_index": "1/5",
+    }
+
+    categories = [
+        {"name": "General", "count": 12, "icon_bg": "#f5f3ff", "icon_color": "#7c3aed", "icon_type": "speaker"},
+        {"name": "HR Policy", "count": 6, "icon_bg": "#ecfdf5", "icon_color": "#10b981", "icon_type": "shield"},
+        {"name": "Events", "count": 5, "icon_bg": "#fffbeb", "icon_color": "#f59e0b", "icon_type": "calendar"},
+        {"name": "Updates", "count": 3, "icon_bg": "#eff6ff", "icon_color": "#3b82f6", "icon_type": "bell"},
+        {"name": "Facilities", "count": 2, "icon_bg": "#fdf2f8", "icon_color": "#ec4899", "icon_type": "building"},
+    ]
+
+    recent_announcements = [
+        {
+            "id": 1,
+            "title": "Office Maintenance on May 20",
+            "is_important": True,
+            "publisher": "Admin",
+            "category": "Facilities",
+            "status": "Active",
+            "date": "May 18, 2026",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "speaker",
+        },
+        {
+            "id": 2,
+            "title": "New Leave Policy Effective from June 1",
+            "is_important": True,
+            "publisher": "HR Team",
+            "category": "HR Policy",
+            "status": "Active",
+            "date": "May 16, 2026",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "speaker",
+        },
+        {
+            "id": 3,
+            "title": "Team Outing Scheduled on May 25",
+            "is_important": False,
+            "publisher": "Admin",
+            "category": "Events",
+            "status": "Active",
+            "date": "May 15, 2026",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "calendar",
+        },
+        {
+            "id": 4,
+            "title": "Work From Home Guidelines",
+            "is_important": False,
+            "publisher": "HR Team",
+            "category": "Updates",
+            "status": "Active",
+            "date": "May 12, 2026",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "bell",
+        },
+        {
+            "id": 5,
+            "title": "Monthly Townhall Meeting",
+            "is_important": False,
+            "publisher": "Admin",
+            "category": "General",
+            "status": "Active",
+            "date": "May 10, 2026",
+            "icon_bg": "#fff1f2",
+            "icon_color": "#e11d48",
+            "icon_type": "building",
+        },
+    ]
+
+    quick_actions = [
+        {
+            "title": "Create Announcement",
+            "desc": "Publish a new announcement",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "plus",
+            "action_id": "create_ann",
+        },
+        {
+            "title": "Manage Categories",
+            "desc": "Organize announcement categories",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "grid",
+            "action_id": "manage_cat",
+        },
+        {
+            "title": "Announcement Analytics",
+            "desc": "View announcement statistics",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "chart",
+            "action_id": "analytics",
+        },
+        {
+            "title": "Scheduled Announcements",
+            "desc": "View scheduled announcements",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "calendar",
+            "action_id": "scheduled",
+        },
+    ]
+
+    context = {
+        "active_page": "announcements",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "featured": featured,
+        "categories": categories,
+        "recent_announcements": recent_announcements,
+        "quick_actions": quick_actions,
+    }
+    return render(request, "accounts/announcements.html", context)
+
+
+@login_required
+def documents_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        doc_name = request.POST.get("doc_name", "Corporate Document").strip()
+        category = request.POST.get("category", "HR Policies").strip()
+        msg = f"Document '{doc_name}' ({category}) uploaded to enterprise repository."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("documents")
+
+    kpi_metrics = {
+        "total_docs": 128,
+        "total_sub": "+18 this month",
+        "categories_count": 28,
+        "categories_sub": "Organized",
+        "storage_used": "4.2 GB",
+        "storage_total": "of 10 GB",
+        "downloads_count": 56,
+        "downloads_sub": "This month",
+        "restricted_count": 23,
+        "restricted_sub": "Secure",
+    }
+
+    storage_overview = {
+        "used": "4.2 GB",
+        "used_pct": "42%",
+        "used_num": 42,
+        "free": "5.8 GB",
+        "free_pct": "58%",
+    }
+
+    categories = [
+        {"name": "HR Policies", "count": 32, "icon_bg": "#f5f3ff", "icon_color": "#7c3aed", "icon_type": "briefcase"},
+        {"name": "Employee Docs", "count": 24, "icon_bg": "#ecfdf5", "icon_color": "#10b981", "icon_type": "user-doc"},
+        {"name": "Forms & Templates", "count": 18, "icon_bg": "#fffbeb", "icon_color": "#f59e0b", "icon_type": "form"},
+        {"name": "Company Docs", "count": 22, "icon_bg": "#eff6ff", "icon_color": "#3b82f6", "icon_type": "building"},
+        {"name": "Others", "count": 32, "icon_bg": "#fff1f2", "icon_color": "#e11d48", "icon_type": "archive"},
+    ]
+
+    recent_documents = [
+        {
+            "name": "Employee Handbook.pdf",
+            "category": "HR Policies",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "uploaded_by": "Test Administrator",
+            "date": "May 18, 2026",
+            "size": "2.4 MB",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+        },
+        {
+            "name": "Leave Policy.docx",
+            "category": "HR Policies",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "uploaded_by": "Test Administrator",
+            "date": "May 16, 2026",
+            "size": "1.8 MB",
+            "format": "DOC",
+            "format_bg": "#dbeafe",
+            "format_color": "#2563eb",
+        },
+        {
+            "name": "Salary Structure.xlsx",
+            "category": "Company Docs",
+            "category_bg": "#eff6ff",
+            "category_color": "#3b82f6",
+            "uploaded_by": "Test Administrator",
+            "date": "May 14, 2026",
+            "size": "856 KB",
+            "format": "XLS",
+            "format_bg": "#dcfce7",
+            "format_color": "#16a34a",
+        },
+        {
+            "name": "Code of Conduct.pdf",
+            "category": "Company Docs",
+            "category_bg": "#eff6ff",
+            "category_color": "#3b82f6",
+            "uploaded_by": "Test Administrator",
+            "date": "May 12, 2026",
+            "size": "1.2 MB",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+        },
+        {
+            "name": "PF Declaration Form.pdf",
+            "category": "Forms & Templates",
+            "category_bg": "#fffbeb",
+            "category_color": "#f59e0b",
+            "uploaded_by": "Test Administrator",
+            "date": "May 10, 2026",
+            "size": "623 KB",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+        },
+    ]
+
+    quick_actions = [
+        {
+            "title": "Upload Document",
+            "desc": "Add new document",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "upload",
+            "action_id": "upload_doc",
+        },
+        {
+            "title": "Create Category",
+            "desc": "Add a new category",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "folder-plus",
+            "action_id": "create_cat",
+        },
+        {
+            "title": "Request Document",
+            "desc": "Request document from employee",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "file-text",
+            "action_id": "request_doc",
+        },
+        {
+            "title": "Document Analytics",
+            "desc": "View document statistics",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "chart",
+            "action_id": "analytics",
+        },
+    ]
+
+    recent_activity = [
+        {
+            "title": "New document uploaded",
+            "target": "Salary Structure.xlsx",
+            "time": "2 min ago",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "upload",
+        },
+        {
+            "title": "Document downloaded",
+            "target": "Employee Handbook.pdf",
+            "time": "15 min ago",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "download",
+        },
+        {
+            "title": "New category created",
+            "target": "IT Policies",
+            "time": "1 hour ago",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "folder",
+        },
+        {
+            "title": "Document shared",
+            "target": "Leave Policy.docx",
+            "time": "2 hours ago",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "share",
+        },
+    ]
+
+    context = {
+        "active_page": "documents",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "storage_overview": storage_overview,
+        "categories": categories,
+        "recent_documents": recent_documents,
+        "quick_actions": quick_actions,
+        "recent_activity": recent_activity,
+    }
+    return render(request, "accounts/documents.html", context)
+
+
+@login_required
+def assets_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        asset_name = request.POST.get("asset_name", "Asset").strip()
+        category = request.POST.get("category", "Laptops").strip()
+        assigned_to = request.POST.get("assigned_to", "Not Assigned").strip()
+        msg = f"Asset '{asset_name}' ({category}) registered and assigned to {assigned_to}."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("assets")
+
+    kpi_metrics = {
+        "total_assets": 156,
+        "total_sub": "+12% from last month",
+        "assigned_assets": 92,
+        "assigned_sub": "+8% from last month",
+        "in_stock": 45,
+        "in_stock_sub": "+5% from last month",
+        "maintenance": 19,
+        "maintenance_sub": "-3% from last month",
+        "retired": 12,
+        "retired_sub": "-2% from last month",
+    }
+
+    category_distribution = {
+        "total": 156,
+        "categories": [
+            {"name": "Laptops", "count": 42, "pct": "26.9%", "color": "#7c3aed"},
+            {"name": "Monitors", "count": 34, "pct": "21.8%", "color": "#3b82f6"},
+            {"name": "Mobiles", "count": 28, "pct": "17.9%", "color": "#06b6d4"},
+            {"name": "Accessories", "count": 22, "pct": "14.1%", "color": "#f43f5e"},
+            {"name": "Peripherals", "count": 18, "pct": "11.5%", "color": "#f59e0b"},
+            {"name": "Others", "count": 12, "pct": "7.7%", "color": "#8b5cf6"},
+        ]
+    }
+
+    status_distribution = [
+        {"name": "Assigned", "count": 92, "pct": "59.0%", "color": "#10b981", "icon_bg": "#ecfdf5"},
+        {"name": "Available", "count": 45, "pct": "28.8%", "color": "#3b82f6", "icon_bg": "#eff6ff"},
+        {"name": "Maintenance", "count": 19, "pct": "12.2%", "color": "#f59e0b", "icon_bg": "#fffbeb"},
+        {"name": "Retired", "count": 12, "pct": "7.7%", "color": "#ef4444", "icon_bg": "#fef2f2"},
+    ]
+
+    inventory_items = [
+        {
+            "name": "MacBook Pro 16-inch",
+            "category": "Laptops",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "tag": "LAP-2024-001",
+            "assignee": "Rohit Mehta",
+            "designation": "Software Engineer",
+            "status": "Assigned",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "location": "IT Department",
+            "date": "Apr 10, 2024",
+            "icon_type": "laptop",
+        },
+        {
+            "name": "Dell UltraSharp 27-inch",
+            "category": "Monitors",
+            "category_bg": "#eff6ff",
+            "category_color": "#3b82f6",
+            "tag": "MON-2024-015",
+            "assignee": "Anita Deshmukh",
+            "designation": "UI/UX Designer",
+            "status": "Assigned",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "location": "Design Team",
+            "date": "Mar 18, 2024",
+            "icon_type": "monitor",
+        },
+        {
+            "name": "iPhone 15 Pro",
+            "category": "Mobiles",
+            "category_bg": "#ecfeff",
+            "category_color": "#06b6d4",
+            "tag": "MOB-2024-032",
+            "assignee": "Vikram Singh",
+            "designation": "Project Manager",
+            "status": "Assigned",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "location": "Management",
+            "date": "Jan 25, 2024",
+            "icon_type": "phone",
+        },
+        {
+            "name": "Logitech MX Master 3S",
+            "category": "Accessories",
+            "category_bg": "#fffbeb",
+            "category_color": "#f59e0b",
+            "tag": "ACC-2024-068",
+            "assignee": "Neha Kapoor",
+            "designation": "Product Designer",
+            "status": "Available",
+            "status_bg": "#eff6ff",
+            "status_color": "#3b82f6",
+            "location": "IT Store",
+            "date": "May 05, 2024",
+            "icon_type": "headphone",
+        },
+        {
+            "name": "Keychron K2 Keyboard",
+            "category": "Peripherals",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "tag": "PER-2024-074",
+            "assignee": None,
+            "designation": None,
+            "status": "Available",
+            "status_bg": "#eff6ff",
+            "status_color": "#3b82f6",
+            "location": "IT Store",
+            "date": "May 05, 2024",
+            "icon_type": "keyboard",
+        },
+        {
+            "name": "HP LaserJet Pro MFP",
+            "category": "Others",
+            "category_bg": "#f1f5f9",
+            "category_color": "#64748b",
+            "tag": "OTH-2024-089",
+            "assignee": None,
+            "designation": None,
+            "status": "Maintenance",
+            "status_bg": "#fffbeb",
+            "status_color": "#f59e0b",
+            "location": "Support Team",
+            "date": "May 12, 2024",
+            "icon_type": "printer",
+        },
+    ]
+
+    quick_actions = [
+        {
+            "title": "Add New Asset",
+            "desc": "Register a new company asset",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "plus",
+            "action_id": "new_asset",
+        },
+        {
+            "title": "Bulk Import Assets",
+            "desc": "Import multiple assets at once",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "import",
+            "action_id": "import_asset",
+        },
+        {
+            "title": "Assign Asset",
+            "desc": "Assign asset to an employee",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "user-check",
+            "action_id": "assign_asset",
+        },
+        {
+            "title": "Asset Reports",
+            "desc": "View detailed asset reports",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "report",
+            "action_id": "reports",
+        },
+    ]
+
+    recent_activity = [
+        {
+            "title": "New asset added",
+            "desc": "MacBook Pro 16-inch added",
+            "time": "2 min ago",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "plus",
+        },
+        {
+            "title": "Asset assigned",
+            "desc": "Dell UltraSharp 27-inch assigned to Anita Deshmukh",
+            "time": "15 min ago",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "check",
+        },
+        {
+            "title": "Asset under maintenance",
+            "desc": "HP LaserJet Pro MFP sent for maintenance",
+            "time": "1 hour ago",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "wrench",
+        },
+        {
+            "title": "Asset returned",
+            "desc": "iPhone 14 returned by Rahul Mehta",
+            "time": "2 hours ago",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "box",
+        },
+        {
+            "title": "Asset retired",
+            "desc": "Old Monitor (MON-2023-45) retired",
+            "time": "1 day ago",
+            "icon_bg": "#fef2f2",
+            "icon_color": "#ef4444",
+            "icon_type": "trash",
+        },
+    ]
+
+    context = {
+        "active_page": "assets",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "category_distribution": category_distribution,
+        "status_distribution": status_distribution,
+        "inventory_items": inventory_items,
+        "quick_actions": quick_actions,
+        "recent_activity": recent_activity,
+        "total_inventory_count": len(inventory_items),
+    }
+    return render(request, "accounts/assets.html", context)
+
+
+@login_required
+def expenses_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        title = request.POST.get("expense_title", "Expense Claim").strip()
+        category = request.POST.get("category", "Travel").strip()
+        amount = request.POST.get("amount", "0").strip()
+        msg = f"Expense claim '{title}' (₹ {amount} - {category}) submitted for manager approval."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("expenses")
+
+    kpi_metrics = {
+        "total_expenses": "₹ 12,45,320",
+        "total_sub": "+18.6% from last month",
+        "approved_amount": "₹ 9,82,700",
+        "approved_sub": "+16.3% from last month",
+        "pending_amount": "₹ 1,62,620",
+        "pending_sub": "-8.4% from last month",
+        "rejected_amount": "₹ 73,450",
+        "rejected_sub": "-4.7% from last month",
+        "total_claims": 128,
+        "claims_sub": "+21.2% from last month",
+    }
+
+    trend_months = [
+        {"month": "Jan", "val": "8.2L", "num": 8.2},
+        {"month": "Feb", "val": "9.1L", "num": 9.1},
+        {"month": "Mar", "val": "11.8L", "num": 11.8},
+        {"month": "Apr", "val": "10.2L", "num": 10.2},
+        {"month": "May", "val": "13.6L", "num": 13.6},
+        {"month": "Jun", "val": "12.45L", "num": 12.45},
+    ]
+
+    category_distribution = {
+        "total": "₹ 12,45,320",
+        "categories": [
+            {"name": "Travel", "amount": "₹ 4,25,600", "pct": "34.2%", "color": "#7c3aed"},
+            {"name": "Meals", "amount": "₹ 2,15,400", "pct": "17.3%", "color": "#3b82f6"},
+            {"name": "Accommodation", "amount": "₹ 1,85,750", "pct": "14.9%", "color": "#06b6d4"},
+            {"name": "Office Supplies", "amount": "₹ 1,35,200", "pct": "10.9%", "color": "#f59e0b"},
+            {"name": "Client Entertainment", "amount": "₹ 1,20,300", "pct": "9.7%", "color": "#10b981"},
+            {"name": "Others", "amount": "₹ 1,63,070", "pct": "13.0%", "color": "#ec4899"},
+        ]
+    }
+
+    approval_summary = {
+        "total": 128,
+        "items": [
+            {"name": "Approved", "count": 78, "pct": "60.9%", "color": "#10b981"},
+            {"name": "Pending", "count": 32, "pct": "25.0%", "color": "#f59e0b"},
+            {"name": "Rejected", "count": 12, "pct": "9.4%", "color": "#ef4444"},
+            {"name": "Reimbursed", "count": 6, "pct": "4.7%", "color": "#3b82f6"},
+        ]
+    }
+
+    recent_claims = [
+        {
+            "id": "EXP-2024-128",
+            "employee": "Rohit Mehta",
+            "designation": "Software Engineer",
+            "category": "Travel",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "category_icon": "airplane",
+            "date": "May 24, 2024",
+            "amount": "₹ 12,450",
+            "status": "Approved",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "payment_mode": "Corporate Card",
+            "payment_icon": "card",
+        },
+        {
+            "id": "EXP-2024-127",
+            "employee": "Anita Deshmukh",
+            "designation": "UI/UX Designer",
+            "category": "Meals",
+            "category_bg": "#fffbeb",
+            "category_color": "#f59e0b",
+            "category_icon": "utensils",
+            "date": "May 23, 2024",
+            "amount": "₹ 2,340",
+            "status": "Pending",
+            "status_bg": "#fffbeb",
+            "status_color": "#f59e0b",
+            "payment_mode": "Personal",
+            "payment_icon": "user",
+        },
+        {
+            "id": "EXP-2024-126",
+            "employee": "Vikram Singh",
+            "designation": "Project Manager",
+            "category": "Accommodation",
+            "category_bg": "#eff6ff",
+            "category_color": "#3b82f6",
+            "category_icon": "hotel",
+            "date": "May 22, 2024",
+            "amount": "₹ 8,750",
+            "status": "Approved",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "payment_mode": "Corporate Card",
+            "payment_icon": "card",
+        },
+        {
+            "id": "EXP-2024-125",
+            "employee": "Neha Kapoor",
+            "designation": "Product Designer",
+            "category": "Office Supplies",
+            "category_bg": "#ecfdf5",
+            "category_color": "#10b981",
+            "category_icon": "box",
+            "date": "May 21, 2024",
+            "amount": "₹ 1,850",
+            "status": "Approved",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "payment_mode": "UPI",
+            "payment_icon": "pen",
+        },
+        {
+            "id": "EXP-2024-124",
+            "employee": "Arjun Patel",
+            "designation": "Sales Executive",
+            "category": "Client Entertainment",
+            "category_bg": "#fff1f2",
+            "category_color": "#e11d48",
+            "category_icon": "users",
+            "date": "May 20, 2024",
+            "amount": "₹ 3,450",
+            "status": "Rejected",
+            "status_bg": "#fff1f2",
+            "status_color": "#e11d48",
+            "payment_mode": "Personal",
+            "payment_icon": "user",
+        },
+        {
+            "id": "EXP-2024-123",
+            "employee": "Priya Sharma",
+            "designation": "HR Executive",
+            "category": "Others",
+            "category_bg": "#ecfeff",
+            "category_color": "#06b6d4",
+            "category_icon": "dots",
+            "date": "May 19, 2024",
+            "amount": "₹ 1,320",
+            "status": "Approved",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+            "payment_mode": "UPI",
+            "payment_icon": "pen",
+        },
+    ]
+
+    quick_actions = [
+        {
+            "title": "Submit New Expense",
+            "desc": "Create a new expense claim",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "plus",
+            "action_id": "new_expense",
+        },
+        {
+            "title": "My Expenses",
+            "desc": "View my submitted expenses",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "file",
+            "action_id": "my_expenses",
+        },
+        {
+            "title": "Pending Approvals",
+            "desc": "Approve or reject expenses",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "clock",
+            "action_id": "pending_approvals",
+        },
+        {
+            "title": "Expense Reports",
+            "desc": "Generate expense reports",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "report",
+            "action_id": "reports",
+        },
+        {
+            "title": "Reimbursement Settings",
+            "desc": "Manage reimbursement rules",
+            "icon_bg": "#fdf2f8",
+            "icon_color": "#ec4899",
+            "icon_type": "settings",
+            "action_id": "settings",
+        },
+    ]
+
+    context = {
+        "active_page": "expenses",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "trend_months": trend_months,
+        "category_distribution": category_distribution,
+        "approval_summary": approval_summary,
+        "recent_claims": recent_claims,
+        "quick_actions": quick_actions,
+    }
+    return render(request, "accounts/expenses.html", context)
+
+
+# -------------------------------------------------------------------------
+# Reports & Analytics Modules
+# -------------------------------------------------------------------------
+
+@login_required
+def reports_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        report_name = request.POST.get("report_name", "Workforce Report").strip()
+        format_type = request.POST.get("format", "PDF").strip()
+        msg = f"Report '{report_name}' ({format_type}) generated and queued for export."
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({"status": "success", "message": msg})
+
+        messages.success(request, msg)
+        return redirect("reports")
+
+    kpi_metrics = {
+        "total_reports": 128,
+        "total_sub": "+18.5% from last month",
+        "generated_reports": 96,
+        "generated_sub": "+22.3% from last month",
+        "scheduled_reports": 18,
+        "scheduled_sub": "+12.0% from last month",
+        "downloads": 342,
+        "downloads_sub": "+28.7% from last month",
+        "data_sources": 24,
+        "data_sources_sub": "Active integrations",
+    }
+
+    report_categories = [
+        {"name": "Employee Reports", "count": 32, "icon_bg": "#f5f3ff", "icon_color": "#7c3aed", "icon_type": "user"},
+        {"name": "Attendance Reports", "count": 18, "icon_bg": "#ecfdf5", "icon_color": "#10b981", "icon_type": "clock"},
+        {"name": "Payroll Reports", "count": 16, "icon_bg": "#fffbeb", "icon_color": "#f59e0b", "icon_type": "card"},
+        {"name": "Leave Reports", "count": 14, "icon_bg": "#ecfeff", "icon_color": "#06b6d4", "icon_type": "calendar"},
+        {"name": "Performance Reports", "count": 12, "icon_bg": "#eff6ff", "icon_color": "#3b82f6", "icon_type": "chart"},
+        {"name": "Recruitment Reports", "count": 10, "icon_bg": "#f0f9ff", "icon_color": "#0ea5e9", "icon_type": "users"},
+        {"name": "Custom Reports", "count": 26, "icon_bg": "#fdf2f8", "icon_color": "#ec4899", "icon_type": "code"},
+    ]
+
+    category_analytics = {
+        "total": 128,
+        "breakdown": [
+            {"name": "Employee Reports", "count": 32, "pct": "25%", "color": "#7c3aed"},
+            {"name": "Attendance Reports", "count": 18, "pct": "14%", "color": "#10b981"},
+            {"name": "Payroll Reports", "count": 16, "pct": "12.5%", "color": "#f59e0b"},
+            {"name": "Leave Reports", "count": 14, "pct": "11%", "color": "#06b6d4"},
+            {"name": "Performance Reports", "count": 12, "pct": "9%", "color": "#3b82f6"},
+            {"name": "Recruitment Reports", "count": 10, "pct": "8%", "color": "#ec4899"},
+            {"name": "Custom Reports", "count": 26, "pct": "20.5%", "color": "#8b5cf6"},
+        ]
+    }
+
+    recent_reports = [
+        {
+            "name": "Employee Summary Report",
+            "category": "Employee",
+            "category_bg": "#f5f3ff",
+            "category_color": "#7c3aed",
+            "generated_by": "Test Administrator",
+            "date": "May 18, 2026 10:30 AM",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+        },
+        {
+            "name": "Monthly Attendance Report",
+            "category": "Attendance",
+            "category_bg": "#ecfdf5",
+            "category_color": "#10b981",
+            "generated_by": "Test Administrator",
+            "date": "May 18, 2026 09:15 AM",
+            "format": "Excel",
+            "format_bg": "#dcfce7",
+            "format_color": "#16a34a",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+        },
+        {
+            "name": "Payroll Summary Report",
+            "category": "Payroll",
+            "category_bg": "#fffbeb",
+            "category_color": "#f59e0b",
+            "generated_by": "Test Administrator",
+            "date": "May 17, 2026 04:45 PM",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+        },
+        {
+            "name": "Leave Analysis Report",
+            "category": "Leave",
+            "category_bg": "#eff6ff",
+            "category_color": "#3b82f6",
+            "generated_by": "Test Administrator",
+            "date": "May 17, 2026 11:20 AM",
+            "format": "Excel",
+            "format_bg": "#dcfce7",
+            "format_color": "#16a34a",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+        },
+        {
+            "name": "Performance Overview Report",
+            "category": "Performance",
+            "category_bg": "#fdf2f8",
+            "category_color": "#ec4899",
+            "generated_by": "Test Administrator",
+            "date": "May 16, 2026 03:10 PM",
+            "format": "PDF",
+            "format_bg": "#fee2e2",
+            "format_color": "#ef4444",
+            "icon_bg": "#fdf2f8",
+            "icon_color": "#ec4899",
+        },
+    ]
+
+    scheduled_reports = [
+        {
+            "name": "Weekly Attendance Report",
+            "frequency": "Weekly",
+            "next_run": "May 19, 2026 09:00 AM",
+            "recipients_count": 5,
+            "status": "Active",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+        },
+        {
+            "name": "Monthly Payroll Report",
+            "frequency": "Monthly",
+            "next_run": "Jun 01, 2026 10:00 AM",
+            "recipients_count": 3,
+            "status": "Active",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+        },
+        {
+            "name": "Leave Balance Report",
+            "frequency": "Monthly",
+            "next_run": "Jun 01, 2026 09:30 AM",
+            "recipients_count": 4,
+            "status": "Active",
+            "status_bg": "#ecfdf5",
+            "status_color": "#10b981",
+        },
+    ]
+
+    quick_actions = [
+        {
+            "title": "Generate Report",
+            "desc": "Create a new custom report",
+            "icon_bg": "#f5f3ff",
+            "icon_color": "#7c3aed",
+            "icon_type": "doc",
+            "action_id": "gen_report",
+        },
+        {
+            "title": "Report Builder",
+            "desc": "Build advanced reports",
+            "icon_bg": "#ecfdf5",
+            "icon_color": "#10b981",
+            "icon_type": "builder",
+            "action_id": "builder",
+        },
+        {
+            "title": "Data Export",
+            "desc": "Export data in bulk",
+            "icon_bg": "#fffbeb",
+            "icon_color": "#f59e0b",
+            "icon_type": "export",
+            "action_id": "export_data",
+        },
+        {
+            "title": "Report Settings",
+            "desc": "Manage report preferences",
+            "icon_bg": "#eff6ff",
+            "icon_color": "#3b82f6",
+            "icon_type": "settings",
+            "action_id": "settings",
+        },
+    ]
+
+    context = {
+        "active_page": "reports",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "report_categories": report_categories,
+        "category_analytics": category_analytics,
+        "recent_reports": recent_reports,
+        "scheduled_reports": scheduled_reports,
+        "quick_actions": quick_actions,
+    }
+    return render(request, "accounts/reports.html", context)
+
+
+@login_required
+def analytics_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
+
+    kpi_metrics = {
+        "total_employees": "1,248",
+        "emp_sub": "+12.5% from last month",
+        "active_employees": "1,150",
+        "active_sub": "+8.3% from last month",
+        "avg_attendance": "92.6%",
+        "att_sub": "+4.7% from last month",
+        "total_payroll": "₹ 1.82 Cr",
+        "payroll_sub": "+15.6% from last month",
+        "open_positions": "48",
+        "positions_sub": "-9.4% from last month",
+        "attrition_rate": "8.6%",
+        "attrition_sub": "-1.2% from last month",
+    }
+
+    growth_trend = {
+        "total": "1,248",
+        "growth_pct": "+18.6%",
+        "points": [
+            {"month": "Jan", "val": 850},
+            {"month": "Feb", "val": 900},
+            {"month": "Mar", "val": 940},
+            {"month": "Apr", "val": 980},
+            {"month": "May", "val": 1020},
+            {"month": "Jun", "val": 1062, "highlight": True},
+            {"month": "Jul", "val": 1110},
+            {"month": "Aug", "val": 1150},
+            {"month": "Sep", "val": 1180},
+            {"month": "Oct", "val": 1205},
+            {"month": "Nov", "val": 1225},
+            {"month": "Dec", "val": 1248},
+        ]
+    }
+
+    employees_by_dept = {
+        "total": "1,248",
+        "departments": [
+            {"name": "Engineering", "pct": "32%", "count": "399", "color": "#7c3aed"},
+            {"name": "Sales", "pct": "18%", "count": "225", "color": "#3b82f6"},
+            {"name": "HR", "pct": "12%", "count": "150", "color": "#06b6d4"},
+            {"name": "Marketing", "pct": "10%", "count": "125", "color": "#f59e0b"},
+            {"name": "Finance", "pct": "8%", "count": "100", "color": "#ef4444"},
+            {"name": "Operations", "pct": "7%", "count": "87", "color": "#10b981"},
+            {"name": "Others", "pct": "13%", "count": "162", "color": "#94a3b8"},
+        ]
+    }
+
+    attendance_heatmap = [
+        {"week": "W1", "days": [{"val": "94%", "status": "high"}, {"val": "95%", "status": "high"}, {"val": "92%", "status": "high"}, {"val": "91%", "status": "high"}, {"val": "96%", "status": "high"}]},
+        {"week": "W2", "days": [{"val": "93%", "status": "high"}, {"val": "90%", "status": "high"}, {"val": "89%", "status": "low"}, {"val": "95%", "status": "high"}, {"val": "94%", "status": "high"}]},
+        {"week": "W3", "days": [{"val": "96%", "status": "high"}, {"val": "97%", "status": "high"}, {"val": "94%", "status": "high"}, {"val": "93%", "status": "high"}, {"val": "95%", "status": "high"}]},
+        {"week": "W4", "days": [{"val": "91%", "status": "high"}, {"val": "88%", "status": "low"}, {"val": "87%", "status": "low"}, {"val": "92%", "status": "high"}, {"val": "90%", "status": "high"}]},
+        {"week": "W5", "days": [{"val": "95%", "status": "high"}, {"val": "96%", "status": "high"}, {"val": "93%", "status": "high"}, {"val": "94%", "status": "high"}, {"val": "97%", "status": "high"}]},
+    ]
+
+    payroll_trend = {
+        "total": "₹ 18.25 Cr",
+        "growth": "+16.8%",
+        "bars": [
+            {"month": "Jan", "h": 35},
+            {"month": "Feb", "h": 45},
+            {"month": "Mar", "h": 60},
+            {"month": "Apr", "h": 50},
+            {"month": "May", "h": 70},
+            {"month": "Jun", "h": 65},
+            {"month": "Jul", "h": 75},
+            {"month": "Aug", "h": 80},
+            {"month": "Sep", "h": 85},
+            {"month": "Oct", "h": 82},
+            {"month": "Nov", "h": 88},
+            {"month": "Dec", "h": 95},
+        ]
+    }
+
+    leave_summary = {
+        "total": 342,
+        "items": [
+            {"name": "Casual Leave", "count": 128, "pct": "37.4%", "color": "#7c3aed"},
+            {"name": "Sick Leave", "count": 86, "pct": "25.1%", "color": "#3b82f6"},
+            {"name": "Privilege Leave", "count": 64, "pct": "18.7%", "color": "#10b981"},
+            {"name": "Unpaid Leave", "count": 42, "pct": "12.3%", "color": "#f59e0b"},
+            {"name": "Maternity Leave", "count": 22, "pct": "6.5%", "color": "#ec4899"},
+        ]
+    }
+
+    performance_distribution = [
+        {"label": "Excellent", "pct": "32%", "val": 32},
+        {"label": "Good", "pct": "28%", "val": 28},
+        {"label": "Average", "pct": "20%", "val": 20},
+        {"label": "Below Average", "pct": "12%", "val": 12},
+        {"label": "Poor", "pct": "8%", "val": 8},
+    ]
+
+    workforce_summary = {
+        "male_count": "732 (58.7%)",
+        "male_pct": 58.7,
+        "female_count": "516 (41.3%)",
+        "female_pct": 41.3,
+        "avg_age": "29.6 Years",
+        "avg_tenure": "2.8 Years",
+    }
+
+    detailed_analytics = [
+        {"title": "Headcount Analysis", "desc": "View headcount trends", "icon_bg": "#f5f3ff", "icon_color": "#7c3aed", "icon_type": "users"},
+        {"title": "Attendance Analytics", "desc": "View attendance trends", "icon_bg": "#ecfdf5", "icon_color": "#10b981", "icon_type": "check"},
+        {"title": "Payroll Analytics", "desc": "View payroll insights", "icon_bg": "#fffbeb", "icon_color": "#f59e0b", "icon_type": "card"},
+        {"title": "Leave Analytics", "desc": "View leave patterns", "icon_bg": "#eff6ff", "icon_color": "#3b82f6", "icon_type": "doc"},
+        {"title": "Recruitment Analytics", "desc": "View hiring insights", "icon_bg": "#fdf2f8", "icon_color": "#ec4899", "icon_type": "users-plus"},
+        {"title": "Performance Analytics", "desc": "View performance data", "icon_bg": "#f5f3ff", "icon_color": "#6366f1", "icon_type": "chart"},
+    ]
+
+    context = {
+        "active_page": "analytics",
+        "profile": profile,
+        "kpi_metrics": kpi_metrics,
+        "growth_trend": growth_trend,
+        "employees_by_dept": employees_by_dept,
+        "attendance_heatmap": attendance_heatmap,
+        "payroll_trend": payroll_trend,
+        "leave_summary": leave_summary,
+        "performance_distribution": performance_distribution,
+        "workforce_summary": workforce_summary,
+        "detailed_analytics": detailed_analytics,
+    }
+    return render(request, "accounts/analytics.html", context)

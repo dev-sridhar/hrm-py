@@ -51,4 +51,15 @@ urlpatterns = [
     path("applications/holidays/", views.holidays_view, name="holidays"),
     path("applications/payroll/", views.payroll_view, name="payroll"),
     path("applications/performance/", views.performance_view, name="performance"),
+    path("applications/recruitment/", views.recruitment_view, name="recruitment"),
+
+    # Management - Announcements, Documents, Assets & Expenses
+    path("management/announcements/", views.announcements_view, name="announcements"),
+    path("management/documents/", views.documents_view, name="documents"),
+    path("management/assets/", views.assets_view, name="assets"),
+    path("management/expenses/", views.expenses_view, name="expenses"),
+
+    # Reports - Reports & Analytics
+    path("reports/reports/", views.reports_view, name="reports"),
+    path("reports/analytics/", views.analytics_view, name="analytics"),
 ]

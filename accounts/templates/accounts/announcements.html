@@ -1,0 +1,946 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Announcements - Enterprise HRMS{% endblock %}
+
+{% block dashboard_content %}
+<style>
+    /* Top Header Bar */
+    .ann-header-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .ann-header-title h2 {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ann-header-title p {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin: 3px 0 0;
+    }
+
+    .btn-new-ann {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px var(--primary-shadow);
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .btn-new-ann:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px var(--primary-shadow);
+    }
+
+    /* Layout Main Grid */
+    .ann-layout-grid {
+        display: grid;
+        grid-template-columns: 2.1fr 1fr;
+        gap: 20px;
+    }
+
+    .ann-left-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .ann-right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* 4 Top KPI Cards Grid */
+    .ann-4kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .ann-kpi-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ann-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    }
+
+    .ann-kpi-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ann-kpi-info h4 {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin: 0 0 2px;
+        white-space: nowrap;
+    }
+
+    .ann-kpi-info .kpi-val {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--text-main);
+        line-height: 1.1;
+    }
+
+    .ann-kpi-info .kpi-sub {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: #10b981;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+    }
+
+    /* Featured Announcement Hero Card */
+    .featured-hero-card {
+        background: radial-gradient(circle at 85% 50%, var(--primary) 0%, #1e1b4b 65%, #0f172a 100%);
+        border-radius: 20px;
+        padding: 26px 30px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+    }
+
+    .featured-badge-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .featured-tag-pill {
+        background: #f59e0b;
+        color: #ffffff;
+        font-size: 10.5px;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .featured-carousel-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .carousel-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.15s ease;
+    }
+
+    .carousel-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    .featured-title {
+        font-size: 22px;
+        font-weight: 900;
+        margin: 0 0 8px;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .featured-desc {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.5;
+        max-width: 480px;
+        margin: 0 0 18px;
+    }
+
+    .featured-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .featured-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 700;
+    }
+
+    .btn-featured-action {
+        background: #ffffff;
+        color: var(--text-main);
+        border: none;
+        border-radius: 10px;
+        padding: 9px 18px;
+        font-size: 12.5px;
+        font-weight: 800;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        transition: transform 0.15s ease;
+    }
+
+    .btn-featured-action:hover {
+        transform: translateY(-1px);
+        background: #f8fafc;
+    }
+
+    /* 3D Speaker Illustration */
+    .featured-illustration {
+        position: absolute;
+        right: 24px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 170px;
+        height: 170px;
+        pointer-events: none;
+        opacity: 0.95;
+    }
+
+    /* Standard Card Container */
+    .ann-panel {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .ann-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+    }
+
+    .ann-panel-title {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--text-main);
+        margin: 0;
+    }
+
+    /* Category List Items */
+    .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .category-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 12px;
+        border-radius: 12px;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+
+    .category-item:hover {
+        background: var(--card-bg);
+        border-color: var(--primary);
+        transform: translateX(2px);
+    }
+
+    .category-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .category-icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .category-name {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    .category-count {
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-muted);
+    }
+
+    /* Recent Announcements Feed */
+    .recent-ann-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .recent-ann-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        transition: all 0.15s ease;
+        gap: 12px;
+    }
+
+    .recent-ann-item:hover {
+        background: var(--card-bg);
+        border-color: var(--primary);
+    }
+
+    .recent-ann-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex: 1;
+    }
+
+    .recent-ann-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .recent-ann-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .important-badge {
+        color: #e11d48;
+        font-size: 11px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .recent-ann-sub {
+        font-size: 11.5px;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    .status-active-pill {
+        background: #ecfdf5;
+        color: #10b981;
+        border: 1px solid #a7f3d0;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 6px;
+    }
+
+    .recent-ann-date {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+    }
+
+    .menu-icon-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .menu-icon-btn:hover {
+        background: var(--card-bg);
+        color: var(--primary);
+    }
+
+    /* Quick Actions */
+    .quick-actions-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quick-action-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+
+    .quick-action-item:hover {
+        background: var(--card-bg);
+        border-color: var(--primary);
+        transform: translateX(2px);
+    }
+
+    .quick-action-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .quick-action-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .quick-action-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--text-main);
+    }
+
+    .quick-action-desc {
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 700;
+        margin-top: 1px;
+    }
+
+    .view-all-purple-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--primary);
+        font-size: 12.5px;
+        font-weight: 800;
+        text-decoration: none;
+        margin-top: 14px;
+        cursor: pointer;
+        transition: gap 0.15s ease;
+    }
+
+    .view-all-purple-link:hover {
+        gap: 9px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .ann-layout-grid { grid-template-columns: 1fr; }
+        .ann-4kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .featured-illustration { display: none; }
+    }
+
+    @media (max-width: 640px) {
+        .ann-4kpi-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<!-- Top Header Bar -->
+<div class="ann-header-bar">
+    <div class="ann-header-title">
+        <h2>
+            <span>Announcements</span>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.69-2.7a2 2 0 112.83-2.83 2 2 0 01-2.83 2.83z"></path>
+            </svg>
+        </h2>
+        <p>Stay updated with company news, important updates and events.</p>
+    </div>
+    <button type="button" class="btn-new-ann" onclick="openNewAnnouncementModal()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span>New Announcement</span>
+    </button>
+</div>
+
+<!-- Main Layout Grid -->
+<div class="ann-layout-grid">
+    <!-- Left Column -->
+    <div class="ann-left-col">
+        <!-- 4 Top KPI Cards Grid -->
+        <div class="ann-4kpi-grid">
+            <!-- Total Announcements -->
+            <div class="ann-kpi-card">
+                <div class="ann-kpi-avatar" style="background: var(--pill-purple); color: var(--primary);">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                </div>
+                <div class="ann-kpi-info">
+                    <div class="kpi-val" style="color: var(--primary);">{{ kpi_metrics.total }}</div>
+                    <h4>Total Announcements</h4>
+                    <div class="kpi-sub">
+                        <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+                        <span>{{ kpi_metrics.growth }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active -->
+            <div class="ann-kpi-card">
+                <div class="ann-kpi-avatar" style="background: #ecfdf5; color: #10b981;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div class="ann-kpi-info">
+                    <div class="kpi-val" style="color: #10b981;">{{ kpi_metrics.active }}</div>
+                    <h4>Active</h4>
+                    <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">Currently active</div>
+                </div>
+            </div>
+
+            <!-- This Month -->
+            <div class="ann-kpi-card">
+                <div class="ann-kpi-avatar" style="background: #fffbeb; color: #f59e0b;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                </div>
+                <div class="ann-kpi-info">
+                    <div class="kpi-val" style="color: #f59e0b;">{{ kpi_metrics.this_month }}</div>
+                    <h4>This Month</h4>
+                    <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">New announcements</div>
+                </div>
+            </div>
+
+            <!-- Departments -->
+            <div class="ann-kpi-card">
+                <div class="ann-kpi-avatar" style="background: #eff6ff; color: #3b82f6;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <div class="ann-kpi-info">
+                    <div class="kpi-val" style="color: #3b82f6;">{{ kpi_metrics.departments }}</div>
+                    <h4>Departments</h4>
+                    <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">Published to</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Announcement Hero Card -->
+        <div class="featured-hero-card">
+            <div class="featured-badge-row">
+                <span class="featured-tag-pill">
+                    <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    <span>FEATURED</span>
+                </span>
+                <div class="featured-carousel-controls">
+                    <button type="button" class="carousel-btn" onclick="prevFeaturedSlide()">&lsaquo;</button>
+                    <button type="button" class="carousel-btn" onclick="nextFeaturedSlide()">&rsaquo;</button>
+                    <span style="font-size: 11.5px; font-weight: 800; opacity: 0.9; margin-left: 4px;">{{ featured.slide_index }}</span>
+                </div>
+            </div>
+
+            <h3 class="featured-title">
+                <span>{{ featured.title }}</span>
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #f59e0b;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.69-2.7a2 2 0 112.83-2.83 2 2 0 01-2.83 2.83z"></path>
+                </svg>
+            </h3>
+            <p class="featured-desc">{{ featured.description }}</p>
+
+            <div class="featured-meta-row">
+                <div class="featured-meta-item">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>{{ featured.dates }}</span>
+                </div>
+                <div class="featured-meta-item">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span>{{ featured.time }}</span>
+                </div>
+                <div class="featured-meta-item">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>{{ featured.location }}</span>
+                </div>
+            </div>
+
+            <button type="button" class="btn-featured-action" onclick="showToast('Annual Company Summit 2026 registration details opened.', 'info')">
+                <span>View Details</span>
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+
+            <!-- 3D Megaphone Vector Art -->
+            <div class="featured-illustration">
+                <svg width="170" height="170" viewBox="0 0 200 200" fill="none">
+                    <defs>
+                        <linearGradient id="coneGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                            <stop offset="100%" stop-color="#cbd5e1" stop-opacity="0.9" />
+                        </linearGradient>
+                        <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="var(--primary)" />
+                            <stop offset="100%" stop-color="#4338ca" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Sound Sparkles & Lightning -->
+                    <path d="M 40,45 L 25,60 L 35,62 L 20,80" stroke="#fde047" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M 60,140 L 45,155 L 55,157 L 40,175" stroke="#f472b6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                    <circle cx="160" cy="40" r="3" fill="#38bdf8" />
+                    <circle cx="175" cy="150" r="3.5" fill="#facc15" />
+
+                    <!-- Speaker Body -->
+                    <path d="M 90,80 L 140,55 L 140,145 L 90,120 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+                    <!-- Front Cone Ring -->
+                    <ellipse cx="140" cy="100" rx="14" ry="45" fill="url(#coneGrad)" />
+                    <ellipse cx="140" cy="100" rx="8" ry="32" fill="#312e81" />
+                    <!-- Back Grip -->
+                    <path d="M 90,80 C 80,80 70,88 70,100 C 70,112 80,120 90,120 Z" fill="#6366f1" />
+                    <!-- Handle -->
+                    <path d="M 85,115 L 75,150 C 73,156 78,162 84,160 L 98,155 L 102,118 Z" fill="url(#bodyGrad)" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Recent Announcements Feed -->
+        <div class="ann-panel">
+            <div class="ann-panel-header">
+                <h3 class="ann-panel-title">Recent Announcements</h3>
+                <button type="button" class="btn-sidebar-settings" style="padding: 5px 12px; font-size: 11.5px; border-radius: 8px; width: auto; height: auto;" onclick="showToast('Showing all announcements archive...', 'info')">View All</button>
+            </div>
+
+            <div class="recent-ann-list">
+                {% for r in recent_announcements %}
+                <div class="recent-ann-item">
+                    <div class="recent-ann-left">
+                        <div class="recent-ann-icon" style="background: {{ r.icon_bg }}; color: {{ r.icon_color }};">
+                            {% if r.icon_type == 'speaker' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                            {% elif r.icon_type == 'calendar' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            {% elif r.icon_type == 'bell' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            {% else %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="recent-ann-title">
+                                <span>{{ r.title }}</span>
+                                {% if r.is_important %}
+                                <span class="important-badge">
+                                    <svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                    Important
+                                </span>
+                                {% endif %}
+                            </div>
+                            <div class="recent-ann-sub">Published by {{ r.publisher }} &bull; {{ r.category }}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <span class="status-active-pill">{{ r.status }}</span>
+                        <div class="recent-ann-date">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span>{{ r.date }}</span>
+                        </div>
+                        <button type="button" class="menu-icon-btn" title="Options" onclick="showToast('Announcement options ready.', 'info')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <a href="javascript:void(0)" class="view-all-purple-link" onclick="showToast('Opening full announcements roster...', 'info')">
+                <span>View All Announcements</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="ann-right-col">
+        <!-- Announcement Categories -->
+        <div class="ann-panel">
+            <div class="ann-panel-header">
+                <h3 class="ann-panel-title">Announcement Categories</h3>
+            </div>
+            <div class="category-list">
+                {% for c in categories %}
+                <div class="category-item" onclick="showToast('Filtered by {{ c.name }} category.', 'info')">
+                    <div class="category-left">
+                        <div class="category-icon-box" style="background: {{ c.icon_bg }}; color: {{ c.icon_color }};">
+                            {% if c.icon_type == 'speaker' %}
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                            {% elif c.icon_type == 'shield' %}
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            {% elif c.icon_type == 'calendar' %}
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            {% elif c.icon_type == 'bell' %}
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            {% else %}
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            {% endif %}
+                        </div>
+                        <span class="category-name">{{ c.name }}</span>
+                    </div>
+                    <span class="category-count">{{ c.count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="javascript:void(0)" class="view-all-purple-link" onclick="openCategoriesModal()">
+                <span>View All Categories</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="ann-panel">
+            <div class="ann-panel-header">
+                <h3 class="ann-panel-title">Quick Actions</h3>
+            </div>
+            <div class="quick-actions-list">
+                {% for q in quick_actions %}
+                <div class="quick-action-item" onclick="handleQuickAction('{{ q.action_id }}')">
+                    <div class="quick-action-left">
+                        <div class="quick-action-icon" style="background: {{ q.icon_bg }}; color: {{ q.icon_color }};">
+                            {% if q.icon_type == 'plus' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                            {% elif q.icon_type == 'grid' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            {% elif q.icon_type == 'chart' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                            {% else %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <div class="quick-action-title">{{ q.title }}</div>
+                            <div class="quick-action-desc">{{ q.desc }}</div>
+                        </div>
+                    </div>
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: New Announcement -->
+<div id="newAnnouncementModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 500px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Create Announcement</h3>
+                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Broadcast news, event, or policy updates.</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeNewAnnouncementModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <form id="announcementForm" onsubmit="submitAnnouncement(event)">
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Announcement Title *</label>
+                    <input type="text" id="annTitle" class="perf-search-input" style="padding-left: 12px;" required placeholder="Headline...">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Category</label>
+                        <select id="annCategory" class="perf-search-input" style="padding-left: 12px; cursor: pointer;">
+                            <option>General</option>
+                            <option>HR Policy</option>
+                            <option>Events</option>
+                            <option>Updates</option>
+                            <option>Facilities</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Priority</label>
+                        <select id="annPriority" class="perf-search-input" style="padding-left: 12px; cursor: pointer;">
+                            <option>Normal</option>
+                            <option>High Priority</option>
+                            <option>Important</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Content / Details *</label>
+                    <textarea id="annContent" class="perf-search-input" style="padding: 10px 12px; height: 90px; resize: vertical;" required placeholder="Write announcement description..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; border-top: 1px solid var(--border); padding-top: 16px;">
+                <button type="button" class="btn-perf-filter" onclick="closeNewAnnouncementModal()">Cancel</button>
+                <button type="submit" class="btn-new-ann">Publish to Feed</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Categories -->
+<div id="categoriesModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(3px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 440px; max-width: 90%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Announcement Categories</h3>
+            <button type="button" onclick="closeCategoriesModal()" style="background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div class="category-list">
+            {% for c in categories %}
+            <div class="category-item">
+                <div class="category-left">
+                    <div class="category-icon-box" style="background: {{ c.icon_bg }}; color: {{ c.icon_color }};">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="category-name">{{ c.name }}</span>
+                </div>
+                <span class="category-count">{{ c.count }} Announcements</span>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="margin-top: 20px; text-align: right;">
+            <button type="button" class="btn-new-ann" onclick="closeCategoriesModal()" style="padding: 7px 16px; font-size: 12px;">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openNewAnnouncementModal() {
+        document.getElementById('newAnnouncementModal').style.display = 'flex';
+    }
+    function closeNewAnnouncementModal() {
+        document.getElementById('newAnnouncementModal').style.display = 'none';
+    }
+    function openCategoriesModal() {
+        document.getElementById('categoriesModal').style.display = 'flex';
+    }
+    function closeCategoriesModal() {
+        document.getElementById('categoriesModal').style.display = 'none';
+    }
+
+    function handleQuickAction(actionId) {
+        if (actionId === 'create_ann') {
+            openNewAnnouncementModal();
+        } else if (actionId === 'manage_cat') {
+            openCategoriesModal();
+        } else if (actionId === 'analytics') {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Announcement engagement: 98.4% read rate, 240 active viewers.', 'info');
+            }
+        } else if (actionId === 'scheduled') {
+            if (typeof window.showToast === 'function') {
+                window.showToast('2 scheduled announcements queued for next week.', 'info');
+            }
+        }
+    }
+
+    function prevFeaturedSlide() {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Showing previous featured announcement.', 'info');
+        }
+    }
+    function nextFeaturedSlide() {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Showing next featured announcement.', 'info');
+        }
+    }
+
+    function submitAnnouncement(e) {
+        e.preventDefault();
+        var title = document.getElementById('annTitle').value;
+        var cat = document.getElementById('annCategory').value;
+        var prio = document.getElementById('annPriority').value;
+        closeNewAnnouncementModal();
+
+        var formData = new FormData();
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        formData.append('title', title);
+        formData.append('category', cat);
+        formData.append('priority', prio);
+        formData.append('ajax', '1');
+
+        fetch('{% url "announcements" %}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).catch(function(err) { console.error(err); });
+
+        if (typeof window.showToast === 'function') {
+            window.showToast('Announcement "' + title + '" published to feed successfully.', 'success');
+        }
+        document.getElementById('announcementForm').reset();
+    }
+</script>
+{% endblock %}
