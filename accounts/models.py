@@ -324,3 +324,27 @@ class EmployeeProfile(models.Model):
     @property
     def net_monthly(self):
         return self.gross_monthly - self.total_deductions_monthly
+
+
+class PerformanceReview(models.Model):
+    user = models.ForeignKey(
+        UserModel,
+        on_delete=models.CASCADE,
+        related_name="performance_reviews",
+    )
+    reviewer_name = models.CharField(max_length=100, default="System Administrator")
+    department = models.CharField(max_length=100, default="Engineering")
+    designation = models.CharField(max_length=100, default="Software Engineer")
+    review_cycle = models.CharField(max_length=100, default="Q3 2026 - Annual Appraisal")
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=4.5)
+    status = models.CharField(max_length=50, default="Excellent")
+    comments = models.TextField(blank=True, default="")
+    review_date = models.DateField(default=timezone.localdate)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-rating", "-review_date"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.rating} ({self.status})"

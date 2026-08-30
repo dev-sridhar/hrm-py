@@ -50,4 +50,5 @@ urlpatterns = [
     path("applications/permissions/<int:pk>/delete/", views.permission_delete_view, name="permission_delete"),
     path("applications/holidays/", views.holidays_view, name="holidays"),
     path("applications/payroll/", views.payroll_view, name="payroll"),
+    path("applications/performance/", views.performance_view, name="performance"),
 ]

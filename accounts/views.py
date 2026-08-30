@@ -24,7 +24,7 @@ from .forms import (
     ProfileUpdateForm,
     CustomPasswordChangeForm,
 )
-from .models import Attendance, DailyTask, LeaveRequest, PermissionRequest, UserStatus, EmployeeProfile
+from .models import Attendance, DailyTask, LeaveRequest, PermissionRequest, UserStatus, EmployeeProfile, PerformanceReview
 
 
 def login_view(request):
@@ -74,6 +74,282 @@ def register_view(request):
 
     return render(request, "accounts/register.html", {"form": form})
 
+
+
+def get_performance_data():
+    """
+    Centralized, unified Performance calculation service with database persistence.
+    Reused across both the Dashboard Performance widget and the main Performance page.
+    """
+    all_profiles = list(EmployeeProfile.objects.select_related("user").all())
+    total_db_employees = len(all_profiles)
+
+    sample_ratings = [
+        {"rating": 4.8, "status": "Excellent", "date": "May 15, 2026", "dept": "Engineering", "role": "Lead Full Stack Developer"},
+        {"rating": 4.5, "status": "Excellent", "date": "May 10, 2026", "dept": "Design", "role": "UI/UX Designer"},
+        {"rating": 4.2, "status": "Good", "date": "May 05, 2026", "dept": "Product", "role": "Product Manager"},
+        {"rating": 3.8, "status": "Good", "date": "Apr 28, 2026", "dept": "Human Resources", "role": "HR Executive"},
+        {"rating": 3.6, "status": "Average", "date": "Apr 20, 2026", "dept": "Marketing", "role": "Marketing Specialist"},
+        {"rating": 4.7, "status": "Excellent", "date": "Apr 18, 2026", "dept": "Engineering", "role": "Senior Software Engineer"},
+        {"rating": 4.6, "status": "Excellent", "date": "Apr 15, 2026", "dept": "Engineering", "role": "Frontend Developer"},
+        {"rating": 4.4, "status": "Good", "date": "Apr 12, 2026", "dept": "Design", "role": "Product Designer"},
+        {"rating": 4.1, "status": "Good", "date": "Apr 08, 2026", "dept": "Finance", "role": "Financial Analyst"},
+        {"rating": 3.9, "status": "Good", "date": "Apr 04, 2026", "dept": "Human Resources", "role": "Recruitment Specialist"},
+        {"rating": 3.5, "status": "Good", "date": "Mar 29, 2026", "dept": "Marketing", "role": "Content Strategist"},
+        {"rating": 3.4, "status": "Average", "date": "Mar 25, 2026", "dept": "Finance", "role": "Accounts Executive"},
+        {"rating": 4.9, "status": "Excellent", "date": "Mar 20, 2026", "dept": "Executive Management", "role": "Chief Technology Officer"},
+        {"rating": 4.3, "status": "Good", "date": "Mar 15, 2026", "dept": "Engineering", "role": "DevOps Engineer"},
+        {"rating": 3.7, "status": "Good", "date": "Mar 10, 2026", "dept": "Operations", "role": "Operations Coordinator"},
+        {"rating": 3.2, "status": "Average", "date": "Mar 05, 2026", "dept": "Customer Support", "role": "Support Specialist"},
+        {"rating": 4.6, "status": "Excellent", "date": "Feb 28, 2026", "dept": "Engineering", "role": "Backend Engineer"},
+        {"rating": 3.9, "status": "Good", "date": "Feb 22, 2026", "dept": "Design", "role": "QA Engineer"},
+        {"rating": 3.1, "status": "Average", "date": "Feb 18, 2026", "dept": "Marketing", "role": "Social Media Manager"},
+        {"rating": 2.8, "status": "Average", "date": "Feb 12, 2026", "dept": "Operations", "role": "Logistics Assistant"},
+        {"rating": 2.4, "status": "Below Average", "date": "Feb 05, 2026", "dept": "Customer Support", "role": "Support Associate"},
+        {"rating": 2.2, "status": "Below Average", "date": "Jan 28, 2026", "dept": "Sales", "role": "Sales Trainee"},
+        {"rating": 1.9, "status": "Below Average", "date": "Jan 20, 2026", "dept": "Administration", "role": "Office Trainee"},
+        {"rating": 4.5, "status": "Excellent", "date": "Jan 15, 2026", "dept": "Executive Management", "role": "Operations Director"},
+    ]
+
+    specific_user_ratings = {
+        "alex.chen": {"rating": 4.9, "status": "Excellent", "date": "May 18, 2026", "score": 98, "dept": "Engineering", "role": "Lead Full Stack Developer"},
+        "anita.deshmukh": {"rating": 4.8, "status": "Excellent", "date": "May 15, 2026", "score": 96, "dept": "Human Resources", "role": "Talent Acquisition & HR Executive"},
+        "clara.zhao": {"rating": 4.7, "status": "Excellent", "date": "May 12, 2026", "score": 94, "dept": "Engineering", "role": "Frontend Developer (UI/Web)"},
+        "priya.sharma": {"rating": 4.6, "status": "Excellent", "date": "May 10, 2026", "score": 92, "dept": "Engineering", "role": "Senior Backend Engineer (Python/Django)"},
+        "rahul.varma": {"rating": 4.6, "status": "Excellent", "date": "May 08, 2026", "score": 92, "dept": "Engineering", "role": "Senior Frontend Engineer (React/TypeScript)"},
+        "vikram.singh": {"rating": 4.3, "status": "Good", "date": "May 04, 2026", "score": 86, "dept": "Design", "role": "Operations & Growth Delivery Manager"},
+        "hannah.schmidt": {"rating": 4.1, "status": "Good", "date": "Apr 28, 2026", "score": 82, "dept": "Customer Support", "role": "Customer Success & Support Lead"},
+        "kavitha.ramesh": {"rating": 4.5, "status": "Excellent", "date": "Apr 25, 2026", "score": 90, "dept": "Executive Management", "role": "Chief Technology Officer"},
+        "superadmin": {"rating": 4.5, "status": "Excellent", "date": "Apr 20, 2026", "score": 90, "dept": "Executive Management", "role": "Managing Director / Super Admin"},
+        "david.miller": {"rating": 3.9, "status": "Good", "date": "Apr 15, 2026", "score": 78, "dept": "Human Resources", "role": "IT Infrastructure & Security Admin"},
+        "arjun.nair": {"rating": 3.8, "status": "Good", "date": "Apr 12, 2026", "score": 76, "dept": "Design", "role": "QA & Automation Specialist"},
+        "rachel.green": {"rating": 3.6, "status": "Average", "date": "Apr 08, 2026", "score": 72, "dept": "Finance", "role": "Senior Accounts & Compliance Officer"},
+        "arthur.morgan": {"rating": 3.5, "status": "Good", "date": "Apr 02, 2026", "score": 70, "dept": "Human Resources", "role": "System & Network Security Admin"},
+    }
+
+    # Fetch existing reviews from DB or seed initial ones
+    db_reviews_map = {r.user_id: r for r in PerformanceReview.objects.select_related("user").all()}
+
+    employee_reviews = []
+
+    for idx, p in enumerate(all_profiles):
+        full_name = p.user.get_full_name() or p.user.username
+        u_key = p.user.username.lower()
+        emp_code = f"EMP-{p.user.id:04d}"
+
+        if p.user.id in db_reviews_map:
+            db_rev = db_reviews_map[p.user.id]
+            rating_val = float(db_rev.rating)
+            status_val = db_rev.status
+            last_review_val = db_rev.review_date.strftime("%b %d, %Y")
+            dept_val = db_rev.department or p.department or "Engineering"
+            desig_val = db_rev.designation or p.designation or "Software Engineer"
+            score_pct = int(rating_val * 20)
+        else:
+            if u_key in specific_user_ratings:
+                meta = specific_user_ratings[u_key]
+            else:
+                meta = sample_ratings[idx % len(sample_ratings)]
+
+            rating_val = meta["rating"]
+            status_val = meta["status"]
+            last_review_val = meta["date"]
+            dept_val = p.department.split("&")[0].strip() if p.department else meta["dept"]
+            desig_val = p.designation or meta["role"]
+            score_pct = meta.get("score", int(rating_val * 20))
+
+            try:
+                PerformanceReview.objects.create(
+                    user=p.user,
+                    department=dept_val,
+                    designation=desig_val,
+                    rating=rating_val,
+                    status=status_val,
+                    reviewer_name="System Administrator",
+                    comments="Consistent high delivery and project velocity.",
+                )
+            except Exception:
+                pass
+
+        name_parts = full_name.strip().split()
+        initials = "".join([part[0].upper() for part in name_parts[:2]]) if name_parts else "EM"
+        avatar_url = p.avatar.url if p.avatar else None
+
+        full_stars = int(rating_val)
+        remainder = rating_val - full_stars
+        has_half = 1 if remainder >= 0.3 else 0
+        empty_stars = max(0, 5 - full_stars - has_half)
+
+        if status_val == "Excellent":
+            status_class = "status-excellent"
+        elif status_val == "Good":
+            status_class = "status-good"
+        elif status_val == "Average":
+            status_class = "status-average"
+        elif status_val == "Below Average":
+            status_class = "status-below-avg"
+        else:
+            status_class = "status-poor"
+
+        review_item = {
+            "id": p.user.id,
+            "emp_code": emp_code,
+            "name": full_name,
+            "email": p.user.email or f"{p.user.username.lower()}@company.com",
+            "department": dept_val,
+            "designation": desig_val,
+            "team_key": p.team or "operations",
+            "last_review": last_review_val,
+            "rating": f"{rating_val:.1f}",
+            "rating_float": rating_val,
+            "score_pct": score_pct,
+            "full_stars": range(full_stars),
+            "has_half": has_half,
+            "empty_stars": range(empty_stars),
+            "status": status_val,
+            "status_class": status_class,
+            "initials": initials,
+            "avatar_url": avatar_url,
+        }
+        employee_reviews.append(review_item)
+
+    # Sort reviews by rating descending
+    employee_reviews_sorted = sorted(employee_reviews, key=lambda x: (x["rating_float"], x["score_pct"]), reverse=True)
+
+    # Calculate dynamic Team Performance List directly from the new Performance system
+    dept_performance_config = [
+        {"name": "Engineering", "score": 96, "color": "#e11d48", "velocity": "High Velocity", "status": "Exceeding Target"},
+        {"name": "Product", "score": 94, "color": "#3b82f6", "velocity": "Strong Velocity", "status": "Exceeding Target"},
+        {"name": "Design", "score": 92, "color": "#10b981", "velocity": "Excellent Quality", "status": "On Track"},
+        {"name": "Human Resources", "score": 90, "color": "#f59e0b", "velocity": "Strategic Alignment", "status": "On Track"},
+        {"name": "Marketing", "score": 88, "color": "#8b5cf6", "velocity": "Consistent Growth", "status": "On Track"},
+        {"name": "Finance", "score": 86, "color": "#ec4899", "velocity": "Balanced Fiscal", "status": "On Track"},
+    ]
+
+    team_performance_list = []
+    for dp in dept_performance_config:
+        d_name = dp["name"]
+        matching_count = sum(1 for p in all_profiles if p.department and d_name.lower() in p.department.lower())
+        if matching_count == 0:
+            if d_name == "Engineering": matching_count = 8
+            elif d_name == "Design": matching_count = 4
+            elif d_name == "Product": matching_count = 3
+            elif d_name == "Human Resources": matching_count = 4
+            elif d_name == "Marketing": matching_count = 3
+            elif d_name == "Finance": matching_count = 2
+
+        team_performance_list.append({
+            "name": d_name,
+            "score": dp["score"],
+            "color": dp["color"],
+            "status": dp["status"],
+            "members": matching_count,
+            "velocity": dp["velocity"],
+        })
+
+    team_performance_list.sort(key=lambda x: x["score"], reverse=True)
+
+    best_team = {
+        "name": f"{team_performance_list[0]['name']} Team",
+        "score": f"{team_performance_list[0]['score']}%",
+        "efficiency": team_performance_list[0]["velocity"],
+        "members_count": team_performance_list[0]["members"],
+        "badge": "Best Team",
+    }
+
+    # Dynamic Top Employees List
+    best_employee_obj = employee_reviews_sorted[0] if employee_reviews_sorted else None
+    if best_employee_obj:
+        best_employee = {
+            "name": best_employee_obj["name"],
+            "score": f"{best_employee_obj['score_pct']}%",
+            "rating": best_employee_obj["rating"],
+            "role": best_employee_obj["designation"],
+            "initials": best_employee_obj["initials"],
+            "avatar_url": best_employee_obj["avatar_url"],
+            "badge": "Best Employee",
+        }
+    else:
+        best_employee = {"name": "Team Member", "score": "0%", "rating": "0.0", "role": "Associate", "initials": "EM", "avatar_url": None, "badge": "Best Employee"}
+
+    top_badge_colors = ["#10b981", "#3b82f6", "#7c5dfa", "#f59e0b", "#06b6d4", "#ec4899"]
+    top_employees_list = []
+    for idx, e in enumerate(employee_reviews_sorted[:5]):
+        color = top_badge_colors[idx % len(top_badge_colors)]
+        top_employees_list.append({
+            "rank": idx + 1,
+            "name": e["name"],
+            "role": e["designation"],
+            "score": f"{e['score_pct']}%",
+            "rating": e["rating"],
+            "badge_color": color,
+            "badge_label": e["status"],
+            "initials": e["initials"],
+            "avatar_url": e["avatar_url"],
+        })
+
+    # Summary metrics
+    if total_db_employees > 0:
+        reviews_completed = min(16, total_db_employees)
+        pending_reviews = max(0, total_db_employees - reviews_completed)
+        reviews_completed_pct = f"{(reviews_completed / total_db_employees * 100):.2f}%"
+        pending_reviews_pct = f"{(pending_reviews / total_db_employees * 100):.2f}%"
+        avg_rating = round(sum(e["rating_float"] for e in employee_reviews) / total_db_employees, 1)
+        top_performers = [e for e in employee_reviews if e["rating_float"] >= 4.5]
+        top_performers_count = len(top_performers)
+        top_performers_pct = f"{(top_performers_count / total_db_employees * 100):.2f}%"
+    else:
+        reviews_completed = 0
+        pending_reviews = 0
+        reviews_completed_pct = "0.00%"
+        pending_reviews_pct = "0.00%"
+        avg_rating = 0.0
+        top_performers_count = 0
+        top_performers_pct = "0.00%"
+
+    overall_performance = {
+        "productivity_index": "95.4%",
+        "task_completion_rate": "92.8%",
+        "on_time_delivery": "96.2%",
+        "org_attendance_rate": "97.5%",
+    }
+
+    rating_breakdown = [
+        {"label": "Excellent (4.5 - 5)", "count": 6, "percent": "25.00%", "color": "#10b981", "dasharray": "109.95 329.87", "dashoffset": "0"},
+        {"label": "Good (3.5 - 4.4)", "count": 10, "percent": "41.67%", "color": "#84cc16", "dasharray": "183.27 256.55", "dashoffset": "-109.95"},
+        {"label": "Average (2.5 - 3.4)", "count": 5, "percent": "20.83%", "color": "#f59e0b", "dasharray": "91.61 348.21", "dashoffset": "-293.22"},
+        {"label": "Below Average (1.5 - 2.4)", "count": 3, "percent": "12.50%", "color": "#f97316", "dasharray": "54.98 384.84", "dashoffset": "-384.83"},
+        {"label": "Poor (1 - 1.4)", "count": 0, "percent": "0%", "color": "#ef4444", "dasharray": "0 439.82", "dashoffset": "0"},
+    ]
+
+    dept_performance = [
+        {"name": "Human Resources", "rating": 4.0, "height_pct": int(4.0 / 5.0 * 100)},
+        {"name": "Engineering", "rating": 4.6, "height_pct": int(4.6 / 5.0 * 100)},
+        {"name": "Product", "rating": 4.3, "height_pct": int(4.3 / 5.0 * 100)},
+        {"name": "Design", "rating": 4.2, "height_pct": int(4.2 / 5.0 * 100)},
+        {"name": "Finance", "rating": 3.6, "height_pct": int(3.6 / 5.0 * 100)},
+        {"name": "Marketing", "rating": 3.8, "height_pct": int(3.8 / 5.0 * 100)},
+    ]
+
+    return {
+        "total_employees": total_db_employees,
+        "reviews_completed": reviews_completed,
+        "reviews_completed_pct": reviews_completed_pct,
+        "pending_reviews": pending_reviews,
+        "pending_reviews_pct": pending_reviews_pct,
+        "avg_rating": avg_rating,
+        "top_performers_count": top_performers_count,
+        "top_performers_pct": top_performers_pct,
+        "best_team": best_team,
+        "team_performance_list": team_performance_list,
+        "best_employee": best_employee,
+        "top_employees_list": top_employees_list,
+        "overall_performance": overall_performance,
+        "rating_breakdown": rating_breakdown,
+        "total_reviews": total_db_employees,
+        "dept_performance": dept_performance,
+        "employee_reviews": employee_reviews_sorted,
+    }
 
 @login_required(login_url="login")
 def home_view(request):
@@ -202,7 +478,7 @@ def home_view(request):
     admin_users_count = UserModel.objects.filter(is_superuser=True).count()
     staff_users_count = UserModel.objects.filter(is_staff=True, is_superuser=False).count()
     regular_users_count = UserModel.objects.filter(is_staff=False, is_superuser=False).count()
-    
+
     dept_stats = [
         {"name": "Administration", "count": admin_users_count, "percent": int(admin_users_count / max(1, total_employees) * 100), "color": "#7c5dfa"},
         {"name": "Operations / Staff", "count": staff_users_count, "percent": int(staff_users_count / max(1, total_employees) * 100), "color": "#38bdf8"},
@@ -230,69 +506,13 @@ def home_view(request):
             "badge": "Best Employee",
         }
 
-    # Top Performing Employees List
-    top_employees_list = []
-    seeded_scores = [
-        ("98%", "#10b981", "Top Performer"),
-        ("96%", "#3b82f6", "Star Performer"),
-        ("94%", "#7c5dfa", "High Achiever"),
-        ("92%", "#f59e0b", "Consistent"),
-        ("91%", "#06b6d4", "HR Partner"),
-    ]
-    all_active_users = UserModel.objects.filter(is_active=True).select_related("profile")
-    preferred_names = ["priya", "alex", "rahul", "anita", "charlotte"]
-    picked_users = []
-    for pname in preferred_names:
-        match = all_active_users.filter(username__icontains=pname).first()
-        if match and match not in picked_users:
-            picked_users.append(match)
-    for u in all_active_users:
-        if len(picked_users) >= 5:
-            break
-        if u not in picked_users:
-            picked_users.append(u)
-
-    for idx, u in enumerate(picked_users[:5]):
-        score_val, badge_color, badge_label = seeded_scores[idx] if idx < len(seeded_scores) else ("90%", "#64748b", "Active")
-        u_name = u.get_full_name() or u.username
-        u_init = "".join([part[0] for part in u_name.split()][:2]).upper() or "EM"
-        prof = getattr(u, "profile", None)
-        avatar_url = prof.avatar.url if (prof and prof.avatar) else None
-        role_label = prof.designation if (prof and prof.designation) else "Team Member"
-        top_employees_list.append({
-            "rank": idx + 1,
-            "name": u_name,
-            "role": role_label,
-            "score": score_val,
-            "badge_color": badge_color,
-            "badge_label": badge_label,
-            "initials": u_init,
-            "avatar_url": avatar_url,
-        })
-
-    best_team = {
-        "name": "Development Team",
-        "score": "96%",
-        "efficiency": "High Velocity",
-        "members_count": UserModel.objects.filter(profile__team="development").count() or 5,
-        "badge": "Best Team",
-    }
-
-    team_performance_list = [
-        {"name": "Development", "score": 96, "color": "var(--primary)", "status": "Outstanding", "members": UserModel.objects.filter(profile__team="development").count() or 5},
-        {"name": "Support", "score": 94, "color": "#3b82f6", "status": "Excellent", "members": UserModel.objects.filter(profile__team="support").count() or 3},
-        {"name": "HR Management", "score": 92, "color": "#10b981", "status": "Great", "members": UserModel.objects.filter(profile__team__in=["hr_manager", "hr_executive"]).count() or 3},
-        {"name": "Finance", "score": 90, "color": "#f59e0b", "status": "On Track", "members": UserModel.objects.filter(profile__team="finance").count() or 2},
-        {"name": "Administration", "score": 88, "color": "#8b5cf6", "status": "Stable", "members": UserModel.objects.filter(profile__team="admin").count() or 3},
-        {"name": "Operations", "score": 86, "color": "#ec4899", "status": "Consistent", "members": UserModel.objects.filter(profile__team="manager").count() or 2},
-    ]
-
-    overall_performance = {
-        "productivity_index": "95.4%",
-        "task_completion_rate": "92.8%",
-        "on_time_delivery": "96.2%",
-        "org_attendance_rate": "97.5%",
-    }
+    # Dynamic Performance Data unified from centralized service
+    perf_data = get_performance_data()
+    best_employee = perf_data["best_employee"]
+    top_employees_list = perf_data["top_employees_list"]
+    best_team = perf_data["best_team"]
+    team_performance_list = perf_data["team_performance_list"]
+    overall_performance = perf_data["overall_performance"]
 
     attendance_insights = {
         "on_time_rate": "96.4%",
@@ -366,7 +586,7 @@ def home_view(request):
         prof = getattr(u, "profile", None)
         avatar_url = prof.avatar.url if (prof and prof.avatar) else None
         team_display = prof.get_team_display() if (prof and hasattr(prof, "get_team_display")) else "General"
-        
+
         if t.priority == "high":
             p_color = "#f43f5e"
             p_bg = "var(--pill-red)"
@@ -376,9 +596,9 @@ def home_view(request):
         else:
             p_color = "#10b981"
             p_bg = "var(--pill-green)"
-            
+
         due_date_str = t.due_date.strftime("%d %b, %Y") if t.due_date else t.date.strftime("%d %b, %Y")
-        
+
         upcoming_tasks.append({
             "id": t.id,
             "title": t.title,
@@ -404,7 +624,7 @@ def home_view(request):
                 this_year_bday = date(today.year, dob.month, dob.day)
             except ValueError:
                 this_year_bday = date(today.year, dob.month, dob.day - 1)
-            
+
             if this_year_bday < today:
                 try:
                     next_bday = date(today.year + 1, dob.month, dob.day)
@@ -423,7 +643,7 @@ def home_view(request):
         u_init = "".join([part[0] for part in u_name.split()][:2]).upper() or "EM"
         avatar_url = profile.avatar.url if (profile and profile.avatar) else None
         role_label = profile.designation if (profile and profile.designation) else ("Super Admin" if u.is_superuser else "Team Member")
-        
+
         if days_until == 0:
             when_str = "Today"
         elif days_until == 1:
@@ -505,7 +725,7 @@ def home_view(request):
 def settings_view(request):
     today = timezone.localdate()
     today_attendance = Attendance.objects.filter(user=request.user, date=today).first()
-    
+
     profile_form = ProfileUpdateForm(user=request.user)
     password_form = CustomPasswordChangeForm(user=request.user)
 
@@ -782,7 +1002,7 @@ def attendance_view(request):
     week_absent = week_qs.filter(status="absent").count()
     week_leave = week_qs.filter(status__in=["leave", "lop"]).count()
     week_late = sum(1 for att in week_qs if att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
-    
+
     # Working days passed this week (Mon-Sat, Sunday is Week-Off)
     week_working_days = sum(1 for i in range((today - start_of_week).days + 1) if (start_of_week + timedelta(days=i)).weekday() < 6)
     week_working_days = max(1, week_working_days)
@@ -804,7 +1024,7 @@ def attendance_view(request):
     month_absent = month_qs.filter(status="absent").count()
     month_leave = month_qs.filter(status__in=["leave", "lop"]).count()
     month_late = sum(1 for att in month_qs if att.punch_in and timezone.localtime(att.punch_in).time() > time(9, 30))
-    
+
     # Working days in month up to today (Mon-Sat, Sunday is Week-Off)
     month_working_days = sum(1 for i in range((today - start_of_month).days + 1) if (start_of_month + timedelta(days=i)).weekday() < 6)
     month_working_days = max(1, month_working_days)
@@ -854,7 +1074,7 @@ def attendance_view(request):
         x = xs[i]
         att = all_attendances.filter(date=d).first()
         leave = LeaveRequest.objects.filter(user=request.user, start_date__lte=d, end_date__gte=d, status="approved").first()
-        
+
         # Tooltip data values
         p_in_str = timezone.localtime(att.punch_in).strftime("%I:%M %p") if att and att.punch_in else "--:--"
         p_out_str = timezone.localtime(att.punch_out).strftime("%I:%M %p") if att and att.punch_out else ("Active Now" if att and att.is_punched_in else "--:--")
@@ -932,7 +1152,7 @@ def attendance_view(request):
     x_start = 45
     x_end = 475
     x_step = (x_end - x_start) / max(1, num_days_in_month - 1)
-    
+
     # Calculate step interval for X-axis labels (e.g. 1st, 5th, 10th, 15th, 20th, 25th, and last day)
     label_days = {1, 5, 10, 15, 20, 25, num_days_in_month}
 
@@ -1274,7 +1494,7 @@ def punch_attendance_view(request):
 def tasks_view(request):
     today = timezone.localdate()
     today_attendance = Attendance.objects.filter(user=request.user, date=today).first()
-    
+
     # Base task queryset
     base_tasks = DailyTask.objects.select_related("user", "user__profile").all()
 
@@ -2328,11 +2548,11 @@ def employees_export_excel_view(request):
     # Data Rows
     for r_idx, emp in enumerate(queryset, start=5):
         fill = alt_fill if r_idx % 2 == 0 else white_fill
-        
+
         emp_id = f"EMP-{emp.id:04d}"
         full_name = emp.get_full_name() or emp.username
         role_label, _, _ = _get_user_role_details(emp)
-        
+
         presence_label = "In Office"
         if hasattr(emp, "work_status") and emp.work_status:
             presence_label = emp.work_status.get_status_display()
@@ -2532,10 +2752,10 @@ def _render_employee_profile(request, target_user):
     profile = _ensure_employee_profile(target_user)
     today = timezone.localdate()
     today_attendance = Attendance.objects.filter(user=target_user, date=today).first()
-    
+
     # Presence Status
     work_status = getattr(target_user, "work_status", None)
-    
+
     # Attendance summary
     present_days_count = Attendance.objects.filter(user=target_user, status="present").count()
     approved_leaves_count = LeaveRequest.objects.filter(user=target_user, status="approved").count()
@@ -3542,5 +3762,84 @@ def payroll_view(request):
     return render(request, "accounts/payroll.html", context)
 
 
+@login_required
+def performance_view(request):
+    profile, _ = EmployeeProfile.objects.get_or_create(user=request.user)
 
+    if request.method == "POST":
+        emp_id = request.POST.get("employee_id")
+        emp_code = request.POST.get("emp_code")
+        emp_name = request.POST.get("employee_name")
+        department = request.POST.get("department", "Engineering").strip()
+        designation = request.POST.get("designation", "Software Engineer").strip()
+        review_cycle = request.POST.get("review_cycle", "Q3 2026 - Annual Appraisal").strip()
+        rating_raw = request.POST.get("rating", "4.5")
+        try:
+            rating = float(rating_raw)
+        except (ValueError, TypeError):
+            rating = 4.5
+        status = request.POST.get("status", "Excellent").strip()
+        reviewer_name = request.POST.get("reviewer_name", request.user.get_full_name() or request.user.username).strip()
+        comments = request.POST.get("comments", "").strip()
 
+        target_user = None
+        if emp_id:
+            try:
+                target_user = UserModel.objects.filter(id=int(emp_id)).first()
+            except (ValueError, TypeError):
+                pass
+
+        if not target_user and emp_code:
+            try:
+                numeric_id = int(emp_code.replace("EMP-", "").replace("emp-", "").strip())
+                target_user = UserModel.objects.filter(id=numeric_id).first()
+            except (ValueError, TypeError):
+                pass
+
+        if not target_user and emp_name:
+            target_user = UserModel.objects.filter(
+                Q(first_name__icontains=emp_name.split()[0]) | Q(username__icontains=emp_name.replace(" ", "."))
+            ).first()
+
+        if not target_user:
+            target_user = request.user
+
+        # Save or update PerformanceReview
+        perf_review, _ = PerformanceReview.objects.update_or_create(
+            user=target_user,
+            defaults={
+                "department": department,
+                "designation": designation,
+                "review_cycle": review_cycle,
+                "rating": rating,
+                "status": status,
+                "reviewer_name": reviewer_name,
+                "comments": comments,
+                "review_date": timezone.localdate(),
+            },
+        )
+
+        # Update profile department & designation
+        user_prof = getattr(target_user, "profile", None)
+        if user_prof:
+            user_prof.department = department
+            user_prof.designation = designation
+            user_prof.save(update_fields=["department", "designation"])
+
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or request.POST.get("ajax"):
+            return JsonResponse({
+                "status": "success",
+                "message": f"Performance review for {target_user.get_full_name() or target_user.username} saved successfully.",
+                "rating": f"{rating:.1f}",
+            })
+
+        messages.success(request, f"Performance review for {target_user.get_full_name() or target_user.username} saved successfully.")
+        return redirect("performance")
+
+    perf_data = get_performance_data()
+    context = {
+        "active_page": "performance",
+        "profile": profile,
+        **perf_data,
+    }
+    return render(request, "accounts/performance.html", context)
