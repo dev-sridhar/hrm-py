@@ -1000,6 +1000,34 @@
             background: var(--primary-light);
         }
 
+        .btn-action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action-icon.btn-add-icon {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 2px 8px var(--primary-shadow);
+        }
+
+        .btn-action-icon.btn-reset-icon {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
         /* Form Inputs */
         .form-label-title {
             display: block;

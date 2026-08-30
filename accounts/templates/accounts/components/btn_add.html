@@ -3,7 +3,7 @@
 {% if href %}
 <a href="{{ href }}" 
    class="{% if icon_only %}btn-action-icon btn-add-icon{% else %}btn-custom btn-custom-primary{% endif %} {{ extra_class }}" 
-   style="{% if icon_only %}width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--primary-gradient); color: #ffffff; text-decoration: none; box-shadow: 0 2px 8px var(--primary-shadow); transition: all 0.2s ease;{% endif %} {{ style }}" 
+   {% if style %}style="{{ style }}"{% endif %}
    title="{{ title|default:'Add New' }}">
     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
@@ -16,7 +16,7 @@
 <button type="button" 
         {% if onclick %}onclick="{{ onclick }}"{% endif %} 
         class="{% if icon_only %}btn-action-icon btn-add-icon{% else %}btn-custom btn-custom-primary{% endif %} {{ extra_class }}" 
-        style="{% if icon_only %}width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--primary-gradient); color: #ffffff; border: none; cursor: pointer; box-shadow: 0 2px 8px var(--primary-shadow); transition: all 0.2s ease;{% endif %} {{ style }}" 
+        {% if style %}style="{{ style }}"{% endif %}
         title="{{ title|default:'Add New' }}">
     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>

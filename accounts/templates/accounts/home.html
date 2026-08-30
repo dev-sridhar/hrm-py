@@ -515,6 +515,11 @@
         gap: 4px;
     }
 
+    .timesheet-day-box.timesheet-day-today {
+        border-color: var(--primary);
+        background: var(--pill-purple);
+    }
+
     .timesheet-day-name {
         font-size: 10.5px;
         font-weight: 800;
@@ -594,6 +599,65 @@
         background: var(--primary-light);
         color: var(--primary);
         border-color: var(--primary);
+    }
+
+    .week-day-pill {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        line-height: 1.2;
+        padding: 4px 2px;
+        border-radius: 8px;
+        transition: all 0.15s ease;
+        background: transparent;
+    }
+
+    .week-day-pill.is-today {
+        background: var(--pill-purple);
+        border: 1px solid var(--primary);
+        box-shadow: 0 2px 6px var(--primary-shadow);
+    }
+
+    .week-day-name {
+        font-size: 9.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+    }
+
+    .week-day-pill.is-today .week-day-name {
+        color: var(--primary);
+    }
+
+    .week-day-hours {
+        font-size: 8.5px;
+        font-weight: 800;
+        color: var(--text-muted);
+        margin-top: 1px;
+    }
+
+    .week-day-pill.is-today .week-day-hours {
+        color: var(--primary);
+    }
+
+    .week-day-pill.has-hours .week-day-hours {
+        color: #10b981;
+    }
+
+    .btn-checkout-active {
+        background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35);
+        border: none;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .btn-checkout-disabled {
+        background: #feeef0;
+        color: #f43f5e;
+        border: 1px solid rgba(244, 63, 94, 0.2);
+        opacity: 0.6;
     }
 
     /* Upcoming List Summary Rows & Chips */
@@ -814,8 +878,8 @@
                         <span>Target: 40h</span>
                     </div>
                     <div style="height: 7px; background: var(--pill-gray); border-radius: 6px; overflow: hidden; display: flex; border: 1px solid var(--border);">
-                        <div style="width: {{ present_percent }}%; background: linear-gradient(90deg, #f43f5e, #fb7185); border-radius: 6px 0 0 6px;"></div>
-                        <div style="width: {{ on_leave_percent }}%; background: #f59e0b;"></div>
+                        <div style="--w: {{ present_percent }}%; width: var(--w); background: linear-gradient(90deg, #f43f5e, #fb7185); border-radius: 6px 0 0 6px;"></div>
+                        <div style="--w: {{ on_leave_percent }}%; width: var(--w); background: #f59e0b;"></div>
                         <div style="flex-grow: 1; background: transparent;"></div>
                     </div>
                 </div>
@@ -866,11 +930,11 @@
                         <!-- 7 Day Labels Row (Transparent Pill Design) -->
                         <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 6px; border-top: 1px dashed var(--border); padding-top: 6px;">
                             {% for day_stat in weekly_day_stats %}
-                            <div style="display: flex; flex-direction: column; align-items: center; text-align: center; line-height: 1.2; padding: 4px 2px; border-radius: 8px; transition: all 0.15s ease; {% if day_stat.is_today %}background: var(--pill-purple); border: 1px solid var(--primary); box-shadow: 0 2px 6px var(--primary-shadow);{% else %}background: transparent;{% endif %}">
-                                <span style="font-size: 9.5px; font-weight: 800; color: {% if day_stat.is_today %}var(--primary){% else %}var(--text-muted){% endif %};">
+                            <div class="week-day-pill {% if day_stat.is_today %}is-today{% elif day_stat.hours > 0 %}has-hours{% endif %}">
+                                <span class="week-day-name">
                                     {{ day_stat.day }}
                                 </span>
-                                <span style="font-size: 8.5px; font-weight: 800; color: {% if day_stat.is_today %}var(--primary){% elif day_stat.hours > 0 %}#10b981{% else %}var(--text-muted){% endif %}; margin-top: 1px;">
+                                <span class="week-day-hours">
                                     {{ day_stat.hours_display }}
                                 </span>
                             </div>
@@ -937,7 +1001,7 @@
                             <span>{{ d.count }}</span>
                         </div>
                         <div class="dept-bar-track">
-                            <div class="dept-bar-fill" style="width: {{ d.percent }}%; background: {{ d.color }};"></div>
+                            <div class="dept-bar-fill" style="--bar-w: {{ d.percent }}%; --bar-bg: {{ d.color }}; width: var(--bar-w); background: var(--bar-bg);"></div>
                         </div>
                     </div>
                     {% endfor %}
@@ -1085,10 +1149,10 @@
                         <div>
                             <div style="display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 3px;">
                                 <span style="color: var(--text-main);">{{ tp.name }} <span style="font-size: 9.5px; color: var(--text-muted);">({{ tp.members }} members)</span></span>
-                                <span style="color: {{ tp.color }};">{{ tp.score }}%</span>
+                                <span style="--c: {{ tp.color }}; color: var(--c);">{{ tp.score }}%</span>
                             </div>
                             <div style="height: 5px; width: 100%; background: var(--border); border-radius: 4px; overflow: hidden;">
-                                <div style="height: 100%; width: {{ tp.score }}%; background: {{ tp.color }}; border-radius: 4px;"></div>
+                                <div style="height: 100%; --bar-w: {{ tp.score }}%; --bar-bg: {{ tp.color }}; width: var(--bar-w); background: var(--bar-bg); border-radius: 4px;"></div>
                             </div>
                         </div>
                         {% endfor %}
@@ -1134,7 +1198,7 @@
                                 <div style="font-size: 10px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ emp.role }}</div>
                             </div>
                             <div style="text-align: right; flex-shrink: 0;">
-                                <span style="font-size: 11px; font-weight: 800; color: {{ emp.badge_color }};">{{ emp.score }}</span>
+                                <span style="font-size: 11px; font-weight: 800; --c: {{ emp.badge_color }}; color: var(--c);">{{ emp.score }}</span>
                             </div>
                         </div>
                         {% endfor %}
@@ -1266,7 +1330,7 @@
                                 </div>
                             </div>
                         </div>
-                        <span class="upcoming-badge-pill" style="background: {{ t.priority_bg }}; color: {{ t.priority_color }}; flex-shrink: 0;">{{ t.priority }}</span>
+                        <span class="upcoming-badge-pill" style="--bg: {{ t.priority_bg }}; --c: {{ t.priority_color }}; background: var(--bg); color: var(--c); flex-shrink: 0;">{{ t.priority }}</span>
                     </div>
                     {% empty %}
                     <div style="text-align: center; padding: 15px; color: var(--text-muted); font-size: 12px;">No upcoming tasks found.</div>
@@ -1423,7 +1487,7 @@
                 <form action="{% url 'punch_attendance' %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="punch_out">
-                    <button type="submit" class="btn-custom" style="width: 100%; justify-content: center; padding: 12px; border-radius: 14px; gap: 8px; {% if today_attendance and today_attendance.is_punched_in %}background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: #ffffff; box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35); border: none; font-weight: 800; cursor: pointer;{% else %}background: #feeef0; color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); opacity: 0.6;{% endif %}" {% if not today_attendance or not today_attendance.is_punched_in %}disabled title="Check in first to enable check out"{% endif %}>
+                    <button type="submit" class="btn-custom {% if today_attendance and today_attendance.is_punched_in %}btn-checkout-active{% else %}btn-checkout-disabled{% endif %}" style="width: 100%; justify-content: center; padding: 12px; border-radius: 14px; gap: 8px;" {% if not today_attendance or not today_attendance.is_punched_in %}disabled title="Check in first to enable check out"{% endif %}>
                         <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
                         <span>Check Out</span>
                     </button>
@@ -1449,7 +1513,7 @@
 
             <!-- 7 Days Mon-Sun -->
             {% for day_stat in weekly_day_stats %}
-            <div class="timesheet-day-box {% if day_stat.is_today %}style="border-color: var(--primary); background: var(--pill-purple);"{% endif %}">
+            <div class="timesheet-day-box {% if day_stat.is_today %}timesheet-day-today{% endif %}">
                 <span class="timesheet-day-name">{{ day_stat.day_short }}</span>
                 <span class="timesheet-day-hours">{{ day_stat.hours_display }}</span>
             </div>
@@ -1463,7 +1527,7 @@
                 <span>Target: 40h 00m</span>
             </div>
             <div style="height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
-                <div style="height: 100%; width: {{ weekly_target_pct }}%; background: var(--primary); border-radius: 6px;"></div>
+                <div style="height: 100%; --bar-w: {{ weekly_target_pct }}%; width: var(--bar-w); background: var(--primary); border-radius: 6px;"></div>
             </div>
         </div>
     </div>
@@ -1527,7 +1591,7 @@
                     {% for act in recent_activities|slice:":4" %}
                     <div class="upcoming-row-item" style="padding: 9px 12px; min-height: 48px; margin-bottom: 0;">
                         <div class="upcoming-left-info" style="min-width: 0;">
-                            <span style="font-size: 10.5px; font-weight: 800; color: {{ act.status_color|default:'var(--primary)' }}; flex-shrink: 0;">{{ act.initials }}</span>
+                            <span style="font-size: 10.5px; font-weight: 800; --c: {{ act.status_color|default:'var(--primary)' }}; color: var(--c); flex-shrink: 0;">{{ act.initials }}</span>
                             <div style="min-width: 0;">
                                 <div style="font-size: 11.5px; font-weight: 700; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ act.title }}</div>
                                 <div style="font-size: 9.5px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">{{ act.time }}</div>

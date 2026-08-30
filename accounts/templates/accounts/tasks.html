@@ -294,6 +294,37 @@
         outline: none;
         transition: all 0.15s ease;
     }
+    .status-badge-select.status-completed {
+        background: var(--pill-green);
+        color: #10b981;
+        border-color: rgba(16, 185, 129, 0.3);
+    }
+    .status-badge-select.status-in_progress {
+        background: var(--pill-blue);
+        color: #3b82f6;
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+    .status-badge-select.status-pending {
+        background: var(--pill-orange);
+        color: #f59e0b;
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .task-title-text {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .task-title-text.is-completed {
+        text-decoration: line-through;
+        color: var(--text-muted);
+    }
+    .search-clear-btn.is-hidden {
+        display: none !important;
+    }
 
     .priority-badge {
         font-size: 9.5px;
@@ -476,7 +507,7 @@
         <div class="search-input-wrap">
             <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 10px; color: var(--text-muted); pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             <input type="text" name="q" id="taskSearchInput" value="{{ search_query }}" placeholder="Search tasks, emp, project..." class="search-input-field" oninput="debounceTaskSearch()">
-            <button type="button" id="taskSearchClearBtn" class="search-clear-btn" onclick="clearTaskSearch()" title="Clear Search" style="display: {% if search_query %}flex{% else %}none{% endif %};">&times;</button>
+            <button type="button" id="taskSearchClearBtn" class="search-clear-btn {% if not search_query %}is-hidden{% endif %}" onclick="clearTaskSearch()" title="Clear Search">&times;</button>
         </div>
 
         <!-- 5. Export Icon-Only Button -->
@@ -547,7 +578,7 @@
 
         <!-- 4. Task (Title + Priority Inline) -->
         <div style="min-width: 0; display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 12.5px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; {% if task.status == 'completed' %}text-decoration: line-through; color: var(--text-muted);{% endif %}" title="{{ task.title }}">
+            <span class="task-title-text {% if task.status == 'completed' %}is-completed{% endif %}" title="{{ task.title }}">
                 {{ task.title }}
             </span>
             <span class="priority-badge {{ task.priority }}" style="flex-shrink: 0;">{{ task.get_priority_display }}</span>
@@ -567,7 +598,7 @@
         <div style="text-align: center;">
             <form action="{% url 'task_update_status' task.id %}" method="post" style="display: inline;">
                 {% csrf_token %}
-                <select name="status" onchange="this.form.submit()" class="status-badge-select" style="{% if task.status == 'completed' %}background: var(--pill-green); color: #10b981; border-color: rgba(16,185,129,0.3);{% elif task.status == 'in_progress' %}background: var(--pill-blue); color: #3b82f6; border-color: rgba(59,130,246,0.3);{% else %}background: var(--pill-orange); color: #f59e0b; border-color: rgba(245,158,11,0.3);{% endif %}">
+                <select name="status" onchange="this.form.submit()" class="status-badge-select status-{{ task.status }}">
                     <option value="pending" {% if task.status == 'pending' %}selected{% endif %}>Pending</option>
                     <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
                     <option value="completed" {% if task.status == 'completed' %}selected{% endif %}>Completed</option>

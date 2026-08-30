@@ -4,7 +4,7 @@
 <button type="button" 
         onclick="{{ onclick }}" 
         class="{% if icon_only %}btn-action-icon btn-reset-icon{% else %}btn-custom btn-custom-outline{% endif %} {{ extra_class }}" 
-        style="{% if icon_only %}width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg); border: 1.5px solid var(--border); color: var(--text-muted); cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: all 0.2s ease;{% endif %} {{ style }}" 
+        {% if style %}style="{{ style }}"{% endif %}
         title="{{ title|default:'Reset Filters' }}">
     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.033 8.033 0 01-15.357-2m15.357 2H15"></path>
@@ -16,7 +16,7 @@
 {% else %}
 <a href="{{ href|default:'?' }}" 
    class="{% if icon_only %}btn-action-icon btn-reset-icon{% else %}btn-custom btn-custom-outline{% endif %} {{ extra_class }}" 
-   style="{% if icon_only %}width: 32px; height: 32px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; background: var(--card-bg); border: 1.5px solid var(--border); color: var(--text-muted); text-decoration: none; box-shadow: 0 1px 4px rgba(0,0,0,0.04); transition: all 0.2s ease;{% endif %} {{ style }}" 
+   {% if style %}style="{{ style }}"{% endif %}
    title="{{ title|default:'Reset Filters' }}">
     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.033 8.033 0 01-15.357-2m15.357 2H15"></path>

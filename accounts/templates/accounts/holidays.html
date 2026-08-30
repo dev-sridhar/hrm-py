@@ -990,8 +990,9 @@
     </div>
 </div>
 
+<script id="holidaysData" type="application/json">{{ holidays_json|safe }}</script>
 <script>
-    const ALL_HOLIDAYS = {{ holidays_json|safe }};
+    const ALL_HOLIDAYS = JSON.parse(document.getElementById('holidaysData').textContent);
     const now = new Date();
     const liveTodayDate = now.getDate();
     const liveTodayMonth = now.getMonth(); // 0-indexed
