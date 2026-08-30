@@ -1,9 +1,10 @@
 {% extends "accounts/dashboard_base.html" %}
 
-{% block title %}Enterprise HRMS - Payroll & Compensation Hub{% endblock %}
+{% block title %}Payroll Overview - Enterprise HRMS{% endblock %}
 
 {% block dashboard_content %}
 <style>
+    /* Executive Header */
     .payroll-header-bar {
         display: flex;
         align-items: center;
@@ -13,294 +14,1002 @@
         margin-bottom: 22px;
     }
 
-    .payroll-title-wrap h2 {
-        font-size: 21px;
+    .payroll-header-title h2 {
+        font-size: 20px;
         font-weight: 800;
         color: var(--text-main);
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        margin: 0;
+        line-height: 1.2;
     }
 
-    .payroll-title-wrap p {
+    .payroll-header-title p {
         font-size: 13px;
         color: var(--text-muted);
-        margin-top: 3px;
+        margin: 2px 0 0;
     }
 
-    /* KPI Summary Stats */
-    .kpi-metrics-grid {
+    .btn-process-payroll {
+        background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(225, 29, 72, 0.25);
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .btn-process-payroll:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(225, 29, 72, 0.35);
+    }
+
+    /* 4 Top KPI Cards Grid */
+    .payroll-kpi-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 16px;
         margin-bottom: 22px;
     }
 
-    @media (max-width: 992px) {
-        .kpi-metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 540px) {
-        .kpi-metrics-grid { grid-template-columns: 1fr; }
-    }
-
-    .kpi-card {
-        background: var(--card-bg);
-        border: 1px solid var(--card-border);
-        border-radius: 18px;
-        padding: 18px 20px;
-        box-shadow: var(--card-shadow);
-        position: relative;
-        overflow: hidden;
+    @media (max-width: 1024px) {
+        .payroll-kpi-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
     }
 
-    .kpi-card-label {
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .kpi-card-value {
-        font-size: 24px;
-        font-weight: 800;
-        color: var(--text-main);
-        margin: 6px 0 2px;
-        line-height: 1.1;
-    }
-
-    .kpi-card-sub {
-        font-size: 12px;
-        color: var(--text-muted);
-    }
-
-    /* 2 Column Layout */
-    .payroll-grid-split {
-        display: grid;
-        grid-template-columns: 1fr 1.3fr;
-        gap: 20px;
-    }
-
-    @media (max-width: 992px) {
-        .payroll-grid-split {
+    @media (max-width: 576px) {
+        .payroll-kpi-grid {
             grid-template-columns: 1fr;
         }
     }
 
-    .payroll-card-panel {
+    .payroll-kpi-card {
         background: var(--card-bg);
         border: 1px solid var(--card-border);
-        border-radius: 20px;
-        padding: 22px;
+        border-radius: 16px;
+        padding: 18px 20px;
         box-shadow: var(--card-shadow);
-        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
-    .card-panel-title {
-        font-size: 15px;
+    .payroll-kpi-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .kpi-info-col {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kpi-title-label {
+        font-size: 11px;
         font-weight: 800;
-        color: var(--text-main);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
     }
 
-    .salary-row-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 9px 0;
-        border-bottom: 1px solid var(--border);
-        font-size: 13px;
+    .kpi-count-num {
+        font-size: 23px;
+        font-weight: 900;
+        margin: 4px 0 2px;
+        line-height: 1.15;
     }
 
-    .salary-row-item:last-child {
-        border-bottom: none;
-    }
-
-    .salary-row-label {
+    .kpi-sub-text {
+        font-size: 11.5px;
         color: var(--text-muted);
         font-weight: 600;
     }
 
-    .salary-row-val {
+    .kpi-icon-circle {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .kpi-icon-purple {
+        background: rgba(124, 93, 250, 0.12);
+        color: #7c5dfa;
+    }
+
+    .kpi-icon-green {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+    }
+
+    .kpi-icon-orange {
+        background: rgba(249, 115, 22, 0.12);
+        color: #f97316;
+    }
+
+    .kpi-icon-blue {
+        background: rgba(59, 130, 246, 0.12);
+        color: #3b82f6;
+    }
+
+    /* Sub-Navigation Tabs Bar */
+    .payroll-tabs-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .payroll-tab-pill {
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s ease;
+        font-family: inherit;
+    }
+
+    .payroll-tab-pill:hover:not(.active) {
+        border-color: var(--text-muted);
+        color: var(--text-main);
+    }
+
+    .payroll-tab-pill.active {
+        background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+    }
+
+    /* Main Card Panel */
+    .payroll-main-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        padding: 22px 24px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .payroll-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .payroll-card-title h3 {
+        font-size: 13.5px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--text-main);
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+
+    .payroll-card-title p {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 2px 0 0;
+    }
+
+    .payroll-search-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 7px 14px;
+        width: 240px;
+        transition: all 0.15s ease;
+    }
+
+    .payroll-search-box:focus-within {
+        border-color: var(--primary);
+        background: var(--card-bg);
+        box-shadow: 0 0 0 3px rgba(124, 93, 250, 0.1);
+    }
+
+    .payroll-search-box input {
+        border: none;
+        background: transparent;
+        font-size: 12.5px;
+        color: var(--text-main);
+        outline: none;
+        width: 100%;
+        font-family: inherit;
+    }
+
+    .disbursement-row-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 4px;
+        border-bottom: 1px solid var(--border);
+        font-size: 13.5px;
+    }
+
+    .disbursement-row-label {
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .disbursement-row-val {
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: 0.2px;
+    }
+
+    /* Professional Pagination Footer */
+    .pagination-footer {
+        padding: 14px 4px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--border);
+        margin-top: 14px;
+    }
+
+    .pagination-info {
+        font-size: 12.5px;
+        color: var(--text-muted);
+    }
+
+    .pagination-nav-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        padding: 5px 11px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-main);
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        text-decoration: none;
+        transition: all 0.15s ease;
+        min-width: 32px;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .pagination-btn:hover:not(.disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(124, 93, 250, 0.3);
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    /* Executive Data Table */
+    .payroll-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+
+    .payroll-table th {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+
+    .payroll-table td {
+        padding: 14px 14px;
+        font-size: 13px;
+        color: var(--text-main);
+        border-bottom: 1px solid var(--border);
+        vertical-align: middle;
+    }
+
+    .payroll-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .payroll-table tbody tr:hover {
+        background: rgba(124, 93, 250, 0.03);
+    }
+
+    .payroll-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .dept-name-cell {
         font-weight: 800;
         color: var(--text-main);
     }
 
-    /* Payslip Row Card */
-    .payslip-row-card {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        padding: 14px 18px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        flex-wrap: wrap;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    .amount-cell {
+        font-weight: 700;
+        color: var(--text-main);
+        font-variant-numeric: tabular-nums;
     }
 
-    .payslip-row-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }
-
-    .payslip-status-paid {
+    .status-pill-processed {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 4px 10px;
+        padding: 4px 12px;
         border-radius: 20px;
         background: rgba(16, 185, 129, 0.12);
         color: #10b981;
         font-size: 11px;
         font-weight: 800;
-        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .action-btn-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .action-icon-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .action-icon-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: var(--card-bg);
+        transform: translateY(-1px);
+    }
+
+    /* Modals */
+    .payroll-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+    }
+
+    .payroll-modal-box {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px;
+        max-width: 540px;
+        width: 100%;
+        padding: 24px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        animation: popoverFade 0.2s ease-out;
+    }
+
+    .modal-form-group {
+        margin-bottom: 16px;
+    }
+
+    .modal-form-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .modal-form-input {
+        width: 100%;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 9px 12px;
+        font-size: 13px;
+        color: var(--text-main);
+        box-sizing: border-box;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .modal-form-input:focus {
+        border-color: var(--primary);
+        background: var(--card-bg);
     }
 </style>
 
-<!-- Header Section -->
+<!-- Top Header Bar -->
 <div class="payroll-header-bar">
-    <div class="payroll-title-wrap">
-        <h2>
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    <div class="payroll-header-title">
+        <h2>Payroll Overview</h2>
+        <p>Manage employee salaries, payslips, deductions and payroll history.</p>
+    </div>
+    <button type="button" class="btn-process-payroll" onclick="openProcessPayrollModal()">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+        <span>Process Payroll</span>
+    </button>
+</div>
+
+<!-- 4 Top KPI Summary Cards -->
+<div class="payroll-kpi-grid">
+    <!-- 1. Total Employees -->
+    <div class="payroll-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">TOTAL EMPLOYEES</span>
+            <span class="kpi-count-num" style="color: #7c5dfa;">{{ total_employees }}</span>
+            <span class="kpi-sub-text">Active Employees</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-purple">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
             </svg>
-            Payroll & Compensation Hub
-        </h2>
-        <p>Salary breakdown, monthly disbursements, tax deductions, and itemized payslips.</p>
-    </div>
-</div>
-
-<!-- KPI Summary Cards -->
-<div class="kpi-metrics-grid">
-    <div class="kpi-card">
-        <div class="kpi-card-label">Annual CTC</div>
-        <div class="kpi-card-value" style="color: var(--primary);">INR {{ annual_ctc|floatformat:2 }}</div>
-        <div class="kpi-card-sub">Cost to Company</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-card-label">Gross Monthly</div>
-        <div class="kpi-card-value">INR {{ gross_monthly|floatformat:2 }}</div>
-        <div class="kpi-card-sub">Base before deductions</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-card-label">Monthly Deductions</div>
-        <div class="kpi-card-value" style="color: #f43f5e;">INR {{ total_deductions|floatformat:2 }}</div>
-        <div class="kpi-card-sub">PF + Income Tax</div>
-    </div>
-    <div class="kpi-card">
-        <div class="kpi-card-label">Net In-Hand Monthly</div>
-        <div class="kpi-card-value" style="color: #10b981;">INR {{ net_monthly|floatformat:2 }}</div>
-        <div class="kpi-card-sub">Disbursed on 28th of every month</div>
-    </div>
-</div>
-
-<!-- Main Split Section -->
-<div class="payroll-grid-split">
-    <!-- Left Column: Salary Structure & Bank Info -->
-    <div>
-        <!-- Salary Structure Card -->
-        <div class="payroll-card-panel">
-            <div class="card-panel-title">
-                <span>Monthly Salary Structure</span>
-                <span style="font-size: 11px; color: var(--primary); font-weight: 800;">INR / Month</span>
-            </div>
-            <div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">Basic Salary</span>
-                    <span class="salary-row-val">INR {{ profile.basic_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">House Rent Allowance (HRA)</span>
-                    <span class="salary-row-val">INR {{ profile.hra_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">Special Allowance</span>
-                    <span class="salary-row-val">INR {{ profile.special_allowance_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">Conveyance Allowance</span>
-                    <span class="salary-row-val">INR {{ profile.conveyance_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item" style="border-top: 1px dashed var(--border); padding-top: 12px; margin-top: 4px;">
-                    <span class="salary-row-label" style="font-weight: 800; color: var(--text-main);">Provident Fund (PF)</span>
-                    <span class="salary-row-val" style="color: #f43f5e;">- INR {{ profile.pf_deduction_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label" style="font-weight: 800; color: var(--text-main);">Professional / Income Tax</span>
-                    <span class="salary-row-val" style="color: #f43f5e;">- INR {{ profile.tax_deduction_monthly|floatformat:2 }}</span>
-                </div>
-                <div class="salary-row-item" style="background: rgba(16, 185, 129, 0.05); padding: 12px 14px; border-radius: 10px; margin-top: 10px; border: 1px solid rgba(16, 185, 129, 0.2);">
-                    <span style="font-weight: 900; color: #10b981; font-size: 14px;">Net Take Home Pay</span>
-                    <span style="font-weight: 900; color: #10b981; font-size: 15px;">INR {{ net_monthly|floatformat:2 }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bank Account & Tax Info Card -->
-        <div class="payroll-card-panel">
-            <div class="card-panel-title">
-                <span>Disbursement & Tax Account</span>
-            </div>
-            <div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">Bank Name</span>
-                    <span class="salary-row-val">{{ profile.bank_name|default:"HDFC Bank" }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">Account Number</span>
-                    <span class="salary-row-val">{{ profile.account_number|default:"50100234567890" }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">IFSC Code</span>
-                    <span class="salary-row-val">{{ profile.ifsc_code|default:"HDFC0001234" }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">PAN Number</span>
-                    <span class="salary-row-val">{{ profile.pan_number|default:"ABCDE1234F" }}</span>
-                </div>
-                <div class="salary-row-item">
-                    <span class="salary-row-label">UAN Number</span>
-                    <span class="salary-row-val">{{ profile.uan_number|default:"100987654321" }}</span>
-                </div>
-            </div>
         </div>
     </div>
 
-    <!-- Right Column: Payslips History -->
-    <div>
-        <div class="payroll-card-panel">
-            <div class="card-panel-title">
-                <span>Payslip History (Last 6 Months)</span>
-                <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 700;">Direct Bank Transfer</span>
-            </div>
+    <!-- 2. Total Payroll -->
+    <div class="payroll-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">TOTAL PAYROLL ({{ current_period_short }})</span>
+            <span class="kpi-count-num" style="color: #10b981;">&#8377; {{ total_gross_formatted }}</span>
+            <span class="kpi-sub-text">Gross Salary</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-green">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+    </div>
 
-            <div>
-                {% for slip in payslips %}
-                <div class="payslip-row-card">
-                    <div>
-                        <div style="font-size: 14.5px; font-weight: 800; color: var(--text-main);">{{ slip.period }}</div>
-                        <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">Ref: {{ slip.slip_id }} &bull; Paid on {{ slip.payment_date }}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 15px; font-weight: 900; color: #10b981;">INR {{ slip.net_pay|floatformat:2 }}</div>
-                        <div style="margin-top: 4px;">
-                            <span class="payslip-status-paid">
-                                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                {{ slip.status }}
-                            </span>
+    <!-- 3. Total Deductions -->
+    <div class="payroll-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">TOTAL DEDUCTIONS</span>
+            <span class="kpi-count-num" style="color: #f97316;">&#8377; {{ total_deductions_formatted }}</span>
+            <span class="kpi-sub-text">Total Deductions</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-orange">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v14a2 2 0 01-2 2z"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 4. Net Payout -->
+    <div class="payroll-kpi-card">
+        <div class="kpi-info-col">
+            <span class="kpi-title-label">NET PAYOUT</span>
+            <span class="kpi-count-num" style="color: #3b82f6;">&#8377; {{ total_net_formatted }}</span>
+            <span class="kpi-sub-text">Net Salary</span>
+        </div>
+        <div class="kpi-icon-circle kpi-icon-blue">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Sub-Navigation Tabs Bar -->
+<div class="payroll-tabs-bar">
+    <button type="button" class="payroll-tab-pill active" id="tabBtnSummary" onclick="switchPayrollTab('summary')">Payroll Summary</button>
+    <button type="button" class="payroll-tab-pill" id="tabBtnPayslips" onclick="switchPayrollTab('payslips')">Payslips</button>
+    <button type="button" class="payroll-tab-pill" id="tabBtnDeductions" onclick="switchPayrollTab('deductions')">Deductions</button>
+    <button type="button" class="payroll-tab-pill" id="tabBtnComponents" onclick="switchPayrollTab('components')">Salary Components</button>
+    <button type="button" class="payroll-tab-pill" id="tabBtnHistory" onclick="switchPayrollTab('history')">Payroll History</button>
+    <button type="button" class="payroll-tab-pill" id="tabBtnDisbursement" onclick="switchPayrollTab('disbursement')">Tax Account</button>
+</div>
+
+<!-- Tab Panel 1: Payroll Summary (Reference Design) -->
+<div id="panelPayrollSummary" class="payroll-main-card">
+    <div class="payroll-card-header">
+        <div class="payroll-card-title">
+            <h3>PAYROLL SUMMARY &ndash; {{ current_period_full }}</h3>
+            <p>Showing payroll summary by department.</p>
+        </div>
+        <div class="payroll-search-box">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="deptSearchInput" placeholder="Search department..." onkeyup="filterDepartmentTable()">
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="payroll-table" id="deptSummaryTable">
+            <thead>
+                <tr>
+                    <th>DEPARTMENT</th>
+                    <th>EMPLOYEES</th>
+                    <th>GROSS SALARY</th>
+                    <th>DEDUCTIONS</th>
+                    <th>NET PAYOUT</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in departments %}
+                <tr class="dept-table-row" data-name="{{ d.name|lower }}">
+                    <td class="dept-name-cell">{{ d.name }}</td>
+                    <td style="font-weight: 700;">{{ d.employees_count }}</td>
+                    <td class="amount-cell">&#8377; {{ d.gross_formatted }}</td>
+                    <td class="amount-cell">&#8377; {{ d.deductions_formatted }}</td>
+                    <td class="amount-cell">&#8377; {{ d.net_formatted }}</td>
+                    <td>
+                        <span class="status-pill-processed">{{ d.status }}</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="action-btn-group">
+                            <button type="button" class="action-icon-btn" title="View Department Breakdown" onclick="openDeptBreakdownModal('{{ d.name }}', '{{ d.employees_count }}', '{{ d.gross_formatted }}', '{{ d.deductions_formatted }}', '{{ d.net_formatted }}')">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                            </button>
+                            <button type="button" class="action-icon-btn" title="Download Department Report" onclick="downloadDeptReport('{{ d.name }}')">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </button>
                         </div>
-                    </div>
-                </div>
+                    </td>
+                </tr>
                 {% endfor %}
-            </div>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Panel 2: Payslips (Itemized DB list) -->
+<div id="panelPayslips" class="payroll-main-card" style="display: none;">
+    <div class="payroll-card-header">
+        <div class="payroll-card-title">
+            <h3>EMPLOYEE PAYSLIPS &ndash; {{ current_period_full }}</h3>
+            <p>Itemized salary slips for active organization personnel.</p>
+        </div>
+        <div class="payroll-search-box">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" id="payslipSearchInput" placeholder="Search employee or ID..." onkeyup="filterPayslipsTable()">
+        </div>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="payroll-table">
+            <thead>
+                <tr>
+                    <th>SLIP ID</th>
+                    <th>EMPLOYEE</th>
+                    <th>DEPARTMENT</th>
+                    <th>PERIOD</th>
+                    <th>GROSS</th>
+                    <th>DEDUCTIONS</th>
+                    <th>NET PAY</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">ACTION</th>
+                </tr>
+            </thead>
+            <tbody id="payslipsTableBody">
+                {% for p in db_payslips %}
+                <tr class="payslip-data-row" data-search="{{ p.employee_name|lower }} {{ p.department|lower }} {{ p.slip_id|lower }}">
+                    <td style="font-weight: 700; color: var(--primary);">{{ p.slip_id }}</td>
+                    <td style="font-weight: 800;">{{ p.employee_name }}</td>
+                    <td style="color: var(--text-muted);">{{ p.department }}</td>
+                    <td>{{ p.period }}</td>
+                    <td class="amount-cell">&#8377; {{ p.gross_formatted }}</td>
+                    <td class="amount-cell">&#8377; {{ p.deductions_formatted }}</td>
+                    <td class="amount-cell" style="color: #10b981;">&#8377; {{ p.net_formatted }}</td>
+                    <td><span class="status-pill-processed">{{ p.status }}</span></td>
+                    <td style="text-align: right;">
+                        <button type="button" class="action-icon-btn" title="Download Payslip" onclick="alert('Downloading payslip for {{ p.employee_name }}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Footer for Payslips (10 per page) -->
+    <div class="pagination-footer" id="payslipPaginationFooter">
+        <div class="pagination-info" id="payslipPaginationInfo">
+            Showing <strong>1</strong> to <strong>10</strong> of <strong>{{ db_payslips|length }}</strong> payslips
+        </div>
+        <div class="pagination-nav-group" id="payslipPaginationNav">
+            <!-- Populated by JS -->
         </div>
     </div>
 </div>
-{% endblock %}
 
+<!-- Tab Panel 3: Deductions -->
+<div id="panelDeductions" class="payroll-main-card" style="display: none;">
+    <div class="payroll-card-header">
+        <div class="payroll-card-title">
+            <h3>STATUTORY &amp; TAX DEDUCTIONS BREAKDOWN</h3>
+            <p>Breakdown of PF, ESI, TDS, and state compliance deductions.</p>
+        </div>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="payroll-table">
+            <thead>
+                <tr>
+                    <th>DEDUCTION COMPONENT</th>
+                    <th>TYPE</th>
+                    <th>APPLICABLE RATE</th>
+                    <th>TOTAL AMOUNT</th>
+                    <th>REGULATORY COMPLIANCE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for d in deductions_summary %}
+                <tr>
+                    <td style="font-weight: 800;">{{ d.component }}</td>
+                    <td>{{ d.type }}</td>
+                    <td>{{ d.rate }}</td>
+                    <td class="amount-cell" style="color: #f97316;">&#8377; {{ d.total_formatted }}</td>
+                    <td><span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">{{ d.compliance }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Panel 4: Salary Components -->
+<div id="panelComponents" class="payroll-main-card" style="display: none;">
+    <div class="payroll-card-header">
+        <div class="payroll-card-title">
+            <h3>SALARY COMPONENTS &amp; STRUCTURE</h3>
+            <p>Component weights, taxability and disbursement frequency.</p>
+        </div>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="payroll-table">
+            <thead>
+                <tr>
+                    <th>COMPONENT NAME</th>
+                    <th>CLASSIFICATION</th>
+                    <th>PERCENTAGE / RATIO</th>
+                    <th>TAX TREATMENT</th>
+                    <th>DISBURSEMENT FREQUENCY</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in salary_components %}
+                <tr>
+                    <td style="font-weight: 800;">{{ c.name }}</td>
+                    <td>{{ c.type }}</td>
+                    <td style="font-weight: 700;">{{ c.percentage }}</td>
+                    <td>{{ c.taxable }}</td>
+                    <td>{{ c.frequency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Panel 5: Payroll History -->
+<div id="panelHistory" class="payroll-main-card" style="display: none;">
+    <div class="payroll-card-header">
+        <div class="payroll-card-title">
+            <h3>HISTORICAL PAYROLL RUNS</h3>
+            <p>Archive of processed disbursements and bank transfers.</p>
+        </div>
+    </div>
+    <div style="overflow-x: auto;">
+        <table class="payroll-table">
+            <thead>
+                <tr>
+                    <th>PERIOD</th>
+                    <th>DISBURSED ON</th>
+                    <th>EMPLOYEES</th>
+                    <th>GROSS DISBURSED</th>
+                    <th>TOTAL DEDUCTIONS</th>
+                    <th>NET DISBURSED</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in history_runs %}
+                <tr>
+                    <td style="font-weight: 800; color: var(--primary);">{{ h.period }}</td>
+                    <td>{{ h.disbursed_on }}</td>
+                    <td style="font-weight: 700;">{{ h.employees }}</td>
+                    <td class="amount-cell">&#8377; {{ h.gross }}</td>
+                    <td class="amount-cell">&#8377; {{ h.deductions }}</td>
+                    <td class="amount-cell" style="color: #10b981;">&#8377; {{ h.net }}</td>
+                    <td><span class="status-pill-processed">{{ h.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Panel 6: Disbursement & Tax Account (Matching Reference Image) -->
+<div id="panelDisbursement" class="payroll-main-card" style="display: none; max-width: 680px;">
+    <div style="margin-bottom: 20px;">
+        <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Disbursement &amp; Tax Account</h3>
+    </div>
+
+    <div>
+        <div class="disbursement-row-item">
+            <span class="disbursement-row-label">Bank Name</span>
+            <span class="disbursement-row-val">{{ profile.bank_name|default:"ICICI Bank" }}</span>
+        </div>
+        <div class="disbursement-row-item">
+            <span class="disbursement-row-label">Account Number</span>
+            <span class="disbursement-row-val">{{ profile.account_number|default:"501000001890123" }}</span>
+        </div>
+        <div class="disbursement-row-item">
+            <span class="disbursement-row-label">IFSC Code</span>
+            <span class="disbursement-row-val">{{ profile.ifsc_code|default:"HDFC0001234" }}</span>
+        </div>
+        <div class="disbursement-row-item">
+            <span class="disbursement-row-label">PAN Number</span>
+            <span class="disbursement-row-val">{{ profile.pan_number|default:"ABCDE0001F" }}</span>
+        </div>
+        <div class="disbursement-row-item" style="border-bottom: none;">
+            <span class="disbursement-row-label">UAN Number</span>
+            <span class="disbursement-row-val">{{ profile.uan_number|default:"1009800001321" }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Process Payroll Modal -->
+<div class="payroll-modal-backdrop" id="processPayrollModal">
+    <div class="payroll-modal-box">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px;">
+            <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main); margin: 0;">Process Monthly Payroll</h3>
+            <button type="button" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);" onclick="closeProcessPayrollModal()">&times;</button>
+        </div>
+        <form onsubmit="handleProcessPayrollSubmit(event)">
+            <div class="modal-form-group">
+                <label class="modal-form-label">Payroll Cycle Month</label>
+                <select class="modal-form-input" required>
+                    <option value="AUG_2026">August 2026 (Current Cycle)</option>
+                    <option value="SEP_2026">September 2026 (Upcoming)</option>
+                </select>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-form-label">Disbursement Bank Account</label>
+                <select class="modal-form-input" required>
+                    <option>HDFC Bank Corporate - A/C Ending 890</option>
+                    <option>ICICI Bank Current - A/C Ending 412</option>
+                </select>
+            </div>
+            <div class="modal-form-group">
+                <label class="modal-form-label">Total Payout Estimation</label>
+                <input type="text" class="modal-form-input" value="INR 26,00,000.00 (128 Employees)" readonly style="background: var(--pill-gray); font-weight: 700;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px;">
+                <button type="button" class="payroll-tab-pill" style="border-radius: 10px;" onclick="closeProcessPayrollModal()">Cancel</button>
+                <button type="submit" class="btn-process-payroll">Disburse &amp; Generate Payslips</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Department Breakdown Modal -->
+<div class="payroll-modal-backdrop" id="deptBreakdownModal">
+    <div class="payroll-modal-box">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;" id="deptModalTitle">Department Payroll</h3>
+            <button type="button" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-muted);" onclick="closeDeptModal()">&times;</button>
+        </div>
+        <div id="deptModalContent" style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+            <!-- Injected via JS -->
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+            <button type="button" class="payroll-tab-pill active" style="border-radius: 10px;" onclick="closeDeptModal()">Done</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let payslipCurrentPage = 1;
+    const payslipPageSize = 10;
+
+    function getFilteredPayslipRows() {
+        const query = (document.getElementById("payslipSearchInput")?.value || "").toLowerCase().trim();
+        const allRows = Array.from(document.querySelectorAll(".payslip-data-row"));
+        if (!query) return allRows;
+        return allRows.filter(row => {
+            const data = row.getAttribute("data-search") || "";
+            return data.includes(query);
+        });
+    }
+
+    function renderPayslipsPagination(page = 1) {
+        const allRows = Array.from(document.querySelectorAll(".payslip-data-row"));
+        const matchedRows = getFilteredPayslipRows();
+        const totalItems = matchedRows.length;
+        const totalPages = Math.ceil(totalItems / payslipPageSize) || 1;
+
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        payslipCurrentPage = page;
+
+        // Hide all rows first
+        allRows.forEach(r => r.style.display = "none");
+
+        // Show current slice
+        const startIdx = (page - 1) * payslipPageSize;
+        const endIdx = Math.min(startIdx + payslipPageSize, totalItems);
+
+        for (let i = startIdx; i < endIdx; i++) {
+            if (matchedRows[i]) matchedRows[i].style.display = "";
+        }
+
+        // Update Info text
+        const infoEl = document.getElementById("payslipPaginationInfo");
+        if (infoEl) {
+            if (totalItems === 0) {
+                infoEl.innerHTML = `No matching payslips found`;
+            } else {
+                infoEl.innerHTML = `Showing <strong>${startIdx + 1}</strong> to <strong>${endIdx}</strong> of <strong>${totalItems}</strong> payslips`;
+            }
+        }
+
+        // Render Navigation Buttons
+        const navEl = document.getElementById("payslipPaginationNav");
+        if (navEl) {
+            if (totalPages <= 1) {
+                navEl.innerHTML = "";
+                return;
+            }
+
+            let html = "";
+            const prevDisabled = page === 1 ? "disabled" : "";
+            html += `<button type="button" class="pagination-btn ${prevDisabled}" onclick="renderPayslipsPagination(${page - 1})">&laquo;</button>`;
+
+            for (let p = 1; p <= totalPages; p++) {
+                const activeCls = p === page ? "active" : "";
+                html += `<button type="button" class="pagination-btn ${activeCls}" onclick="renderPayslipsPagination(${p})">${p}</button>`;
+            }
+
+            const nextDisabled = page === totalPages ? "disabled" : "";
+            html += `<button type="button" class="pagination-btn ${nextDisabled}" onclick="renderPayslipsPagination(${page + 1})">&raquo;</button>`;
+
+            navEl.innerHTML = html;
+        }
+    }
+
+    function filterPayslipsTable() {
+        renderPayslipsPagination(1);
+    }
+
+    function switchPayrollTab(tab) {
+        const tabs = ['summary', 'payslips', 'deductions', 'components', 'history', 'disbursement'];
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tabBtn${t.charAt(0).toUpperCase() + t.slice(1)}`);
+            if (t === 'summary') {
+                const sPanel = document.getElementById('panelPayrollSummary');
+                if (tab === 'summary') {
+                    if (sPanel) sPanel.style.display = 'block';
+                    if (btn) btn.classList.add('active');
+                } else {
+                    if (sPanel) sPanel.style.display = 'none';
+                    if (btn) btn.classList.remove('active');
+                }
+            } else {
+                const p = document.getElementById(`panel${t.charAt(0).toUpperCase() + t.slice(1)}`);
+                if (tab === t) {
+                    if (p) p.style.display = 'block';
+                    if (btn) btn.classList.add('active');
+                    if (t === 'payslips') {
+                        renderPayslipsPagination(payslipCurrentPage);
+                    }
+                } else {
+                    if (p) p.style.display = 'none';
+                    if (btn) btn.classList.remove('active');
+                }
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        renderPayslipsPagination(1);
+    });
+
+    function filterDepartmentTable() {
+        const query = document.getElementById("deptSearchInput").value.toLowerCase();
+        const rows = document.querySelectorAll(".dept-table-row");
+        rows.forEach(row => {
+            const name = row.getAttribute("data-name") || "";
+            if (name.includes(query)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
+    function openProcessPayrollModal() {
+        document.getElementById("processPayrollModal").style.display = "flex";
+    }
+
+    function closeProcessPayrollModal() {
+        document.getElementById("processPayrollModal").style.display = "none";
+    }
+
+    function handleProcessPayrollSubmit(e) {
+        e.preventDefault();
+        alert("Payroll disbursement for August 2026 initiated successfully. All payslips generated.");
+        closeProcessPayrollModal();
+    }
+
+    function openDeptBreakdownModal(name, count, gross, deductions, net) {
+        document.getElementById("deptModalTitle").textContent = `${name} Department - August 2026`;
+        document.getElementById("deptModalContent").innerHTML = `
+            <div style="background: var(--pill-gray); padding: 14px; border-radius: 12px; margin-bottom: 14px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Active Employees:</span>
+                    <strong style="color: var(--text-main);">${count}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Gross Salary Total:</span>
+                    <strong style="color: var(--text-main);">&#8377; ${gross}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Deductions Total:</span>
+                    <strong style="color: #f97316;">&#8377; ${deductions}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px;">
+                    <span>Net Disbursement Payout:</span>
+                    <strong style="color: #10b981;">&#8377; ${net}</strong>
+                </div>
+            </div>
+            <p>All payroll allocations have been verified against attendance records and approved by finance.</p>
+        `;
+        document.getElementById("deptBreakdownModal").style.display = "flex";
+    }
+
+    function closeDeptModal() {
+        document.getElementById("deptBreakdownModal").style.display = "none";
+    }
+
+    function downloadDeptReport(deptName) {
+        alert(`Exporting ${deptName} department payroll summary CSV report...`);
+    }
+</script>
+{% endblock %}

@@ -364,11 +364,35 @@
         background: rgba(124, 93, 250, 0.1);
     }
 
+    .day-cell.holiday-day-bordered {
+        border: 1.5px solid rgba(124, 93, 250, 0.45);
+        background: rgba(124, 93, 250, 0.04);
+        font-weight: 800;
+    }
+    .day-cell.holiday-border-green {
+        border-color: rgba(16, 185, 129, 0.6);
+        background: rgba(16, 185, 129, 0.06);
+    }
+    .day-cell.holiday-border-orange {
+        border-color: rgba(249, 115, 22, 0.6);
+        background: rgba(249, 115, 22, 0.06);
+    }
+    .day-cell.holiday-border-purple {
+        border-color: rgba(124, 93, 250, 0.6);
+        background: rgba(124, 93, 250, 0.06);
+    }
+    .day-cell.holiday-border-red {
+        border-color: rgba(225, 29, 72, 0.6);
+        background: rgba(225, 29, 72, 0.06);
+    }
+
+    .day-cell.live-today-highlight,
     .day-cell.highlight-selected {
         background: #10b981 !important;
         color: white !important;
-        font-weight: 800;
+        font-weight: 800 !important;
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        border: none !important;
     }
 
     .holiday-dot-indicator {
@@ -968,8 +992,13 @@
 
 <script>
     const ALL_HOLIDAYS = {{ holidays_json|safe }};
-    let currentYear = 2026;
-    let currentMonth = 7; // 0-indexed: 7 = August
+    const now = new Date();
+    const liveTodayDate = now.getDate();
+    const liveTodayMonth = now.getMonth(); // 0-indexed
+    const liveTodayYear = now.getFullYear();
+
+    let currentYear = liveTodayYear;
+    let currentMonth = liveTodayMonth;
 
     const MONTH_NAMES = [
         "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE",
@@ -980,6 +1009,19 @@
     const listItemsPerPage = 6;
 
     document.addEventListener("DOMContentLoaded", () => {
+        const yearDisplay = document.getElementById("selectedYearDisplay");
+        if (yearDisplay) yearDisplay.textContent = currentYear;
+
+        // Highlight active year in dropdown
+        document.querySelectorAll("#yearDropdownMenu .year-option-item").forEach(item => {
+            const yr = parseInt(item.textContent.trim());
+            if (yr === currentYear) {
+                item.classList.add("active");
+            } else {
+                item.classList.remove("active");
+            }
+        });
+
         renderCalendarGrid(currentYear, currentMonth);
         renderHolidayListPagination(1);
     });
@@ -1026,18 +1068,23 @@
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(currentDayNum).padStart(2, '0')}`;
                     dayCell.textContent = currentDayNum;
 
-                    // Check if day has holiday
+                    // Check if day has holiday -> make border for that Holiday!
                     const holiday = ALL_HOLIDAYS.find(h => h.date === dateStr);
                     if (holiday) {
+                        dayCell.classList.add("holiday-day-bordered");
+                        dayCell.classList.add(`holiday-border-${holiday.color || 'green'}`);
+
                         const dot = document.createElement("span");
                         dot.className = `holiday-dot-indicator dot-${holiday.color || 'green'}`;
                         dayCell.appendChild(dot);
                         dayCell.title = `${holiday.name} (${holiday.category})`;
                     }
 
-                    // Highlight Day 17 in green circle like reference screenshot
-                    if (month === 7 && currentDayNum === 17) {
-                        dayCell.classList.add("highlight-selected");
+                    // Check if it is the live current date today -> highlight live date first!
+                    const isLiveToday = (year === liveTodayYear && month === liveTodayMonth && currentDayNum === liveTodayDate);
+                    if (isLiveToday) {
+                        dayCell.classList.add("live-today-highlight");
+                        dayCell.title = (dayCell.title ? dayCell.title + " - " : "") + "Today (Live Date)";
                     }
 
                     dayCell.onclick = () => {
