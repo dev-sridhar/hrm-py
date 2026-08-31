@@ -1527,10 +1527,8 @@
         document.getElementById('editProfileModal').style.display = 'none';
     }
 
-    function showToast(message, type = 'success') {
-        if (window.showToast) {
-            window.showToast(message, type);
-        }
+    function  {
+        
     }
 
     function copyProfileId() {
@@ -1538,7 +1536,7 @@
         const text = el ? el.innerText.trim() : '';
         if (text && navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Employee ID ' + text + ' copied!');
+                
             });
         }
     }
@@ -1548,7 +1546,7 @@
         const text = el ? el.innerText.trim() : '';
         if (text && navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Email address copied!');
+                
             });
         }
     }
@@ -1558,7 +1556,7 @@
         const text = el ? el.innerText.trim() : '';
         if (text && navigator.clipboard) {
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Phone number copied!');
+                
             });
         }
     }
@@ -1615,14 +1613,14 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                showToast('Profile photo updated successfully!');
+                
             } else {
-                showToast(data.message || 'Failed to update photo');
+                
             }
         })
         .catch(err => {
             console.error(err);
-            showToast('Profile photo updated.');
+            
         });
     }
 </script>

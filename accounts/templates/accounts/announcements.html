@@ -756,11 +756,6 @@
                 </div>
             </div>
 
-            <button type="button" class="btn-featured-action" onclick="openFeaturedDetailsModal()">
-                <span>View Details</span>
-                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </button>
-
             <!-- 3D Megaphone Vector Art -->
             <div class="featured-illustration">
                 <svg width="170" height="170" viewBox="0 0 200 200" fill="none">
@@ -1141,13 +1136,9 @@
         } else if (actionId === 'manage_cat') {
             openCategoriesModal();
         } else if (actionId === 'analytics') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Announcement Analytics: 98.4% read rate, 340 active team viewers this week.', 'info');
-            }
+            
         } else if (actionId === 'scheduled') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('3 queued announcements scheduled for publication next week.', 'info');
-            }
+            
         }
     }
 
@@ -1171,16 +1162,14 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         }).catch(function(err) { console.error(err); });
 
-        if (typeof window.showToast === 'function') {
-            window.showToast('Announcement "' + title + '" broadcasted to feed successfully.', 'success');
-        }
+        
         document.getElementById('announcementForm').reset();
     }
 
-    // 10-Item Pagination Engine for Announcements
+    // 3-Item Pagination Engine for Announcements
     var annPaginationState = {
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 3,
         selectedCategory: 'ALL'
     };
 

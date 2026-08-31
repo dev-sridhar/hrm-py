@@ -675,9 +675,7 @@
                 statusForms.forEach(f => f.remove());
             }
             // 3. Show top-right toast
-            if (window.showToast) {
-                window.showToast(data.message || `Leave request marked as ${actionStatus}.`, actionStatus === 'approved' ? 'success' : 'error');
-            }
+            
         })
         .catch(err => {
             formEl.submit();

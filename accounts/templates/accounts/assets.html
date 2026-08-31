@@ -15,26 +15,27 @@
     }
 
     .ast-header-title h2 {
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 22px;
+        font-weight: 900;
         color: var(--text-main);
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
     }
 
     .ast-header-title p {
         font-size: 13px;
         color: var(--text-muted);
         margin: 3px 0 0;
+        font-weight: 600;
     }
 
     .btn-add-asset {
-        background: var(--primary-gradient);
+        background: var(--primary);
         color: #ffffff;
         border: none;
-        border-radius: 12px;
+        border-radius: 10px;
         padding: 9px 18px;
         font-size: 13px;
         font-weight: 700;
@@ -42,14 +43,14 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        box-shadow: 0 4px 14px var(--primary-shadow);
-        transition: all 0.15s ease;
+        box-shadow: 0 4px 12px var(--primary-shadow);
+        transition: transform 0.15s ease, background 0.15s ease;
         font-family: inherit;
     }
 
     .btn-add-asset:hover {
         transform: translateY(-1px);
-        box-shadow: 0 6px 18px var(--primary-shadow);
+        background: #4f46e5;
     }
 
     /* 5 Top KPI Cards Grid */
@@ -63,18 +64,18 @@
     .ast-kpi-card {
         background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 16px;
+        border-radius: 14px;
+        padding: 16px 18px;
         display: flex;
-        align-items: center;
-        gap: 12px;
+        align-items: flex-start;
+        gap: 14px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .ast-kpi-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.04);
     }
 
     .ast-kpi-avatar {
@@ -87,8 +88,12 @@
         flex-shrink: 0;
     }
 
+    .ast-kpi-info {
+        flex: 1;
+    }
+
     .ast-kpi-info h4 {
-        font-size: 11px;
+        font-size: 11.5px;
         font-weight: 700;
         color: var(--text-muted);
         margin: 0 0 2px;
@@ -96,43 +101,43 @@
     }
 
     .ast-kpi-info .kpi-val {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 900;
         color: var(--text-main);
         line-height: 1.1;
     }
 
-    .ast-kpi-info .kpi-sub {
+    .ast-kpi-info .kpi-sub-title {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-top: 2px;
+    }
+
+    .ast-kpi-info .kpi-trend {
         font-size: 10.5px;
         font-weight: 700;
-        margin-top: 2px;
+        margin-top: 4px;
         display: flex;
         align-items: center;
         gap: 3px;
         white-space: nowrap;
     }
 
-    /* Middle 3-Column Grid */
+    /* Middle 3-Column Analytics Grid */
     .ast-middle-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 20px;
+        grid-template-columns: 1fr 1fr 1.15fr;
+        gap: 16px;
         margin-bottom: 20px;
-    }
-
-    /* Bottom 2-Column Grid */
-    .ast-bottom-grid {
-        display: grid;
-        grid-template-columns: 2.1fr 1fr;
-        gap: 20px;
     }
 
     /* Standard Panel */
     .ast-panel {
         background: var(--card-bg);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        padding: 20px;
+        border-radius: 16px;
+        padding: 18px 20px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
 
@@ -140,7 +145,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
         flex-wrap: wrap;
         gap: 10px;
     }
@@ -155,134 +160,267 @@
         gap: 6px;
     }
 
-    /* Category Distribution List */
-    .cat-dist-list {
+    /* Donut Chart & Category Legend */
+    .chart-container-flex {
         display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .cat-dist-item {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .cat-dist-header {
-        display: flex;
+        align-items: center;
         justify-content: space-between;
-        font-size: 12px;
+        gap: 16px;
+    }
+
+    .donut-chart-box {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        flex-shrink: 0;
+    }
+
+    .donut-center-label {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        pointer-events: none;
+    }
+
+    .donut-val {
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--text-main);
+        line-height: 1.1;
+    }
+
+    .donut-sub {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .cat-legend-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+    }
+
+    .cat-legend-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11.5px;
         font-weight: 700;
         color: var(--text-main);
     }
 
-    .cat-dist-bar {
-        width: 100%;
-        height: 6px;
-        border-radius: 3px;
-        background: var(--pill-gray);
-        overflow: hidden;
-    }
-
-    .cat-dist-fill {
-        height: 100%;
-        border-radius: 3px;
-    }
-
-    /* Status Grid Items */
-    .status-dist-list {
-        display: flex;
-        flex-direction: column;
-        gap: 9px;
-    }
-
-    .status-dist-item {
+    .cat-legend-left {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 9px 12px;
-        border-radius: 12px;
-        background: var(--pill-gray);
-        border: 1px solid var(--border);
-        font-size: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.15s ease;
+        gap: 6px;
     }
 
-    .status-dist-item:hover {
-        background: var(--card-bg);
-        border-color: var(--primary);
-        transform: translateX(2px);
-    }
-
-    .status-dist-left {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .status-dot-indicator {
+    .cat-legend-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
         display: inline-block;
     }
 
-    /* Quick Actions */
-    .quick-actions-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    .cat-legend-count {
+        color: var(--text-muted);
+        font-weight: 800;
+        font-size: 11px;
     }
 
-    .quick-action-item {
+    /* Radial Status Gauge & List */
+    .status-overview-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+    }
+
+    .status-overview-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 10px 12px;
-        border-radius: 12px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--text-main);
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .status-overview-item:hover {
+        transform: translateX(2px);
+    }
+
+    .status-overview-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .status-overview-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        flex-shrink: 0;
+    }
+
+    /* Quick Actions 2*2 Grid */
+    .quick-actions-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .quick-action-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-radius: 10px;
         background: var(--pill-gray);
         border: 1px solid var(--border);
         transition: all 0.15s ease;
         cursor: pointer;
     }
 
-    .quick-action-item:hover {
+    .quick-action-card:hover {
         background: var(--card-bg);
         border-color: var(--primary);
-        transform: translateX(2px);
+        transform: translateY(-1px);
     }
 
     .quick-action-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        min-width: 0;
     }
 
-    .quick-action-icon {
-        width: 32px;
-        height: 32px;
+    .quick-action-sq-icon {
+        width: 28px;
+        height: 28px;
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #ffffff;
         flex-shrink: 0;
     }
 
     .quick-action-title {
-        font-size: 12.5px;
+        font-size: 11.5px;
         font-weight: 800;
         color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .quick-action-desc {
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-muted);
-        font-weight: 700;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
-    /* Asset Inventory Table */
+    /* Bottom 2-Column Grid (Inventory Table + Sidebar) */
+    .ast-bottom-grid {
+        display: grid;
+        grid-template-columns: 2.2fr 1fr;
+        gap: 18px;
+    }
+
+    /* Asset Inventory Toolbar */
+    .ast-inv-badge {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--primary);
+        background: var(--pill-purple);
+        padding: 3px 8px;
+        border-radius: 6px;
+    }
+
+    .ast-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .ast-select-filter {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 10px;
+        font-size: 11.5px;
+        color: var(--text-main);
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+    }
+
+    .ast-search-box {
+        position: relative;
+        min-width: 160px;
+    }
+
+    .ast-search-box input {
+        width: 100%;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 5px 10px 5px 28px;
+        font-size: 11.5px;
+        color: var(--text-main);
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .ast-search-box input:focus {
+        border-color: var(--primary);
+    }
+
+    .ast-search-box svg {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+
+    .btn-filter-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--pill-gray);
+        color: var(--text-main);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-filter-icon:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    /* Inventory Table */
     .ast-table-wrapper {
         width: 100%;
         overflow-x: auto;
@@ -291,40 +429,40 @@
     .ast-custom-table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0 8px;
+        border-spacing: 0 6px;
     }
 
     .ast-custom-table th {
-        font-size: 11.5px;
+        font-size: 10.5px;
         font-weight: 800;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        padding: 8px 12px;
+        padding: 6px 10px;
         text-align: left;
         border-bottom: 1px solid var(--border);
     }
 
     .ast-custom-table td {
-        padding: 12px;
+        padding: 8px 10px;
         background: var(--pill-gray);
-        font-size: 12.5px;
+        font-size: 12px;
         color: var(--text-main);
         vertical-align: middle;
         transition: background 0.15s ease;
     }
 
     .ast-custom-table tr td:first-child {
-        border-top-left-radius: 12px;
-        border-bottom-left-radius: 12px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
         border-left: 1px solid var(--border);
         border-top: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
     }
 
     .ast-custom-table tr td:last-child {
-        border-top-right-radius: 12px;
-        border-bottom-right-radius: 12px;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
         border-right: 1px solid var(--border);
         border-top: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
@@ -339,118 +477,62 @@
         background: var(--card-bg);
     }
 
-    .ast-tag-badge {
-        font-size: 11px;
-        font-weight: 800;
-        color: var(--primary);
-        background: var(--pill-purple);
-        padding: 3px 8px;
+    .device-thumb-box {
+        width: 30px;
+        height: 30px;
         border-radius: 6px;
-        font-family: monospace;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        flex-shrink: 0;
     }
 
-    .ast-status-badge {
+    .ast-cat-badge {
+        font-size: 10.5px;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+
+    .ast-tag-code {
         font-size: 11px;
         font-weight: 800;
-        padding: 3px 9px;
+        color: var(--text-muted);
+        font-family: inherit;
+    }
+
+    .user-avatar-initials {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #4f46e5;
+        color: #ffffff;
+        font-size: 9.5px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ast-status-pill {
+        font-size: 10.5px;
+        font-weight: 800;
+        padding: 2px 8px;
         border-radius: 6px;
         display: inline-flex;
         align-items: center;
         gap: 4px;
     }
 
-    /* Search & Filter Toolbar */
-    .ast-search-bar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-
-    .ast-search-box {
-        position: relative;
-        min-width: 220px;
-    }
-
-    .ast-search-box input {
-        width: 100%;
-        background: var(--pill-gray);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 7px 12px 7px 32px;
-        font-size: 12px;
-        color: var(--text-main);
-        outline: none;
-        box-sizing: border-box;
-    }
-
-    .ast-search-box input:focus {
-        border-color: var(--primary);
-    }
-
-    .ast-search-box svg {
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: var(--text-muted);
-        pointer-events: none;
-    }
-
-    /* Pagination Footer (10 Items / Page) */
-    .tab-pagination-footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 14px 4px 4px;
-        margin-top: 14px;
-        border-top: 1px solid var(--border);
-        font-size: 12px;
-        color: var(--text-muted);
-        font-weight: 700;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
-
-    .pagination-pages {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .pagination-btn {
-        background: var(--pill-gray);
-        border: 1px solid var(--border);
-        color: var(--text-main);
-        font-size: 11.5px;
-        font-weight: 700;
-        padding: 5px 11px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.15s ease;
-    }
-
-    .pagination-btn:hover:not(:disabled) {
-        border-color: var(--primary);
-        color: var(--primary);
-    }
-
-    .pagination-btn.active {
-        background: var(--primary);
-        border-color: var(--primary);
-        color: #ffffff;
-        box-shadow: 0 2px 8px var(--primary-shadow);
-    }
-
-    .pagination-btn:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-    }
-
     .btn-table-action {
-        width: 28px;
-        height: 28px;
-        border-radius: 7px;
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
         border: 1px solid var(--border);
         background: var(--card-bg);
         color: var(--text-main);
@@ -466,6 +548,81 @@
         color: var(--primary);
     }
 
+    /* Table Footer & View All Link */
+    .ast-table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 0 4px;
+        border-top: 1px solid var(--border);
+        margin-top: 10px;
+    }
+
+    .view-all-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12.5px;
+        font-weight: 800;
+        color: var(--primary);
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .view-all-link:hover {
+        transform: translateX(2px);
+    }
+
+    /* Compact Minimized Pagination Footer */
+    .tab-pagination-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 2px 2px;
+        margin-top: 6px;
+        font-size: 11px;
+        color: var(--text-muted);
+        font-weight: 700;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pagination-pages {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .pagination-btn {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        font-size: 10.5px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 2px 6px var(--primary-shadow);
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
     /* Activity Items */
     .activity-list {
         display: flex;
@@ -479,15 +636,74 @@
         gap: 10px;
     }
 
-    .activity-icon {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+    .activity-icon-circ {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
         margin-top: 2px;
+    }
+
+    /* Keep Your Assets Secure Promo Card */
+    .ast-promo-card {
+        background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+        border: 1px solid rgba(124, 58, 237, 0.2);
+        border-radius: 16px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .ast-promo-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: #7c3aed;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+
+    .ast-promo-text h4 {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #1e1b4b;
+        margin: 0 0 2px;
+    }
+
+    .ast-promo-text p {
+        font-size: 10.5px;
+        color: #4b5563;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .ast-promo-btn {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #7c3aed;
+        color: #ffffff;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: transform 0.15s ease;
+    }
+
+    .ast-promo-btn:hover {
+        transform: scale(1.08);
     }
 
     /* Responsive */
@@ -506,18 +722,20 @@
 <div class="ast-header-bar">
     <div class="ast-header-title">
         <h2>
-            <span>Asset Management</span>
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            <span>Assets</span>
+            <svg width="22" height="22" fill="none" stroke="var(--primary)" viewBox="0 0 24 24" stroke-width="2.2">
+                <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
         </h2>
-        <p>Track hardware equipment, license allocation, inventory health, and employee assignments.</p>
+        <p>Track, manage and optimize all company assets in one place.</p>
     </div>
     <button type="button" class="btn-add-asset" onclick="openAddAssetModal()">
-        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
         </svg>
-        <span>Add New Asset</span>
+        <span>Add Asset</span>
     </button>
 </div>
 
@@ -525,133 +743,227 @@
 <div class="ast-5kpi-grid">
     <!-- Total Assets -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: var(--pill-purple); color: var(--primary);">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <div class="ast-kpi-avatar" style="background: #f5f3ff; color: #7c3aed; border: 1px solid #ede9fe;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                <line x1="12" y1="11" x2="12" y2="15"></line>
+                <line x1="10" y1="13" x2="14" y2="13"></line>
+            </svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: var(--primary);">{{ kpi_metrics.total_assets }}</div>
             <h4>Total Assets</h4>
-            <div class="ast-kpi-sub" style="color: #10b981;">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{ kpi_metrics.total_sub }}</span>
+            <div class="kpi-val">{{ kpi_metrics.total_assets }}</div>
+            <div class="kpi-sub-title">All Assets</div>
+            <div class="kpi-trend" style="color: #10b981;">
+                <span>&uarr; {{ kpi_metrics.total_sub|slice:"1:" }}</span>
             </div>
         </div>
     </div>
 
-    <!-- Assigned -->
+    <!-- Assigned Assets -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: #ecfdf5; color: #10b981;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+        <div class="ast-kpi-avatar" style="background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: #10b981;">{{ kpi_metrics.assigned_assets }}</div>
             <h4>Assigned Assets</h4>
-            <div class="ast-kpi-sub" style="color: #10b981;">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{ kpi_metrics.assigned_sub }}</span>
+            <div class="kpi-val">{{ kpi_metrics.assigned_assets }}</div>
+            <div class="kpi-sub-title">Assigned</div>
+            <div class="kpi-trend" style="color: #10b981;">
+                <span>&uarr; {{ kpi_metrics.assigned_sub|slice:"1:" }}</span>
             </div>
         </div>
     </div>
 
     <!-- In Stock -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: #eff6ff; color: #3b82f6;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+        <div class="ast-kpi-avatar" style="background: #eff6ff; color: #3b82f6; border: 1px solid #dbeafe;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                <circle cx="12" cy="10" r="3"></circle>
+                <path d="M7 18a5 5 0 0110 0"></path>
+            </svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: #3b82f6;">{{ kpi_metrics.in_stock }}</div>
-            <h4>In Stock (Ready)</h4>
-            <div class="ast-kpi-sub" style="color: #3b82f6;">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
-                <span>{{ kpi_metrics.in_stock_sub }}</span>
+            <h4>In Stock</h4>
+            <div class="kpi-val">{{ kpi_metrics.in_stock }}</div>
+            <div class="kpi-sub-title">Available</div>
+            <div class="kpi-trend" style="color: #10b981;">
+                <span>&uarr; {{ kpi_metrics.in_stock_sub|slice:"1:" }}</span>
             </div>
         </div>
     </div>
 
-    <!-- Maintenance -->
+    <!-- Under Maintenance -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: #fffbeb; color: #f59e0b;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+        <div class="ast-kpi-avatar" style="background: #fffbeb; color: #f59e0b; border: 1px solid #fef3c7;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"></path>
+                <path d="M19 11l2 2-4 4"></path>
+            </svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: #f59e0b;">{{ kpi_metrics.maintenance }}</div>
-            <h4>Maintenance</h4>
-            <div class="ast-kpi-sub" style="color: var(--text-muted);">{{ kpi_metrics.maintenance_sub }}</div>
+            <h4>Under Maintenance</h4>
+            <div class="kpi-val">{{ kpi_metrics.maintenance }}</div>
+            <div class="kpi-sub-title">Maintenance</div>
+            <div class="kpi-trend" style="color: #ef4444;">
+                <span>&darr; {{ kpi_metrics.maintenance_sub|slice:"1:" }}</span>
+            </div>
         </div>
     </div>
 
-    <!-- Retired -->
+    <!-- Retired Assets -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: #fef2f2; color: #ef4444;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        <div class="ast-kpi-avatar" style="background: #fff1f2; color: #f43f5e; border: 1px solid #ffe4e6;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <rect x="3" y="6" width="18" height="15" rx="2"></rect>
+                <path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                <line x1="12" y1="10" x2="12" y2="16"></line>
+                <line x1="9" y1="13" x2="15" y2="13"></line>
+            </svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: #ef4444;">{{ kpi_metrics.retired }}</div>
-            <h4>Retired</h4>
-            <div class="ast-kpi-sub" style="color: var(--text-muted);">{{ kpi_metrics.retired_sub }}</div>
+            <h4>Retired Assets</h4>
+            <div class="kpi-val">{{ kpi_metrics.retired }}</div>
+            <div class="kpi-sub-title">Retired</div>
+            <div class="kpi-trend" style="color: #ef4444;">
+                <span>&darr; {{ kpi_metrics.retired_sub|slice:"1:" }}</span>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Middle 3-Column Analytics Grid -->
 <div class="ast-middle-grid">
-    <!-- Category Distribution -->
+    <!-- 1. Assets by Category Donut Card -->
     <div class="ast-panel">
         <div class="ast-panel-header">
-            <h3 class="ast-panel-title">Asset Categories</h3>
-            <span style="font-size: 11px; font-weight: 800; color: var(--text-muted);">{{ category_distribution.total }} Total</span>
+            <h3 class="ast-panel-title">Assets by Category</h3>
         </div>
-        <div class="cat-dist-list">
-            {% for c in category_distribution.categories %}
-            <div class="cat-dist-item">
-                <div class="cat-dist-header">
-                    <span>{{ c.name }}</span>
-                    <span style="font-weight: 800; color: var(--text-muted);">{{ c.count }} ({{ c.pct }})</span>
-                </div>
-                <div class="cat-dist-bar">
-                    <div class="cat-dist-fill" style="width: {{ c.pct }}; background: {{ c.color }};"></div>
+        <div class="chart-container-flex">
+            <!-- Donut Chart -->
+            <div class="donut-chart-box">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="var(--pill-gray)" stroke-width="15"></circle>
+                    <!-- Laptops 26.9% (74.4) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#7c3aed" stroke-width="15" stroke-dasharray="74.4 276.5" stroke-dashoffset="0" transform="rotate(-90 60 60)"></circle>
+                    <!-- Monitors 21.8% (60.3) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#3b82f6" stroke-width="15" stroke-dasharray="60.3 276.5" stroke-dashoffset="-74.4" transform="rotate(-90 60 60)"></circle>
+                    <!-- Mobiles 17.9% (49.5) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#06b6d4" stroke-width="15" stroke-dasharray="49.5 276.5" stroke-dashoffset="-134.7" transform="rotate(-90 60 60)"></circle>
+                    <!-- Accessories 14.1% (39.0) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#ec4899" stroke-width="15" stroke-dasharray="39.0 276.5" stroke-dashoffset="-184.2" transform="rotate(-90 60 60)"></circle>
+                    <!-- Peripherals 11.5% (31.8) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#f59e0b" stroke-width="15" stroke-dasharray="31.8 276.5" stroke-dashoffset="-223.2" transform="rotate(-90 60 60)"></circle>
+                    <!-- Others 7.7% (21.3) -->
+                    <circle cx="60" cy="60" r="44" fill="none" stroke="#8b5cf6" stroke-width="15" stroke-dasharray="21.3 276.5" stroke-dashoffset="-255.0" transform="rotate(-90 60 60)"></circle>
+                </svg>
+                <div class="donut-center-label">
+                    <span class="donut-val">{{ category_distribution.total }}</span>
+                    <span class="donut-sub">Total</span>
                 </div>
             </div>
-            {% endfor %}
+            <!-- Legend -->
+            <div class="cat-legend-list">
+                {% for c in category_distribution.categories %}
+                <div class="cat-legend-item">
+                    <div class="cat-legend-left">
+                        <span class="cat-legend-dot" style="background: {{ c.color }};"></span>
+                        <span>{{ c.name }}</span>
+                    </div>
+                    <span class="cat-legend-count">{{ c.count }} ({{ c.pct }})</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <!-- Status Distribution -->
+    <!-- 2. Asset Status Overview Card -->
     <div class="ast-panel">
         <div class="ast-panel-header">
-            <h3 class="ast-panel-title">Inventory Status</h3>
+            <h3 class="ast-panel-title">Asset Status Overview</h3>
         </div>
-        <div class="status-dist-list">
-            {% for s in status_distribution %}
-            <div class="status-dist-item" onclick="filterAssetByStatus('{{ s.name }}')">
-                <div class="status-dist-left">
-                    <span class="status-dot-indicator" style="background: {{ s.color }};"></span>
-                    <span>{{ s.name }}</span>
+        <div class="chart-container-flex">
+            <!-- Radial Arcs Gauge with Shield Center -->
+            <div class="donut-chart-box">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                    <!-- Background Tracks -->
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" stroke-width="4"></circle>
+                    <circle cx="60" cy="60" r="41" fill="none" stroke="#f1f5f9" stroke-width="4"></circle>
+                    <circle cx="60" cy="60" r="32" fill="none" stroke="#f1f5f9" stroke-width="4"></circle>
+                    <circle cx="60" cy="60" r="23" fill="none" stroke="#f1f5f9" stroke-width="4"></circle>
+                    
+                    <!-- Assigned Arc 59% (circumference 314.16 -> 185.3) -->
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="4.5" stroke-dasharray="185.3 314.2" stroke-linecap="round" transform="rotate(-90 60 60)"></circle>
+                    <!-- Available Arc 28.8% (circumference 257.6 -> 74.2) -->
+                    <circle cx="60" cy="60" r="41" fill="none" stroke="#3b82f6" stroke-width="4.5" stroke-dasharray="74.2 257.6" stroke-linecap="round" transform="rotate(-90 60 60)"></circle>
+                    <!-- Maintenance Arc 12.2% (circumference 201.06 -> 24.5) -->
+                    <circle cx="60" cy="60" r="32" fill="none" stroke="#f59e0b" stroke-width="4.5" stroke-dasharray="24.5 201.1" stroke-linecap="round" transform="rotate(-90 60 60)"></circle>
+                    <!-- Retired Arc 7.7% (circumference 144.5 -> 11.1) -->
+                    <circle cx="60" cy="60" r="23" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-dasharray="11.1 144.5" stroke-linecap="round" transform="rotate(-90 60 60)"></circle>
+                </svg>
+                <!-- Center Shield Icon -->
+                <div class="donut-center-label">
+                    <div style="width: 26px; height: 26px; border-radius: 50%; background: #eff6ff; display: flex; align-items: center; justify-content: center; color: #3b82f6; box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
                 </div>
-                <span style="font-weight: 800; color: var(--text-main);">{{ s.count }} ({{ s.pct }})</span>
             </div>
-            {% endfor %}
+            <!-- Status List -->
+            <div class="status-overview-list">
+                {% for s in status_distribution %}
+                <div class="status-overview-item" onclick="filterAssetByStatus('{{ s.name }}')">
+                    <div class="status-overview-left">
+                        <div class="status-overview-icon" style="background: {{ s.icon_bg }}; color: {{ s.color }};">
+                            {% if s.name == 'Assigned' %}
+                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                            {% elif s.name == 'Available' %}
+                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                            {% elif s.name == 'Maintenance' %}
+                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                            {% else %}
+                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            {% endif %}
+                        </div>
+                        <span>{{ s.name }}</span>
+                    </div>
+                    <span style="font-weight: 800; color: var(--text-muted); font-size: 11px;">{{ s.count }} ({{ s.pct }})</span>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 
-    <!-- Quick Actions -->
+    <!-- 3. Quick Actions Card -->
     <div class="ast-panel">
         <div class="ast-panel-header">
             <h3 class="ast-panel-title">Quick Actions</h3>
+            <svg width="16" height="16" fill="#7c3aed" viewBox="0 0 24 24">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+            </svg>
         </div>
         <div class="quick-actions-list">
             {% for q in quick_actions %}
-            <div class="quick-action-item" onclick="handleAssetQuickAction('{{ q.action_id }}')">
+            <div class="quick-action-card" onclick="handleAssetQuickAction('{{ q.action_id }}')">
                 <div class="quick-action-left">
-                    <div class="quick-action-icon" style="background: {{ q.icon_bg }}; color: {{ q.icon_color }};">
+                    <div class="quick-action-sq-icon" style="background: {{ q.icon_bg }};">
                         {% if q.icon_type == 'plus' %}
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
                         {% elif q.icon_type == 'import' %}
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         {% elif q.icon_type == 'user-check' %}
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                         {% else %}
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         {% endif %}
                     </div>
                     <div>
@@ -659,7 +971,7 @@
                         <div class="quick-action-desc">{{ q.desc }}</div>
                     </div>
                 </div>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5" style="color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path></svg>
             </div>
             {% endfor %}
         </div>
@@ -668,27 +980,17 @@
 
 <!-- Bottom Section: Asset Inventory Table & Activity Ledger -->
 <div class="ast-bottom-grid">
-    <!-- Asset Inventory Table (with 10-Item Pagination) -->
+    <!-- Asset Inventory Table Panel -->
     <div class="ast-panel">
         <div class="ast-panel-header">
             <div>
-                <h3 class="ast-panel-title">Asset Inventory Directory</h3>
-                <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Browse and manage registered hardware equipment.</p>
+                <h3 class="ast-panel-title">Asset Inventory</h3>
             </div>
-            <div class="ast-search-bar">
+            <div class="ast-toolbar-right">
                 <div class="ast-search-box">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" id="assetSearchInput" placeholder="Search asset tag, model, assignee..." onkeyup="filterAssets()">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="assetSearchInput" placeholder="Search assets..." onkeyup="filterAssets()">
                 </div>
-                <select id="assetCategoryFilter" style="background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; font-size: 12px; color: var(--text-main); font-family: inherit; cursor: pointer;" onchange="filterAssets()">
-                    <option value="ALL">All Categories</option>
-                    <option value="Laptops">Laptops</option>
-                    <option value="Monitors">Monitors</option>
-                    <option value="Mobiles">Mobiles</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Peripherals">Peripherals</option>
-                    <option value="Others">Others</option>
-                </select>
             </div>
         </div>
 
@@ -696,13 +998,13 @@
             <table class="ast-custom-table" id="assetsTable">
                 <thead>
                     <tr>
-                        <th>Asset Tag</th>
-                        <th>Device / Equipment</th>
+                        <th>Asset Name</th>
                         <th>Category</th>
-                        <th>Assignee</th>
+                        <th>Tag</th>
+                        <th>Assigned To</th>
                         <th>Status</th>
                         <th>Location</th>
-                        <th>Assigned On</th>
+                        <th>Purchase</th>
                         <th style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
@@ -710,38 +1012,58 @@
                     {% for a in inventory_items %}
                     <tr class="asset-table-row" data-tag="{{ a.tag|lower }}" data-name="{{ a.name|lower }}" data-category="{{ a.category }}" data-status="{{ a.status }}" data-assignee="{{ a.assignee|default:''|lower }}" data-location="{{ a.location|lower }}">
                         <td>
-                            <span class="ast-tag-badge">{{ a.tag }}</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="device-thumb-box">
+                                    {% if a.icon_type == 'laptop' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
+                                    {% elif a.icon_type == 'monitor' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                    {% elif a.icon_type == 'phone' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                                    {% elif a.icon_type == 'mouse' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="6" y="3" width="12" height="18" rx="6"></rect><line x1="12" y1="7" x2="12" y2="11"></line></svg>
+                                    {% elif a.icon_type == 'keyboard' %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="6" y1="9" x2="6.01" y2="9"></line><line x1="10" y1="9" x2="10.01" y2="9"></line><line x1="14" y1="9" x2="14.01" y2="9"></line><line x1="18" y1="9" x2="18.01" y2="9"></line><line x1="7" y1="15" x2="17" y2="15"></line></svg>
+                                    {% else %}
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                    {% endif %}
+                                </div>
+                                <span style="font-weight: 800; color: var(--text-main);">{{ a.name }}</span>
+                            </div>
                         </td>
                         <td>
-                            <div style="font-weight: 800; color: var(--text-main);">{{ a.name }}</div>
+                            <span class="ast-cat-badge" style="background: {{ a.category_bg }}; color: {{ a.category_color }};">{{ a.category }}</span>
                         </td>
                         <td>
-                            <span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: {{ a.category_bg }}; color: {{ a.category_color }};">{{ a.category }}</span>
+                            <span class="ast-tag-code">{{ a.tag }}</span>
                         </td>
                         <td>
                             {% if a.assignee %}
-                            <div>
-                                <div style="font-weight: 800; color: var(--text-main);">{{ a.assignee }}</div>
-                                <div style="font-size: 10.5px; color: var(--text-muted); font-weight: 700;">{{ a.designation }}</div>
+                            <div style="display: flex; align-items: center; gap: 7px;">
+                                
+                                <div>
+                                    <div style="font-weight: 800; color: var(--text-main); font-size: 11.5px;">{{ a.assignee }}</div>
+                                    
+                                </div>
                             </div>
                             {% else %}
-                            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); font-style: italic;">Unassigned</span>
+                            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">&mdash; Not Assigned</span>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="ast-status-badge" style="background: {{ a.status_bg }}; color: {{ a.status_color }};">
+                            <span class="ast-status-pill" style="background: {{ a.status_bg }}; color: {{ a.status_color }};">
                                 {{ a.status }}
                             </span>
                         </td>
-                        <td style="font-weight: 700; color: var(--text-muted); font-size: 11.5px;">{{ a.location }}</td>
-                        <td style="font-weight: 700; color: var(--text-muted); font-size: 11.5px;">{{ a.date }}</td>
+                        <td style="font-weight: 600; color: var(--text-muted); font-size: 11.5px;">{{ a.location }}</td>
+                        <td style="font-weight: 600; color: var(--text-muted); font-size: 11.5px;">{{ a.date }}</td>
                         <td style="text-align: right;">
-                            <div style="display: inline-flex; align-items: center; gap: 6px;">
-                                <button type="button" class="btn-table-action" title="View Details" onclick="viewAssetDetails('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}', '{{ a.category|escapejs }}', '{{ a.assignee|default:"Unassigned"|escapejs }}', '{{ a.status|escapejs }}', '{{ a.location|escapejs }}')">
-                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <div style="display: inline-flex; align-items: center; gap: 4px;">
+                                <button type="button" class="btn-table-action" title="Edit" onclick="editAssetModal('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}')">
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
-                                <button type="button" class="btn-table-action" title="Assign / Return" onclick="openAssignModalFor('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}')">
-                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                <button type="button" class="btn-table-action" title="More Options" onclick="viewAssetDetails('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}', '{{ a.category|escapejs }}', '{{ a.assignee|default:"Unassigned"|escapejs }}', '{{ a.status|escapejs }}', '{{ a.location|escapejs }}')">
+                                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="6" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="18" r="2"></circle></svg>
                                 </button>
                             </div>
                         </td>
@@ -751,57 +1073,88 @@
             </table>
         </div>
 
-        <!-- Pagination Container (10 Items / Page) -->
         <div id="assetPagination" class="tab-pagination-footer"></div>
     </div>
 
-    <!-- Recent Activity Timeline -->
-    <div class="ast-panel">
-        <div class="ast-panel-header">
-            <h3 class="ast-panel-title">Asset Activity Log</h3>
-        </div>
-        <div class="activity-list">
-            {% for act in recent_activity %}
-            <div class="activity-item">
-                <div class="activity-icon" style="background: {{ act.icon_bg }}; color: {{ act.icon_color }};">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                </div>
-                <div style="flex: 1;">
-                    <div style="font-size: 12.5px; font-weight: 800; color: var(--text-main);">{{ act.title }}</div>
-                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">{{ act.desc }}</div>
-                    <div style="font-size: 10.5px; color: var(--primary); font-weight: 700; margin-top: 3px;">{{ act.time }}</div>
-                </div>
+    <!-- Right Sidebar (Recent Activity + Promo Card) -->
+    <div style="display: flex; flex-direction: column;">
+        <!-- Recent Activity Card -->
+        <div class="ast-panel">
+            <div class="ast-panel-header">
+                <h3 class="ast-panel-title">Recent Activity</h3>
+                <a href="javascript:void(0)" style="font-size: 11.5px; font-weight: 800; color: var(--primary); text-decoration: none;">View All</a>
             </div>
-            {% endfor %}
+            <div class="activity-list">
+                {% for act in recent_activity %}
+                <div class="activity-item">
+                    <div class="activity-icon-circ" style="background: {{ act.icon_bg }}; color: {{ act.icon_color }};">
+                        {% if act.icon_type == 'plus' %}
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+                        {% elif act.icon_type == 'check' %}
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                        {% elif act.icon_type == 'wrench' %}
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+                        {% elif act.icon_type == 'box' %}
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        {% else %}
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        {% endif %}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="font-size: 11.5px; font-weight: 800; color: var(--text-main);">{{ act.title }}</span>
+                            <span style="font-size: 10px; color: var(--text-muted); font-weight: 600;">{{ act.time }}</span>
+                        </div>
+                        <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 1px; font-weight: 600;">{{ act.desc }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Keep Your Assets Secure Promo Card -->
+        <div class="ast-promo-card">
+            <div class="ast-promo-icon">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"></path>
+                </svg>
+            </div>
+            <div class="ast-promo-text" style="flex: 1;">
+                <h4>Keep Your Assets Secure</h4>
+                <p>Regular asset maintenance and tracking helps improve productivity & security.</p>
+            </div>
+            <button type="button" class="ast-promo-btn" title="View Security Settings" onclick="viewAllAssetsAction()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Modal: Add New Asset -->
 <div id="addAssetModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 92%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 36px; height: 36px; border-radius: 10px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
+                <div style="width: 34px; height: 34px; border-radius: 10px; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
                 </div>
                 <div>
-                    <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Register New Asset</h3>
-                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Add hardware device to company inventory.</p>
+                    <h3 style="font-size: 15px; font-weight: 800; color: var(--text-main); margin: 0;">Register New Asset</h3>
+                    <p style="font-size: 11px; color: var(--text-muted); margin: 2px 0 0;">Add hardware device to company inventory.</p>
                 </div>
             </div>
             <button type="button" onclick="closeAddAssetModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
         </div>
         <form id="addAssetForm" onsubmit="submitAssetRegistration(event)">
-            <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Device / Model Name *</label>
-                    <input type="text" id="newAssetName" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit;" required placeholder="e.g. MacBook Pro 16-inch M3">
+                    <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Device / Model Name *</label>
+                    <input type="text" id="newAssetName" style="padding: 7px 10px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 12px;" required placeholder="e.g. MacBook Pro 16\"">
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                     <div>
-                        <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Category</label>
-                        <select id="newAssetCategory" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit; cursor: pointer;">
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Category</label>
+                        <select id="newAssetCategory" style="padding: 7px 10px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 12px; cursor: pointer;">
                             <option>Laptops</option>
                             <option>Monitors</option>
                             <option>Mobiles</option>
@@ -811,14 +1164,14 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Assign To</label>
-                        <input type="text" id="newAssetAssignee" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit;" placeholder="Employee name or leave blank">
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Assign To</label>
+                        <input type="text" id="newAssetAssignee" style="padding: 7px 10px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 8px; color: var(--text-main); font-family: inherit; font-size: 12px;" placeholder="Employee name or leave blank">
                     </div>
                 </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
-                <button type="button" style="padding: 8px 16px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--pill-gray); color: var(--text-main); cursor: pointer;" onclick="closeAddAssetModal()">Cancel</button>
-                <button type="submit" class="btn-add-asset">Register Asset</button>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 12px;">
+                <button type="button" style="padding: 7px 14px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--pill-gray); color: var(--text-main); cursor: pointer;" onclick="closeAddAssetModal()">Cancel</button>
+                <button type="submit" class="btn-add-asset" style="padding: 7px 14px; font-size: 12px;">Register Asset</button>
             </div>
         </form>
     </div>
@@ -826,22 +1179,22 @@
 
 <!-- Modal: Asset Details Preview -->
 <div id="assetDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 460px; max-width: 92%; padding: 24px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="ast-tag-badge" id="previewAssetTag">LAP-2024-001</span>
-                <span id="previewAssetStatus" style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: #ecfdf5; color: #10b981;">Assigned</span>
+                <span class="ast-inv-badge" id="previewAssetTag">LAP-2024-001</span>
+                <span id="previewAssetStatus" style="font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; background: #ecfdf5; color: #10b981;">Assigned</span>
             </div>
             <button type="button" onclick="closeAssetDetailModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
         </div>
-        <h3 id="previewAssetName" style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 12px;">Device Name</h3>
-        <div style="display: flex; flex-direction: column; gap: 8px; background: var(--pill-gray); border-radius: 12px; padding: 14px; border: 1px solid var(--border); font-size: 12.5px; color: var(--text-main); margin-bottom: 18px;">
+        <h3 id="previewAssetName" style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0 0 10px;">Device Name</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; background: var(--pill-gray); border-radius: 10px; padding: 12px; border: 1px solid var(--border); font-size: 12px; color: var(--text-main); margin-bottom: 16px;">
             <div><span style="color: var(--text-muted); font-weight: 700;">Category:</span> <strong id="previewAssetCategory">Laptops</strong></div>
             <div><span style="color: var(--text-muted); font-weight: 700;">Current Assignee:</span> <strong id="previewAssetAssignee">Rohit Mehta</strong></div>
-            <div><span style="color: var(--text-muted); font-weight: 700;">Deployment Location:</span> <strong id="previewAssetLocation">Engineering Bay</strong></div>
+            <div><span style="color: var(--text-muted); font-weight: 700;">Deployment Location:</span> <strong id="previewAssetLocation">IT Department</strong></div>
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 10px;">
-            <button type="button" class="btn-add-asset" onclick="closeAssetDetailModal()" style="padding: 7px 18px; font-size: 12px;">Close</button>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+            <button type="button" class="btn-add-asset" onclick="closeAssetDetailModal()" style="padding: 6px 14px; font-size: 11.5px;">Close</button>
         </div>
     </div>
 </div>
@@ -870,26 +1223,32 @@
         openAssetDetailModal();
     }
 
-    function openAssignModalFor(tag, name) {
-        if (typeof window.showToast === 'function') {
-            window.showToast('Asset assignment panel ready for ' + tag + ' (' + name + ').', 'info');
-        }
+    function editAssetModal(tag, name) {
+        document.getElementById('newAssetName').value = name;
+        openAddAssetModal();
     }
 
     function handleAssetQuickAction(actionId) {
-        if (actionId === 'new_asset') {
+        if (actionId === 'new_asset' || actionId === 'assign_asset') {
             openAddAssetModal();
         } else if (actionId === 'import_asset') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Bulk Asset CSV import template downloaded and ready for upload.', 'info');
-            }
-        } else if (actionId === 'assign_asset') {
             openAddAssetModal();
         } else if (actionId === 'reports') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Generating comprehensive hardware inventory report...', 'info');
-            }
+            window.location.href = '{% url "reports" %}';
         }
+    }
+
+    function viewAllAssetsAction() {
+        document.getElementById('assetCategoryFilter').value = 'ALL';
+        document.getElementById('assetStatusFilter').value = 'ALL';
+        document.getElementById('assetSearchInput').value = '';
+        assetPaginationState.selectedStatus = 'ALL';
+        assetPaginationState.currentPage = 1;
+        initAssetPagination();
+    }
+
+    function resetAssetFilters() {
+        viewAllAssetsAction();
     }
 
     function submitAssetRegistration(e) {
@@ -912,16 +1271,13 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         }).catch(function(err) { console.error(err); });
 
-        if (typeof window.showToast === 'function') {
-            window.showToast('Asset "' + name + '" registered and logged successfully.', 'success');
-        }
         document.getElementById('addAssetForm').reset();
     }
 
-    // 10-Item Pagination Engine for Asset Table
+    // 3-Item Pagination Engine for Asset Table
     var assetPaginationState = {
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 3,
         selectedStatus: 'ALL'
     };
 
@@ -931,7 +1287,7 @@
 
         var rows = Array.from(table.querySelectorAll('tbody tr.asset-table-row'));
         var searchVal = (document.getElementById('assetSearchInput') ? document.getElementById('assetSearchInput').value : '').toLowerCase().trim();
-        var catVal = (document.getElementById('assetCategoryFilter') ? document.getElementById('assetCategoryFilter').value : 'ALL');
+        var statusVal = assetPaginationState.selectedStatus;
 
         var visibleRows = rows.filter(function(r) {
             var tag = r.getAttribute('data-tag') || '';
@@ -939,12 +1295,12 @@
             var cat = r.getAttribute('data-category') || '';
             var status = r.getAttribute('data-status') || '';
             var assignee = r.getAttribute('data-assignee') || '';
+            var loc = r.getAttribute('data-location') || '';
 
-            var matchStatus = (assetPaginationState.selectedStatus === 'ALL' || status === assetPaginationState.selectedStatus);
-            var matchCat = (catVal === 'ALL' || cat === catVal);
-            var matchSearch = (!searchVal || tag.indexOf(searchVal) > -1 || name.indexOf(searchVal) > -1 || assignee.indexOf(searchVal) > -1 || cat.toLowerCase().indexOf(searchVal) > -1);
+            var matchStatus = (statusVal === 'ALL' || status === statusVal);
+            var matchSearch = (!searchVal || tag.indexOf(searchVal) > -1 || name.indexOf(searchVal) > -1 || assignee.indexOf(searchVal) > -1 || loc.indexOf(searchVal) > -1 || cat.toLowerCase().indexOf(searchVal) > -1);
 
-            return matchStatus && matchCat && matchSearch;
+            return matchStatus && matchSearch;
         });
 
         var total = visibleRows.length;
@@ -999,12 +1355,13 @@
     }
 
     function filterAssetByStatus(statusName) {
-        assetPaginationState.selectedStatus = statusName;
+        if (assetPaginationState.selectedStatus === statusName) {
+            assetPaginationState.selectedStatus = 'ALL';
+        } else {
+            assetPaginationState.selectedStatus = statusName;
+        }
         assetPaginationState.currentPage = 1;
         initAssetPagination();
-        if (typeof window.showToast === 'function') {
-            window.showToast('Filtering assets by ' + statusName + ' status.', 'info');
-        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {

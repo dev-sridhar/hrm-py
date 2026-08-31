@@ -1654,8 +1654,8 @@
             });
         }
 
-        // Global showToast helper for client-side events (clipboard copy, uploads, etc.)
-        window.showToast = function(message, type = 'success') {
+        // Global showToast helper disabled for silent UI interactions
+        window.showToast = function(message, type = 'success') { return;
             const container = document.getElementById('toastContainer');
             if (!container) return;
 

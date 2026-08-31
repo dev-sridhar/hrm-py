@@ -113,9 +113,7 @@
             var keyEl = document.getElementById('rptKey_' + modalId);
             var key = keyEl ? keyEl.value : 'employee';
             window.closeExportModal(modalId);
-            if (typeof window.showToast === 'function') {
-                window.showToast('Generating and downloading report from database...', 'success');
-            }
+            
             window.location.href = '{% url "reports" %}?export=' + encodeURIComponent(key);
         };
     }

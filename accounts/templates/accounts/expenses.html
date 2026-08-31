@@ -902,9 +902,7 @@
     }
 
     function quickApproveClaim(claimId) {
-        if (typeof window.showToast === 'function') {
-            window.showToast('Expense claim ' + claimId + ' approved successfully.', 'success');
-        }
+        
     }
 
     function handleExpenseQuickAction(actionId) {
@@ -912,9 +910,7 @@
             openSubmitExpenseModal();
         } else if (actionId === 'my_expenses') {
             filterExpenseByStatus('ALL');
-            if (typeof window.showToast === 'function') {
-                window.showToast('Showing your submitted expense claims.', 'info');
-            }
+            
         } else if (actionId === 'export_report') {
             var csvContent = "Claim_ID,Employee,Category,Amount,Date,Status\n";
             document.querySelectorAll('.expense-table-row').forEach(function(row) {
@@ -932,13 +928,9 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            if (typeof window.showToast === 'function') {
-                window.showToast('Expense summary CSV exported successfully.', 'success');
-            }
+            
         } else if (actionId === 'policy_guide') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Corporate Reimbursement Policy limits: Travel up to INR 25k/trip, Meals up to INR 3k/day.', 'info');
-            }
+            
         }
     }
 
@@ -962,9 +954,7 @@
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         }).catch(function(err) { console.error(err); });
 
-        if (typeof window.showToast === 'function') {
-            window.showToast('Expense claim "' + title + '" (INR ' + amount + ') submitted for approval.', 'success');
-        }
+        
         document.getElementById('submitExpenseForm').reset();
     }
 

@@ -1299,9 +1299,7 @@
         closeAddReviewModal();
         document.getElementById('addReviewForm').reset();
 
-        if (typeof window.showToast === 'function') {
-            window.showToast('Performance review for ' + name + ' (Rating: ' + ratingStr + '/5.0) saved successfully.', 'success');
-        }
+        
     }
 
     function openEditReviewModal(name, code, dept, role, rating, status, date) {
@@ -1412,9 +1410,7 @@
         renderTablePage(currentTablePage);
         closeEditReviewModal();
 
-        if (typeof window.showToast === 'function') {
-            window.showToast('Performance review for ' + name + ' updated to Rating ' + ratingStr + ' (' + status + ') successfully.', 'success');
-        }
+        
     }
 
     function toggleDeptFilterModal() {

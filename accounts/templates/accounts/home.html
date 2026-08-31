@@ -1799,9 +1799,7 @@
                     `;
                 }
             }
-            if (window.showToast) {
-                window.showToast(data.message || `Leave marked as ${actionStatus}.`, actionStatus === 'approved' ? 'success' : 'error');
-            }
+            
         })
         .catch(err => {
             // Fallback to normal form submission if network fails
