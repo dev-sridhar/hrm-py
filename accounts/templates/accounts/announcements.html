@@ -30,6 +30,12 @@
         margin: 3px 0 0;
     }
 
+    .ann-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
     .btn-new-ann {
         background: var(--primary-gradient);
         color: #ffffff;
@@ -188,7 +194,7 @@
     }
 
     .featured-title {
-        font-size: 22px;
+        font-size: 21px;
         font-weight: 900;
         margin: 0 0 8px;
         line-height: 1.2;
@@ -269,6 +275,8 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 18px;
+        flex-wrap: wrap;
+        gap: 12px;
     }
 
     .ann-panel-title {
@@ -276,6 +284,66 @@
         font-weight: 800;
         color: var(--text-main);
         margin: 0;
+    }
+
+    /* Category Filter Buttons Bar */
+    .ann-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+    }
+
+    .ann-filter-btn {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .ann-filter-btn.active, .ann-filter-btn:hover {
+        background: var(--primary);
+        color: #ffffff;
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    /* Search Toolbar */
+    .ann-search-box {
+        position: relative;
+        min-width: 240px;
+    }
+
+    .ann-search-box input {
+        width: 100%;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 7px 12px 7px 32px;
+        font-size: 12px;
+        color: var(--text-main);
+        outline: none;
+        transition: border-color 0.15s ease;
+        box-sizing: border-box;
+    }
+
+    .ann-search-box input:focus {
+        border-color: var(--primary);
+    }
+
+    .ann-search-box svg {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
     }
 
     /* Category List Items */
@@ -335,7 +403,7 @@
     .recent-ann-list {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
 
     .recent-ann-item {
@@ -383,8 +451,11 @@
 
     .important-badge {
         color: #e11d48;
-        font-size: 11px;
+        background: #ffe4e6;
+        font-size: 10.5px;
         font-weight: 800;
+        padding: 2px 7px;
+        border-radius: 5px;
         display: inline-flex;
         align-items: center;
         gap: 3px;
@@ -408,7 +479,7 @@
     }
 
     .recent-ann-date {
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 700;
         color: var(--text-muted);
         display: flex;
@@ -507,6 +578,56 @@
         gap: 9px;
     }
 
+    /* Pagination Footer (10 Items / Page) */
+    .tab-pagination-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 4px 4px;
+        margin-top: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 700;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .pagination-pages {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
     /* Responsive */
     @media (max-width: 1024px) {
         .ann-layout-grid { grid-template-columns: 1fr; }
@@ -528,14 +649,16 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.69-2.7a2 2 0 112.83-2.83 2 2 0 01-2.83 2.83z"></path>
             </svg>
         </h2>
-        <p>Stay updated with company news, important updates and events.</p>
+        <p>Stay updated with company news, important circulars, policies, and events.</p>
     </div>
-    <button type="button" class="btn-new-ann" onclick="openNewAnnouncementModal()">
-        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
-        </svg>
-        <span>New Announcement</span>
-    </button>
+    <div class="ann-header-actions">
+        <button type="button" class="btn-new-ann" onclick="openNewAnnouncementModal()">
+            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            <span>New Announcement</span>
+        </button>
+    </div>
 </div>
 
 <!-- Main Layout Grid -->
@@ -566,7 +689,7 @@
                 </div>
                 <div class="ann-kpi-info">
                     <div class="kpi-val" style="color: #10b981;">{{ kpi_metrics.active }}</div>
-                    <h4>Active</h4>
+                    <h4>Active Broadcasts</h4>
                     <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">Currently active</div>
                 </div>
             </div>
@@ -597,7 +720,7 @@
         </div>
 
         <!-- Featured Announcement Hero Card -->
-        <div class="featured-hero-card">
+        <div class="featured-hero-card" id="featuredHeroCard">
             <div class="featured-badge-row">
                 <span class="featured-tag-pill">
                     <svg width="12" height="12" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
@@ -606,34 +729,34 @@
                 <div class="featured-carousel-controls">
                     <button type="button" class="carousel-btn" onclick="prevFeaturedSlide()">&lsaquo;</button>
                     <button type="button" class="carousel-btn" onclick="nextFeaturedSlide()">&rsaquo;</button>
-                    <span style="font-size: 11.5px; font-weight: 800; opacity: 0.9; margin-left: 4px;">{{ featured.slide_index }}</span>
+                    <span id="featuredSlideIdx" style="font-size: 11.5px; font-weight: 800; opacity: 0.9; margin-left: 4px;">{{ featured.slide_index }}</span>
                 </div>
             </div>
 
-            <h3 class="featured-title">
+            <h3 class="featured-title" id="featuredTitle">
                 <span>{{ featured.title }}</span>
-                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #f59e0b;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #f59e0b;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.84 2.58m-.12-8.54a6 6 0 00-7.38 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.69-2.7a2 2 0 112.83-2.83 2 2 0 01-2.83 2.83z"></path>
                 </svg>
             </h3>
-            <p class="featured-desc">{{ featured.description }}</p>
+            <p class="featured-desc" id="featuredDesc">{{ featured.description }}</p>
 
             <div class="featured-meta-row">
                 <div class="featured-meta-item">
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <span>{{ featured.dates }}</span>
+                    <span id="featuredDates">{{ featured.dates }}</span>
                 </div>
                 <div class="featured-meta-item">
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>{{ featured.time }}</span>
+                    <span id="featuredTime">{{ featured.time }}</span>
                 </div>
                 <div class="featured-meta-item">
                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span>{{ featured.location }}</span>
+                    <span id="featuredLocation">{{ featured.location }}</span>
                 </div>
             </div>
 
-            <button type="button" class="btn-featured-action" onclick="showToast('Annual Company Summit 2026 registration details opened.', 'info')">
+            <button type="button" class="btn-featured-action" onclick="openFeaturedDetailsModal()">
                 <span>View Details</span>
                 <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
@@ -651,35 +774,46 @@
                             <stop offset="100%" stop-color="#4338ca" />
                         </linearGradient>
                     </defs>
-                    <!-- Sound Sparkles & Lightning -->
                     <path d="M 40,45 L 25,60 L 35,62 L 20,80" stroke="#fde047" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M 60,140 L 45,155 L 55,157 L 40,175" stroke="#f472b6" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
                     <circle cx="160" cy="40" r="3" fill="#38bdf8" />
                     <circle cx="175" cy="150" r="3.5" fill="#facc15" />
-
-                    <!-- Speaker Body -->
                     <path d="M 90,80 L 140,55 L 140,145 L 90,120 Z" fill="url(#bodyGrad)" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
-                    <!-- Front Cone Ring -->
                     <ellipse cx="140" cy="100" rx="14" ry="45" fill="url(#coneGrad)" />
                     <ellipse cx="140" cy="100" rx="8" ry="32" fill="#312e81" />
-                    <!-- Back Grip -->
                     <path d="M 90,80 C 80,80 70,88 70,100 C 70,112 80,120 90,120 Z" fill="#6366f1" />
-                    <!-- Handle -->
                     <path d="M 85,115 L 75,150 C 73,156 78,162 84,160 L 98,155 L 102,118 Z" fill="url(#bodyGrad)" />
                 </svg>
             </div>
         </div>
 
-        <!-- Recent Announcements Feed -->
+        <!-- Recent Announcements Feed & Table (with 10-Item Pagination) -->
         <div class="ann-panel">
             <div class="ann-panel-header">
-                <h3 class="ann-panel-title">Recent Announcements</h3>
-                <button type="button" class="btn-sidebar-settings" style="padding: 5px 12px; font-size: 11.5px; border-radius: 8px; width: auto; height: auto;" onclick="showToast('Showing all announcements archive...', 'info')">View All</button>
+                <div>
+                    <h3 class="ann-panel-title">Company Announcements</h3>
+                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Browse, search, and review all published corporate notices.</p>
+                </div>
+                <div class="ann-search-box">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="annSearchInput" placeholder="Search announcements..." onkeyup="filterAnnouncements()">
+                </div>
             </div>
 
-            <div class="recent-ann-list">
+            <!-- Filter Categories Bar -->
+            <div class="ann-filter-bar">
+                <button type="button" class="ann-filter-btn active" onclick="filterAnnByCategory('ALL', this)">All</button>
+                <button type="button" class="ann-filter-btn" onclick="filterAnnByCategory('General', this)">General</button>
+                <button type="button" class="ann-filter-btn" onclick="filterAnnByCategory('HR Policy', this)">HR Policy</button>
+                <button type="button" class="ann-filter-btn" onclick="filterAnnByCategory('Events', this)">Events</button>
+                <button type="button" class="ann-filter-btn" onclick="filterAnnByCategory('Updates', this)">Updates</button>
+                <button type="button" class="ann-filter-btn" onclick="filterAnnByCategory('Facilities', this)">Facilities</button>
+            </div>
+
+            <!-- Announcements List -->
+            <div class="recent-ann-list" id="announcementsList">
                 {% for r in recent_announcements %}
-                <div class="recent-ann-item">
+                <div class="recent-ann-item ann-item-card" data-category="{{ r.category }}" data-title="{{ r.title|lower }}" data-publisher="{{ r.publisher|lower }}">
                     <div class="recent-ann-left">
                         <div class="recent-ann-icon" style="background: {{ r.icon_bg }}; color: {{ r.icon_color }};">
                             {% if r.icon_type == 'speaker' %}
@@ -688,6 +822,8 @@
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             {% elif r.icon_type == 'bell' %}
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                            {% elif r.icon_type == 'shield' %}
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                             {% else %}
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                             {% endif %}
@@ -697,12 +833,12 @@
                                 <span>{{ r.title }}</span>
                                 {% if r.is_important %}
                                 <span class="important-badge">
-                                    <svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                                    <svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                                     Important
                                 </span>
                                 {% endif %}
                             </div>
-                            <div class="recent-ann-sub">Published by {{ r.publisher }} &bull; {{ r.category }}</div>
+                            <div class="recent-ann-sub">Published by {{ r.publisher }} &bull; {{ r.category }} &bull; {{ r.views }} Views</div>
                         </div>
                     </div>
 
@@ -712,18 +848,16 @@
                             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             <span>{{ r.date }}</span>
                         </div>
-                        <button type="button" class="menu-icon-btn" title="Options" onclick="showToast('Announcement options ready.', 'info')">
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+                        <button type="button" class="menu-icon-btn" title="View Notice" onclick="viewAnnouncementDetails('{{ r.title|escapejs }}', '{{ r.category|escapejs }}', '{{ r.publisher|escapejs }}', '{{ r.date|escapejs }}')">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </button>
                     </div>
                 </div>
                 {% endfor %}
             </div>
 
-            <a href="javascript:void(0)" class="view-all-purple-link" onclick="showToast('Opening full announcements roster...', 'info')">
-                <span>View All Announcements</span>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </a>
+            <!-- Pagination Container (10 Items / Page) -->
+            <div id="annPagination" class="tab-pagination-footer"></div>
         </div>
     </div>
 
@@ -736,7 +870,7 @@
             </div>
             <div class="category-list">
                 {% for c in categories %}
-                <div class="category-item" onclick="showToast('Filtered by {{ c.name }} category.', 'info')">
+                <div class="category-item" onclick="filterAnnByCategory('{{ c.name }}')">
                     <div class="category-left">
                         <div class="category-icon-box" style="background: {{ c.icon_bg }}; color: {{ c.icon_color }};">
                             {% if c.icon_type == 'speaker' %}
@@ -753,12 +887,12 @@
                         </div>
                         <span class="category-name">{{ c.name }}</span>
                     </div>
-                    <span class="category-count">{{ c.count }}</span>
+                    <span class="category-count">{{ c.count }} Notices</span>
                 </div>
                 {% endfor %}
             </div>
             <a href="javascript:void(0)" class="view-all-purple-link" onclick="openCategoriesModal()">
-                <span>View All Categories</span>
+                <span>View Category Details</span>
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </a>
         </div>
@@ -776,11 +910,11 @@
                             {% if q.icon_type == 'plus' %}
                             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
                             {% elif q.icon_type == 'grid' %}
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                             {% elif q.icon_type == 'chart' %}
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
                             {% else %}
-                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             {% endif %}
                         </div>
                         <div>
@@ -806,7 +940,7 @@
                 </div>
                 <div>
                     <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Create Announcement</h3>
-                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Broadcast news, event, or policy updates.</p>
+                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Broadcast news, circulars, or policy updates.</p>
                 </div>
             </div>
             <button type="button" onclick="closeNewAnnouncementModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
@@ -815,12 +949,12 @@
             <div style="display: flex; flex-direction: column; gap: 14px;">
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Announcement Title *</label>
-                    <input type="text" id="annTitle" class="perf-search-input" style="padding-left: 12px;" required placeholder="Headline...">
+                    <input type="text" id="annTitle" class="perf-search-input" style="padding-left: 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; height: 38px; color: var(--text-main); font-family: inherit;" required placeholder="Headline...">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Category</label>
-                        <select id="annCategory" class="perf-search-input" style="padding-left: 12px; cursor: pointer;">
+                        <select id="annCategory" style="padding-left: 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; height: 38px; color: var(--text-main); font-family: inherit; cursor: pointer;">
                             <option>General</option>
                             <option>HR Policy</option>
                             <option>Events</option>
@@ -830,7 +964,7 @@
                     </div>
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Priority</label>
-                        <select id="annPriority" class="perf-search-input" style="padding-left: 12px; cursor: pointer;">
+                        <select id="annPriority" style="padding-left: 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; height: 38px; color: var(--text-main); font-family: inherit; cursor: pointer;">
                             <option>Normal</option>
                             <option>High Priority</option>
                             <option>Important</option>
@@ -839,14 +973,35 @@
                 </div>
                 <div>
                     <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Content / Details *</label>
-                    <textarea id="annContent" class="perf-search-input" style="padding: 10px 12px; height: 90px; resize: vertical;" required placeholder="Write announcement description..."></textarea>
+                    <textarea id="annContent" style="padding: 10px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; height: 90px; resize: vertical; color: var(--text-main); font-family: inherit;" required placeholder="Write announcement description..."></textarea>
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; border-top: 1px solid var(--border); padding-top: 16px;">
-                <button type="button" class="btn-perf-filter" onclick="closeNewAnnouncementModal()">Cancel</button>
+                <button type="button" class="btn-perf-filter" style="padding: 8px 16px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--pill-gray); color: var(--text-main); cursor: pointer;" onclick="closeNewAnnouncementModal()">Cancel</button>
                 <button type="submit" class="btn-new-ann">Publish to Feed</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal: Notice Details Preview -->
+<div id="noticeDetailsModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 500px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="detailCatPill" style="background: var(--pill-purple); color: var(--primary); font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 6px;">General</span>
+                <span id="detailDate" style="font-size: 12px; font-weight: 700; color: var(--text-muted);">May 18, 2026</span>
+            </div>
+            <button type="button" onclick="closeNoticeDetailsModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <h3 id="detailTitle" style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 10px; line-height: 1.3;">Announcement Title</h3>
+        <p id="detailPublisher" style="font-size: 12px; color: var(--text-muted); margin: 0 0 14px; font-weight: 700;">Published by Admin Team</p>
+        <div style="background: var(--pill-gray); border-radius: 12px; padding: 14px; border: 1px solid var(--border); font-size: 13px; color: var(--text-main); line-height: 1.6; margin-bottom: 20px;" id="detailBody">
+            This notice contains official operational updates for all company staff members. Please contact the relevant department desk for any questions or assistance.
+        </div>
+        <div style="text-align: right;">
+            <button type="button" class="btn-new-ann" onclick="closeNoticeDetailsModal()" style="padding: 7px 18px; font-size: 12px;">Acknowledge & Close</button>
+        </div>
     </div>
 </div>
 
@@ -866,7 +1021,7 @@
                     </div>
                     <span class="category-name">{{ c.name }}</span>
                 </div>
-                <span class="category-count">{{ c.count }} Announcements</span>
+                <span class="category-count">{{ c.count }} Notices</span>
             </div>
             {% endfor %}
         </div>
@@ -877,6 +1032,82 @@
 </div>
 
 <script>
+    var featuredSlides = [
+        {
+            tag: "FEATURED",
+            title: "Annual Company Summit 2026",
+            desc: "Get ready for our biggest annual event! Join us for 2 days of inspiration, learning, cross-team collaboration, and celebration.",
+            dates: "May 25 - May 26, 2026",
+            time: "09:00 AM - 05:00 PM",
+            location: "Grand Convention Center, Bangalore",
+            idx: "1/5"
+        },
+        {
+            tag: "POLICY UPDATE",
+            title: "Revised Hybrid Work Framework 2026",
+            desc: "Updated policy on core work hours, remote stipend allowances, and flexible in-office scheduling effective from June 1.",
+            dates: "Effective Jun 01, 2026",
+            time: "Immediate Implementation",
+            location: "All Global Offices",
+            idx: "2/5"
+        },
+        {
+            tag: "HACKATHON",
+            title: "Global Tech Innovation Hackathon",
+            desc: "Form your cross-functional teams to build next-gen AI automation workflows. Over INR 10 Lakhs in prizes and awards.",
+            dates: "Jun 12 - Jun 14, 2026",
+            time: "48 Hours Continuous",
+            location: "Engineering Hubs & Virtual",
+            idx: "3/5"
+        },
+        {
+            tag: "BENEFITS",
+            title: "Enhanced Health & Wellness Program",
+            desc: "Comprehensive family medical insurance upgrades, annual health check vouchers, and mental wellness counseling access.",
+            dates: "Effective May 01, 2026",
+            time: "24/7 Coverage",
+            location: "Employee Portal",
+            idx: "4/5"
+        },
+        {
+            tag: "ALL-HANDS",
+            title: "Q2 Executive Leadership Townhall",
+            desc: "CEO address covering H1 achievements, product milestones, market expansion updates, and open Q&A session.",
+            dates: "Jun 20, 2026",
+            time: "04:00 PM - 05:30 PM",
+            location: "Auditorium & Live Stream",
+            idx: "5/5"
+        }
+    ];
+
+    var currentSlide = 0;
+
+    function renderFeaturedSlide() {
+        var s = featuredSlides[currentSlide];
+        document.getElementById('featuredTitle').children[0].innerText = s.title;
+        document.getElementById('featuredDesc').innerText = s.desc;
+        document.getElementById('featuredDates').innerText = s.dates;
+        document.getElementById('featuredTime').innerText = s.time;
+        document.getElementById('featuredLocation').innerText = s.location;
+        document.getElementById('featuredSlideIdx').innerText = s.idx;
+    }
+
+    function prevFeaturedSlide() {
+        currentSlide = (currentSlide - 1 + featuredSlides.length) % featuredSlides.length;
+        renderFeaturedSlide();
+    }
+
+    function nextFeaturedSlide() {
+        currentSlide = (currentSlide + 1) % featuredSlides.length;
+        renderFeaturedSlide();
+    }
+
+    function openFeaturedDetailsModal() {
+        var s = featuredSlides[currentSlide];
+        viewAnnouncementDetails(s.title, s.tag, "Executive Leadership", s.dates);
+    }
+
+    // Modal Control Functions
     function openNewAnnouncementModal() {
         document.getElementById('newAnnouncementModal').style.display = 'flex';
     }
@@ -889,6 +1120,20 @@
     function closeCategoriesModal() {
         document.getElementById('categoriesModal').style.display = 'none';
     }
+    function openNoticeDetailsModal() {
+        document.getElementById('noticeDetailsModal').style.display = 'flex';
+    }
+    function closeNoticeDetailsModal() {
+        document.getElementById('noticeDetailsModal').style.display = 'none';
+    }
+
+    function viewAnnouncementDetails(title, category, publisher, date) {
+        document.getElementById('detailTitle').innerText = title;
+        document.getElementById('detailCatPill').innerText = category;
+        document.getElementById('detailPublisher').innerText = 'Published by ' + publisher;
+        document.getElementById('detailDate').innerText = date;
+        openNoticeDetailsModal();
+    }
 
     function handleQuickAction(actionId) {
         if (actionId === 'create_ann') {
@@ -897,23 +1142,12 @@
             openCategoriesModal();
         } else if (actionId === 'analytics') {
             if (typeof window.showToast === 'function') {
-                window.showToast('Announcement engagement: 98.4% read rate, 240 active viewers.', 'info');
+                window.showToast('Announcement Analytics: 98.4% read rate, 340 active team viewers this week.', 'info');
             }
         } else if (actionId === 'scheduled') {
             if (typeof window.showToast === 'function') {
-                window.showToast('2 scheduled announcements queued for next week.', 'info');
+                window.showToast('3 queued announcements scheduled for publication next week.', 'info');
             }
-        }
-    }
-
-    function prevFeaturedSlide() {
-        if (typeof window.showToast === 'function') {
-            window.showToast('Showing previous featured announcement.', 'info');
-        }
-    }
-    function nextFeaturedSlide() {
-        if (typeof window.showToast === 'function') {
-            window.showToast('Showing next featured announcement.', 'info');
         }
     }
 
@@ -938,9 +1172,97 @@
         }).catch(function(err) { console.error(err); });
 
         if (typeof window.showToast === 'function') {
-            window.showToast('Announcement "' + title + '" published to feed successfully.', 'success');
+            window.showToast('Announcement "' + title + '" broadcasted to feed successfully.', 'success');
         }
         document.getElementById('announcementForm').reset();
     }
+
+    // 10-Item Pagination Engine for Announcements
+    var annPaginationState = {
+        currentPage: 1,
+        pageSize: 10,
+        selectedCategory: 'ALL'
+    };
+
+    function initAnnouncementsPagination() {
+        var items = Array.from(document.querySelectorAll('.ann-item-card'));
+        var searchVal = (document.getElementById('annSearchInput') ? document.getElementById('annSearchInput').value : '').toLowerCase().trim();
+
+        var visibleItems = items.filter(function(item) {
+            var cat = item.getAttribute('data-category');
+            var title = item.getAttribute('data-title') || '';
+            var pub = item.getAttribute('data-publisher') || '';
+
+            var matchCat = (annPaginationState.selectedCategory === 'ALL' || cat === annPaginationState.selectedCategory);
+            var matchSearch = (!searchVal || title.indexOf(searchVal) > -1 || pub.indexOf(searchVal) > -1 || cat.toLowerCase().indexOf(searchVal) > -1);
+
+            return matchCat && matchSearch;
+        });
+
+        var total = visibleItems.length;
+        var totalPages = Math.ceil(total / annPaginationState.pageSize) || 1;
+        if (annPaginationState.currentPage > totalPages) annPaginationState.currentPage = totalPages;
+        if (annPaginationState.currentPage < 1) annPaginationState.currentPage = 1;
+
+        var startIdx = (annPaginationState.currentPage - 1) * annPaginationState.pageSize;
+        var endIdx = startIdx + annPaginationState.pageSize;
+
+        // Display visibility
+        items.forEach(function(item) { item.style.display = 'none'; });
+        visibleItems.forEach(function(item, idx) {
+            if (idx >= startIdx && idx < endIdx) {
+                item.style.display = 'flex';
+            }
+        });
+
+        // Render Pagination Controls
+        var container = document.getElementById('annPagination');
+        if (!container) return;
+
+        var displayStart = total === 0 ? 0 : startIdx + 1;
+        var displayEnd = Math.min(endIdx, total);
+
+        var html = '<div>Showing <span style="font-weight:800; color:var(--text-main);">' + displayStart + '</span> to <span style="font-weight:800; color:var(--text-main);">' + displayEnd + '</span> of <span style="font-weight:800; color:var(--text-main);">' + total + '</span> announcements</div>';
+        html += '<div class="pagination-pages">';
+
+        // Prev
+        html += '<button type="button" class="pagination-btn" ' + (annPaginationState.currentPage === 1 ? 'disabled' : '') + ' onclick="goToAnnPage(' + (annPaginationState.currentPage - 1) + ')">&lt; Prev</button>';
+
+        // Pages
+        for (var p = 1; p <= totalPages; p++) {
+            html += '<button type="button" class="pagination-btn ' + (p === annPaginationState.currentPage ? 'active' : '') + '" onclick="goToAnnPage(' + p + ')">' + p + '</button>';
+        }
+
+        // Next
+        html += '<button type="button" class="pagination-btn ' + (annPaginationState.currentPage === totalPages ? 'disabled' : '') + ' onclick="goToAnnPage(' + (annPaginationState.currentPage + 1) + ')">Next &gt;</button>';
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    function goToAnnPage(pageNum) {
+        annPaginationState.currentPage = pageNum;
+        initAnnouncementsPagination();
+    }
+
+    function filterAnnouncements() {
+        annPaginationState.currentPage = 1;
+        initAnnouncementsPagination();
+    }
+
+    function filterAnnByCategory(catName, btn) {
+        annPaginationState.selectedCategory = catName;
+        annPaginationState.currentPage = 1;
+
+        if (btn) {
+            document.querySelectorAll('.ann-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+        }
+        initAnnouncementsPagination();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initAnnouncementsPagination();
+    });
 </script>
 {% endblock %}

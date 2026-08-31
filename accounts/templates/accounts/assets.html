@@ -141,6 +141,8 @@
         align-items: center;
         justify-content: space-between;
         margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
     }
 
     .ast-panel-title {
@@ -151,6 +153,40 @@
         display: flex;
         align-items: center;
         gap: 6px;
+    }
+
+    /* Category Distribution List */
+    .cat-dist-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .cat-dist-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .cat-dist-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .cat-dist-bar {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: var(--pill-gray);
+        overflow: hidden;
+    }
+
+    .cat-dist-fill {
+        height: 100%;
+        border-radius: 3px;
     }
 
     /* Status Grid Items */
@@ -170,6 +206,14 @@
         border: 1px solid var(--border);
         font-size: 12px;
         font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .status-dist-item:hover {
+        background: var(--card-bg);
+        border-color: var(--primary);
+        transform: translateX(2px);
     }
 
     .status-dist-left {
@@ -179,12 +223,10 @@
     }
 
     .status-dot-indicator {
-        width: 18px;
-        height: 18px;
-        border-radius: 5px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
     }
 
     /* Quick Actions */
@@ -198,8 +240,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 11px 14px;
-        border-radius: 14px;
+        padding: 10px 12px;
+        border-radius: 12px;
         background: var(--pill-gray);
         border: 1px solid var(--border);
         transition: all 0.15s ease;
@@ -215,13 +257,13 @@
     .quick-action-left {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
     .quick-action-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -235,128 +277,226 @@
     }
 
     .quick-action-desc {
-        font-size: 10.5px;
+        font-size: 11px;
         color: var(--text-muted);
         font-weight: 700;
-        margin-top: 1px;
     }
 
-    /* Inventory Table */
-    .inventory-table {
+    /* Asset Inventory Table */
+    .ast-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .ast-custom-table {
         width: 100%;
         border-collapse: separate;
-        border-spacing: 0;
-        font-size: 12.5px;
+        border-spacing: 0 8px;
     }
 
-    .inventory-table th {
-        background: var(--pill-gray);
-        color: var(--text-muted);
-        font-size: 10.5px;
+    .ast-custom-table th {
+        font-size: 11.5px;
         font-weight: 800;
+        color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        padding: 11px 12px;
+        padding: 8px 12px;
         text-align: left;
         border-bottom: 1px solid var(--border);
     }
 
-    .inventory-table td {
-        padding: 11px 12px;
-        border-bottom: 1px solid var(--border);
+    .ast-custom-table td {
+        padding: 12px;
+        background: var(--pill-gray);
+        font-size: 12.5px;
         color: var(--text-main);
         vertical-align: middle;
+        transition: background 0.15s ease;
     }
 
-    .inventory-table tr:last-child td {
-        border-bottom: none;
+    .ast-custom-table tr td:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+        border-left: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
     }
 
-    .device-icon-box {
-        width: 30px;
-        height: 30px;
-        border-radius: 8px;
-        background: var(--pill-gray);
-        color: var(--text-muted);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
+    .ast-custom-table tr td:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+        border-right: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
     }
 
-    .user-avatar-tiny {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
+    .ast-custom-table tr td:not(:first-child):not(:last-child) {
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+    }
+
+    .ast-custom-table tr:hover td {
+        background: var(--card-bg);
+    }
+
+    .ast-tag-badge {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--primary);
         background: var(--pill-purple);
-        color: var(--primary);
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+    }
+
+    .ast-status-badge {
+        font-size: 11px;
+        font-weight: 800;
+        padding: 3px 9px;
+        border-radius: 6px;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        font-size: 9.5px;
-        font-weight: 800;
-        margin-right: 6px;
-        vertical-align: middle;
+        gap: 4px;
     }
 
-    .view-all-purple-link {
-        display: inline-flex;
+    /* Search & Filter Toolbar */
+    .ast-search-bar {
+        display: flex;
         align-items: center;
-        gap: 6px;
-        color: var(--primary);
-        font-size: 12.5px;
-        font-weight: 800;
-        text-decoration: none;
-        margin-top: 14px;
-        cursor: pointer;
-        transition: gap 0.15s ease;
+        gap: 10px;
+        flex-wrap: wrap;
     }
 
-    .view-all-purple-link:hover {
-        gap: 9px;
+    .ast-search-box {
+        position: relative;
+        min-width: 220px;
     }
 
-    /* Security Banner */
-    .ast-security-banner {
-        background: radial-gradient(circle at 90% 50%, var(--primary) 0%, #1e1b4b 65%, #0f172a 100%);
-        border-radius: 18px;
-        padding: 18px 20px;
-        color: #ffffff;
+    .ast-search-box input {
+        width: 100%;
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 7px 12px 7px 32px;
+        font-size: 12px;
+        color: var(--text-main);
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .ast-search-box input:focus {
+        border-color: var(--primary);
+    }
+
+    .ast-search-box svg {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+    }
+
+    /* Pagination Footer (10 Items / Page) */
+    .tab-pagination-footer {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        padding: 14px 4px 4px;
+        margin-top: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 12px;
+        color: var(--text-muted);
+        font-weight: 700;
+        flex-wrap: wrap;
         gap: 12px;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
     }
 
-    .btn-circle-action {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        background: var(--primary);
-        color: #ffffff;
-        border: none;
+    .pagination-pages {
         display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pagination-btn {
+        background: var(--pill-gray);
+        border: 1px solid var(--border);
+        color: var(--text-main);
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 5px 11px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .pagination-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+        box-shadow: 0 2px 8px var(--primary-shadow);
+    }
+
+    .pagination-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    .btn-table-action {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        border: 1px solid var(--border);
+        background: var(--card-bg);
+        color: var(--text-main);
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        flex-shrink: 0;
-        transition: transform 0.15s ease;
+        transition: all 0.15s ease;
     }
 
-    .btn-circle-action:hover {
-        transform: scale(1.05);
+    .btn-table-action:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    /* Activity Items */
+    .activity-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .activity-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
     }
 
     /* Responsive */
-    @media (max-width: 1200px) {
-        .ast-5kpi-grid { grid-template-columns: repeat(3, 1fr); }
-        .ast-middle-grid { grid-template-columns: 1fr; }
-    }
     @media (max-width: 1024px) {
-        .ast-bottom-grid { grid-template-columns: 1fr; }
         .ast-5kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        .ast-middle-grid { grid-template-columns: 1fr; }
+        .ast-bottom-grid { grid-template-columns: 1fr; }
     }
+
     @media (max-width: 640px) {
         .ast-5kpi-grid { grid-template-columns: 1fr; }
     }
@@ -366,18 +506,18 @@
 <div class="ast-header-bar">
     <div class="ast-header-title">
         <h2>
-            <span>Assets</span>
+            <span>Asset Management</span>
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
             </svg>
         </h2>
-        <p>Track, manage and optimize all company assets in one place.</p>
+        <p>Track hardware equipment, license allocation, inventory health, and employee assignments.</p>
     </div>
-    <button type="button" class="btn-add-asset" onclick="openNewAssetModal()">
+    <button type="button" class="btn-add-asset" onclick="openAddAssetModal()">
         <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path>
         </svg>
-        <span>Add Asset</span>
+        <span>Add New Asset</span>
     </button>
 </div>
 
@@ -386,27 +526,27 @@
     <!-- Total Assets -->
     <div class="ast-kpi-card">
         <div class="ast-kpi-avatar" style="background: var(--pill-purple); color: var(--primary);">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
         </div>
         <div class="ast-kpi-info">
             <div class="kpi-val" style="color: var(--primary);">{{ kpi_metrics.total_assets }}</div>
             <h4>Total Assets</h4>
-            <div class="kpi-sub" style="color: #10b981;">
+            <div class="ast-kpi-sub" style="color: #10b981;">
                 <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                 <span>{{ kpi_metrics.total_sub }}</span>
             </div>
         </div>
     </div>
 
-    <!-- Assigned Assets -->
+    <!-- Assigned -->
     <div class="ast-kpi-card">
         <div class="ast-kpi-avatar" style="background: #ecfdf5; color: #10b981;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
         </div>
         <div class="ast-kpi-info">
             <div class="kpi-val" style="color: #10b981;">{{ kpi_metrics.assigned_assets }}</div>
             <h4>Assigned Assets</h4>
-            <div class="kpi-sub" style="color: #10b981;">
+            <div class="ast-kpi-sub" style="color: #10b981;">
                 <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                 <span>{{ kpi_metrics.assigned_sub }}</span>
             </div>
@@ -416,147 +556,92 @@
     <!-- In Stock -->
     <div class="ast-kpi-card">
         <div class="ast-kpi-avatar" style="background: #eff6ff; color: #3b82f6;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
         </div>
         <div class="ast-kpi-info">
             <div class="kpi-val" style="color: #3b82f6;">{{ kpi_metrics.in_stock }}</div>
-            <h4>In Stock</h4>
-            <div class="kpi-sub" style="color: #10b981;">
+            <h4>In Stock (Ready)</h4>
+            <div class="ast-kpi-sub" style="color: #3b82f6;">
                 <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
                 <span>{{ kpi_metrics.in_stock_sub }}</span>
             </div>
         </div>
     </div>
 
-    <!-- Under Maintenance -->
+    <!-- Maintenance -->
     <div class="ast-kpi-card">
         <div class="ast-kpi-avatar" style="background: #fffbeb; color: #f59e0b;">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
         </div>
         <div class="ast-kpi-info">
             <div class="kpi-val" style="color: #f59e0b;">{{ kpi_metrics.maintenance }}</div>
-            <h4>Under Maintenance</h4>
-            <div class="kpi-sub" style="color: #e11d48;">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                <span>{{ kpi_metrics.maintenance_sub }}</span>
-            </div>
+            <h4>Maintenance</h4>
+            <div class="ast-kpi-sub" style="color: var(--text-muted);">{{ kpi_metrics.maintenance_sub }}</div>
         </div>
     </div>
 
-    <!-- Retired Assets -->
+    <!-- Retired -->
     <div class="ast-kpi-card">
-        <div class="ast-kpi-avatar" style="background: #fff1f2; color: #e11d48;">
+        <div class="ast-kpi-avatar" style="background: #fef2f2; color: #ef4444;">
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         </div>
         <div class="ast-kpi-info">
-            <div class="kpi-val" style="color: #e11d48;">{{ kpi_metrics.retired }}</div>
-            <h4>Retired Assets</h4>
-            <div class="kpi-sub" style="color: #e11d48;">
-                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                <span>{{ kpi_metrics.retired_sub }}</span>
-            </div>
+            <div class="kpi-val" style="color: #ef4444;">{{ kpi_metrics.retired }}</div>
+            <h4>Retired</h4>
+            <div class="ast-kpi-sub" style="color: var(--text-muted);">{{ kpi_metrics.retired_sub }}</div>
         </div>
     </div>
 </div>
 
-<!-- Middle 3-Column Grid -->
+<!-- Middle 3-Column Analytics Grid -->
 <div class="ast-middle-grid">
-    <!-- Assets by Category (Donut) -->
+    <!-- Category Distribution -->
     <div class="ast-panel">
         <div class="ast-panel-header">
-            <h3 class="ast-panel-title">Assets by Category</h3>
+            <h3 class="ast-panel-title">Asset Categories</h3>
+            <span style="font-size: 11px; font-weight: 800; color: var(--text-muted);">{{ category_distribution.total }} Total</span>
         </div>
-        <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 12px; align-items: center;">
-            <!-- Donut SVG -->
-            <div style="position: relative; width: 130px; height: 130px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
-                <svg width="130" height="130" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="38" stroke="var(--primary)" stroke-width="14" stroke-dasharray="64 238.7" stroke-dashoffset="0" fill="none" />
-                    <circle cx="50" cy="50" r="38" stroke="#3b82f6" stroke-width="14" stroke-dasharray="52 238.7" stroke-dashoffset="-64" fill="none" />
-                    <circle cx="50" cy="50" r="38" stroke="#06b6d4" stroke-width="14" stroke-dasharray="42 238.7" stroke-dashoffset="-116" fill="none" />
-                    <circle cx="50" cy="50" r="38" stroke="#f43f5e" stroke-width="14" stroke-dasharray="34 238.7" stroke-dashoffset="-158" fill="none" />
-                    <circle cx="50" cy="50" r="38" stroke="#f59e0b" stroke-width="14" stroke-dasharray="28 238.7" stroke-dashoffset="-192" fill="none" />
-                    <circle cx="50" cy="50" r="38" stroke="#8b5cf6" stroke-width="14" stroke-dasharray="18.7 238.7" stroke-dashoffset="-220" fill="none" />
-                </svg>
-                <div style="position: absolute; text-align: center;">
-                    <div style="font-size: 17px; font-weight: 900; color: var(--text-main); line-height: 1;">{{ category_distribution.total }}</div>
-                    <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">Total</div>
+        <div class="cat-dist-list">
+            {% for c in category_distribution.categories %}
+            <div class="cat-dist-item">
+                <div class="cat-dist-header">
+                    <span>{{ c.name }}</span>
+                    <span style="font-weight: 800; color: var(--text-muted);">{{ c.count }} ({{ c.pct }})</span>
+                </div>
+                <div class="cat-dist-bar">
+                    <div class="cat-dist-fill" style="width: {{ c.pct }}; background: {{ c.color }};"></div>
                 </div>
             </div>
-
-            <!-- Legend List -->
-            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px;">
-                {% for c in category_distribution.categories %}
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
-                    <div style="display: flex; align-items: center; gap: 5px;">
-                        <span style="width: 7px; height: 7px; border-radius: 50%; background: {{ c.color }};"></span>
-                        <span style="color: var(--text-muted); font-weight: 700;">{{ c.name }}</span>
-                    </div>
-                    <span style="font-weight: 800; color: var(--text-main);">{{ c.count }} ({{ c.pct }})</span>
-                </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
     </div>
 
-    <!-- Asset Status Overview (Radial Rings) -->
+    <!-- Status Distribution -->
     <div class="ast-panel">
         <div class="ast-panel-header">
-            <h3 class="ast-panel-title">Asset Status Overview</h3>
+            <h3 class="ast-panel-title">Inventory Status</h3>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1.1fr; gap: 10px; align-items: center;">
-            <!-- Multi-ring Gauge Graphic -->
-            <div style="position: relative; width: 120px; height: 120px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
-                <svg width="120" height="120" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" stroke="#e2e8f0" stroke-width="4" fill="none" stroke-dasharray="4 4" opacity="0.6" />
-                    <circle cx="50" cy="50" r="42" stroke="#10b981" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="155 264" transform="rotate(-90 50 50)" />
-
-                    <circle cx="50" cy="50" r="32" stroke="#e2e8f0" stroke-width="4" fill="none" stroke-dasharray="3 3" opacity="0.6" />
-                    <circle cx="50" cy="50" r="32" stroke="#3b82f6" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="58 201" transform="rotate(-40 50 50)" />
-
-                    <circle cx="50" cy="50" r="22" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="25 138" transform="rotate(30 50 50)" />
-                    <circle cx="50" cy="50" r="14" stroke="#ef4444" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="16 88" transform="rotate(100 50 50)" />
-                </svg>
-                <div style="position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--pill-purple); color: var(--primary); display: flex; align-items: center; justify-content: center;">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <div class="status-dist-list">
+            {% for s in status_distribution %}
+            <div class="status-dist-item" onclick="filterAssetByStatus('{{ s.name }}')">
+                <div class="status-dist-left">
+                    <span class="status-dot-indicator" style="background: {{ s.color }};"></span>
+                    <span>{{ s.name }}</span>
                 </div>
+                <span style="font-weight: 800; color: var(--text-main);">{{ s.count }} ({{ s.pct }})</span>
             </div>
-
-            <!-- Status Distribution Items -->
-            <div class="status-dist-list">
-                {% for s in status_distribution %}
-                <div class="status-dist-item">
-                    <div class="status-dist-left">
-                        <span class="status-dot-indicator" style="background: {{ s.icon_bg }}; color: {{ s.color }};">
-                            {% if s.name == 'Assigned' %}
-                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                            {% elif s.name == 'Available' %}
-                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                            {% elif s.name == 'Maintenance' %}
-                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                            {% else %}
-                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            {% endif %}
-                        </span>
-                        <span>{{ s.name }}</span>
-                    </div>
-                    <span style="font-weight: 800; color: var(--text-main);">{{ s.count }} ({{ s.pct }})</span>
-                </div>
-                {% endfor %}
-            </div>
+            {% endfor %}
         </div>
     </div>
 
     <!-- Quick Actions -->
     <div class="ast-panel">
         <div class="ast-panel-header">
-            <h3 class="ast-panel-title">
-                <span>Quick Actions</span>
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-            </h3>
+            <h3 class="ast-panel-title">Quick Actions</h3>
         </div>
         <div class="quick-actions-list">
             {% for q in quick_actions %}
-            <div class="quick-action-item" onclick="handleQuickAction('{{ q.action_id }}')">
+            <div class="quick-action-item" onclick="handleAssetQuickAction('{{ q.action_id }}')">
                 <div class="quick-action-left">
                     <div class="quick-action-icon" style="background: {{ q.icon_bg }}; color: {{ q.icon_color }};">
                         {% if q.icon_type == 'plus' %}
@@ -564,7 +649,7 @@
                         {% elif q.icon_type == 'import' %}
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                         {% elif q.icon_type == 'user-check' %}
-                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         {% else %}
                         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         {% endif %}
@@ -581,176 +666,119 @@
     </div>
 </div>
 
-<!-- Bottom 2-Column Grid -->
+<!-- Bottom Section: Asset Inventory Table & Activity Ledger -->
 <div class="ast-bottom-grid">
-    <!-- Left Column: Asset Inventory Table -->
-    <div class="ast-panel" style="overflow-x: auto;">
-        <div class="ast-panel-header" style="flex-wrap: wrap; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <h3 class="ast-panel-title">Asset Inventory</h3>
-                <span style="background: var(--pill-purple); color: var(--primary); font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">{{ category_distribution.total }} Assets</span>
+    <!-- Asset Inventory Table (with 10-Item Pagination) -->
+    <div class="ast-panel">
+        <div class="ast-panel-header">
+            <div>
+                <h3 class="ast-panel-title">Asset Inventory Directory</h3>
+                <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Browse and manage registered hardware equipment.</p>
             </div>
-
-            <!-- Filter Toolbar -->
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <select class="perf-search-input" style="padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; height: 32px; cursor: pointer;">
-                    <option>All Categories</option>
-                    <option>Laptops</option>
-                    <option>Monitors</option>
-                    <option>Mobiles</option>
-                </select>
-                <select class="perf-search-input" style="padding: 6px 12px; font-size: 12px; border-radius: 8px; width: auto; height: 32px; cursor: pointer;">
-                    <option>All Status</option>
-                    <option>Assigned</option>
-                    <option>Available</option>
-                    <option>Maintenance</option>
-                </select>
-                <div style="position: relative;">
-                    <input type="text" class="perf-search-input" placeholder="Search assets..." style="padding: 6px 10px 6px 28px; font-size: 12px; border-radius: 8px; height: 32px; width: 140px;">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="position: absolute; left: 8px; top: 10px; color: var(--text-muted);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <div class="ast-search-bar">
+                <div class="ast-search-box">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="assetSearchInput" placeholder="Search asset tag, model, assignee..." onkeyup="filterAssets()">
                 </div>
-                <button type="button" class="perf-row-btn" title="Filter Options" style="height: 32px; width: 32px;">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                </button>
+                <select id="assetCategoryFilter" style="background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; padding: 7px 12px; font-size: 12px; color: var(--text-main); font-family: inherit; cursor: pointer;" onchange="filterAssets()">
+                    <option value="ALL">All Categories</option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Monitors">Monitors</option>
+                    <option value="Mobiles">Mobiles</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Peripherals">Peripherals</option>
+                    <option value="Others">Others</option>
+                </select>
             </div>
         </div>
 
-        <table class="inventory-table">
-            <thead>
-                <tr>
-                    <th>ASSET NAME</th>
-                    <th>CATEGORY</th>
-                    <th>ASSET TAG</th>
-                    <th>ASSIGNED TO</th>
-                    <th>STATUS</th>
-                    <th>LOCATION</th>
-                    <th>PURCHASE DATE</th>
-                    <th style="text-align: center;">ACTIONS</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in inventory_items %}
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span class="device-icon-box">
-                                {% if item.icon_type == 'laptop' %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                {% elif item.icon_type == 'monitor' %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                {% elif item.icon_type == 'phone' %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                {% elif item.icon_type == 'headphone' %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>
-                                {% elif item.icon_type == 'keyboard' %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
-                                {% else %}
-                                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                {% endif %}
+        <div class="ast-table-wrapper">
+            <table class="ast-custom-table" id="assetsTable">
+                <thead>
+                    <tr>
+                        <th>Asset Tag</th>
+                        <th>Device / Equipment</th>
+                        <th>Category</th>
+                        <th>Assignee</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                        <th>Assigned On</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for a in inventory_items %}
+                    <tr class="asset-table-row" data-tag="{{ a.tag|lower }}" data-name="{{ a.name|lower }}" data-category="{{ a.category }}" data-status="{{ a.status }}" data-assignee="{{ a.assignee|default:''|lower }}" data-location="{{ a.location|lower }}">
+                        <td>
+                            <span class="ast-tag-badge">{{ a.tag }}</span>
+                        </td>
+                        <td>
+                            <div style="font-weight: 800; color: var(--text-main);">{{ a.name }}</div>
+                        </td>
+                        <td>
+                            <span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: {{ a.category_bg }}; color: {{ a.category_color }};">{{ a.category }}</span>
+                        </td>
+                        <td>
+                            {% if a.assignee %}
+                            <div>
+                                <div style="font-weight: 800; color: var(--text-main);">{{ a.assignee }}</div>
+                                <div style="font-size: 10.5px; color: var(--text-muted); font-weight: 700;">{{ a.designation }}</div>
+                            </div>
+                            {% else %}
+                            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); font-style: italic;">Unassigned</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="ast-status-badge" style="background: {{ a.status_bg }}; color: {{ a.status_color }};">
+                                {{ a.status }}
                             </span>
-                            <span style="font-weight: 800; color: var(--text-main);">{{ item.name }}</span>
-                        </div>
-                    </td>
-                    <td>
-                        <span style="background: {{ item.category_bg }}; color: {{ item.category_color }}; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">{{ item.category }}</span>
-                    </td>
-                    <td>
-                        <span style="font-weight: 800; color: var(--text-muted); font-size: 11.5px;">{{ item.tag }}</span>
-                    </td>
-                    <td>
-                        {% if item.assignee %}
-                        <span class="user-avatar-tiny">{{ item.assignee|slice:":2"|upper }}</span>
-                        <span style="font-weight: 700; font-size: 12px;">{{ item.assignee }}</span>
-                        {% else %}
-                        <span style="color: var(--text-muted); font-size: 12px; font-weight: 700;">&mdash; Not Assigned</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <span style="background: {{ item.status_bg }}; color: {{ item.status_color }}; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px;">{{ item.status }}</span>
-                    </td>
-                    <td>
-                        <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">{{ item.location }}</span>
-                    </td>
-                    <td>
-                        <span style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">{{ item.date }}</span>
-                    </td>
-                    <td style="text-align: center;">
-                        <div style="display: inline-flex; align-items: center; gap: 5px;">
-                            <button type="button" class="perf-row-btn" title="Edit Asset" onclick="showToast('Editing {{ item.name }}...', 'info')">
-                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            </button>
-                            <button type="button" class="perf-row-btn" title="Options" onclick="showToast('Asset options ready.', 'info')">
-                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td style="font-weight: 700; color: var(--text-muted); font-size: 11.5px;">{{ a.location }}</td>
+                        <td style="font-weight: 700; color: var(--text-muted); font-size: 11.5px;">{{ a.date }}</td>
+                        <td style="text-align: right;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                <button type="button" class="btn-table-action" title="View Details" onclick="viewAssetDetails('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}', '{{ a.category|escapejs }}', '{{ a.assignee|default:"Unassigned"|escapejs }}', '{{ a.status|escapejs }}', '{{ a.location|escapejs }}')">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                </button>
+                                <button type="button" class="btn-table-action" title="Assign / Return" onclick="openAssignModalFor('{{ a.tag|escapejs }}', '{{ a.name|escapejs }}')">
+                                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-        <a href="javascript:void(0)" class="view-all-purple-link" onclick="showToast('Opening complete asset catalog...', 'info')">
-            <span>View All Assets</span>
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-        </a>
+        <!-- Pagination Container (10 Items / Page) -->
+        <div id="assetPagination" class="tab-pagination-footer"></div>
     </div>
 
-    <!-- Right Column: Recent Activity & Security Banner -->
-    <div style="display: flex; flex-direction: column; gap: 20px;">
-        <!-- Recent Activity -->
-        <div class="ast-panel">
-            <div class="ast-panel-header">
-                <h3 class="ast-panel-title">Recent Activity</h3>
-                <button type="button" class="btn-sidebar-settings" style="padding: 4px 10px; font-size: 11px; border-radius: 6px; width: auto; height: auto;" onclick="showToast('Asset activity log refreshed.', 'info')">View All</button>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                {% for a in recent_activity %}
-                <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 32px; height: 32px; border-radius: 9px; background: {{ a.icon_bg }}; color: {{ a.icon_color }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            {% if a.icon_type == 'plus' %}
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v16m8-8H4"></path></svg>
-                            {% elif a.icon_type == 'check' %}
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 13l4 4L19 7"></path></svg>
-                            {% elif a.icon_type == 'wrench' %}
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                            {% elif a.icon_type == 'box' %}
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                            {% else %}
-                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            {% endif %}
-                        </div>
-                        <div>
-                            <div style="font-size: 12px; font-weight: 800; color: var(--text-main);">{{ a.title }}</div>
-                            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-top: 1px;">{{ a.desc }}</div>
-                        </div>
-                    </div>
-                    <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); white-space: nowrap;">{{ a.time }}</span>
-                </div>
-                {% endfor %}
-            </div>
+    <!-- Recent Activity Timeline -->
+    <div class="ast-panel">
+        <div class="ast-panel-header">
+            <h3 class="ast-panel-title">Asset Activity Log</h3>
         </div>
-
-        <!-- Security & Maintenance Banner -->
-        <div class="ast-security-banner">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 38px; height: 38px; border-radius: 12px; background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <div class="activity-list">
+            {% for act in recent_activity %}
+            <div class="activity-item">
+                <div class="activity-icon" style="background: {{ act.icon_bg }}; color: {{ act.icon_color }};">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <div>
-                    <h4 style="font-size: 13.5px; font-weight: 900; margin: 0 0 2px;">Keep Your Assets Secure</h4>
-                    <p style="font-size: 11px; color: rgba(255, 255, 255, 0.85); margin: 0; line-height: 1.4;">Regular asset maintenance and tracking helps improve productivity & security.</p>
+                <div style="flex: 1;">
+                    <div style="font-size: 12.5px; font-weight: 800; color: var(--text-main);">{{ act.title }}</div>
+                    <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">{{ act.desc }}</div>
+                    <div style="font-size: 10.5px; color: var(--primary); font-weight: 700; margin-top: 3px;">{{ act.time }}</div>
                 </div>
             </div>
-            <button type="button" class="btn-circle-action" title="Learn More" onclick="showToast('Security audit scan initiated on hardware fleet.', 'success')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-            </button>
+            {% endfor %}
         </div>
     </div>
 </div>
 
-<!-- Modal: New Asset -->
-<div id="newAssetModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+<!-- Modal: Add New Asset -->
+<div id="addAssetModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
     <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 10px;">
@@ -759,21 +787,21 @@
                 </div>
                 <div>
                     <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Register New Asset</h3>
-                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Add hardware, digital license, or peripheral to inventory.</p>
+                    <p style="font-size: 11.5px; color: var(--text-muted); margin: 2px 0 0;">Add hardware device to company inventory.</p>
                 </div>
             </div>
-            <button type="button" onclick="closeNewAssetModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
+            <button type="button" onclick="closeAddAssetModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
         </div>
-        <form id="assetForm" onsubmit="submitAsset(event)">
+        <form id="addAssetForm" onsubmit="submitAssetRegistration(event)">
             <div style="display: flex; flex-direction: column; gap: 14px;">
                 <div>
-                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Asset Name / Model *</label>
-                    <input type="text" id="astName" class="perf-search-input" style="padding-left: 12px;" required placeholder="e.g. MacBook Pro 16-inch M3">
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Device / Model Name *</label>
+                    <input type="text" id="newAssetName" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit;" required placeholder="e.g. MacBook Pro 16-inch M3">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Category</label>
-                        <select id="astCategory" class="perf-search-input" style="padding-left: 12px; cursor: pointer;">
+                        <select id="newAssetCategory" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit; cursor: pointer;">
                             <option>Laptops</option>
                             <option>Monitors</option>
                             <option>Mobiles</option>
@@ -784,52 +812,98 @@
                     </div>
                     <div>
                         <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px;">Assign To</label>
-                        <input type="text" id="astAssignee" class="perf-search-input" style="padding-left: 12px;" placeholder="Employee Name">
+                        <input type="text" id="newAssetAssignee" style="padding: 8px 12px; width: 100%; box-sizing: border-box; background: var(--pill-gray); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); font-family: inherit;" placeholder="Employee name or leave blank">
                     </div>
                 </div>
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; border-top: 1px solid var(--border); padding-top: 16px;">
-                <button type="button" class="btn-perf-filter" onclick="closeNewAssetModal()">Cancel</button>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+                <button type="button" style="padding: 8px 16px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--pill-gray); color: var(--text-main); cursor: pointer;" onclick="closeAddAssetModal()">Cancel</button>
                 <button type="submit" class="btn-add-asset">Register Asset</button>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-    function openNewAssetModal() { document.getElementById('newAssetModal').style.display = 'flex'; }
-    function closeNewAssetModal() { document.getElementById('newAssetModal').style.display = 'none'; }
+<!-- Modal: Asset Details Preview -->
+<div id="assetDetailModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: var(--card-bg); border-radius: 18px; width: 480px; max-width: 92%; padding: 26px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.18);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="ast-tag-badge" id="previewAssetTag">LAP-2024-001</span>
+                <span id="previewAssetStatus" style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: #ecfdf5; color: #10b981;">Assigned</span>
+            </div>
+            <button type="button" onclick="closeAssetDetailModal()" style="background: none; border: none; font-size: 22px; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <h3 id="previewAssetName" style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 12px;">Device Name</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; background: var(--pill-gray); border-radius: 12px; padding: 14px; border: 1px solid var(--border); font-size: 12.5px; color: var(--text-main); margin-bottom: 18px;">
+            <div><span style="color: var(--text-muted); font-weight: 700;">Category:</span> <strong id="previewAssetCategory">Laptops</strong></div>
+            <div><span style="color: var(--text-muted); font-weight: 700;">Current Assignee:</span> <strong id="previewAssetAssignee">Rohit Mehta</strong></div>
+            <div><span style="color: var(--text-muted); font-weight: 700;">Deployment Location:</span> <strong id="previewAssetLocation">Engineering Bay</strong></div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn-add-asset" onclick="closeAssetDetailModal()" style="padding: 7px 18px; font-size: 12px;">Close</button>
+        </div>
+    </div>
+</div>
 
-    function handleQuickAction(actionId) {
+<script>
+    function openAddAssetModal() {
+        document.getElementById('addAssetModal').style.display = 'flex';
+    }
+    function closeAddAssetModal() {
+        document.getElementById('addAssetModal').style.display = 'none';
+    }
+    function openAssetDetailModal() {
+        document.getElementById('assetDetailModal').style.display = 'flex';
+    }
+    function closeAssetDetailModal() {
+        document.getElementById('assetDetailModal').style.display = 'none';
+    }
+
+    function viewAssetDetails(tag, name, category, assignee, status, location) {
+        document.getElementById('previewAssetTag').innerText = tag;
+        document.getElementById('previewAssetName').innerText = name;
+        document.getElementById('previewAssetCategory').innerText = category;
+        document.getElementById('previewAssetAssignee').innerText = assignee;
+        document.getElementById('previewAssetStatus').innerText = status;
+        document.getElementById('previewAssetLocation').innerText = location;
+        openAssetDetailModal();
+    }
+
+    function openAssignModalFor(tag, name) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Asset assignment panel ready for ' + tag + ' (' + name + ').', 'info');
+        }
+    }
+
+    function handleAssetQuickAction(actionId) {
         if (actionId === 'new_asset') {
-            openNewAssetModal();
+            openAddAssetModal();
         } else if (actionId === 'import_asset') {
             if (typeof window.showToast === 'function') {
-                window.showToast('Bulk import CSV template ready for download.', 'info');
+                window.showToast('Bulk Asset CSV import template downloaded and ready for upload.', 'info');
             }
         } else if (actionId === 'assign_asset') {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Asset allocation modal dispatched.', 'info');
-            }
+            openAddAssetModal();
         } else if (actionId === 'reports') {
             if (typeof window.showToast === 'function') {
-                window.showToast('Generating IT asset depreciation & lifecycle report...', 'info');
+                window.showToast('Generating comprehensive hardware inventory report...', 'info');
             }
         }
     }
 
-    function submitAsset(e) {
+    function submitAssetRegistration(e) {
         e.preventDefault();
-        var name = document.getElementById('astName').value;
-        var cat = document.getElementById('astCategory').value;
-        var assign = document.getElementById('astAssignee').value || 'Not Assigned';
-        closeNewAssetModal();
+        var name = document.getElementById('newAssetName').value;
+        var category = document.getElementById('newAssetCategory').value;
+        var assignee = document.getElementById('newAssetAssignee').value || 'Unassigned';
+        closeAddAssetModal();
 
         var formData = new FormData();
         formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
         formData.append('asset_name', name);
-        formData.append('category', cat);
-        formData.append('assigned_to', assign);
+        formData.append('category', category);
+        formData.append('assigned_to', assignee);
         formData.append('ajax', '1');
 
         fetch('{% url "assets" %}', {
@@ -839,9 +913,102 @@
         }).catch(function(err) { console.error(err); });
 
         if (typeof window.showToast === 'function') {
-            window.showToast('Asset "' + name + '" registered and allocated successfully.', 'success');
+            window.showToast('Asset "' + name + '" registered and logged successfully.', 'success');
         }
-        document.getElementById('assetForm').reset();
+        document.getElementById('addAssetForm').reset();
     }
+
+    // 10-Item Pagination Engine for Asset Table
+    var assetPaginationState = {
+        currentPage: 1,
+        pageSize: 10,
+        selectedStatus: 'ALL'
+    };
+
+    function initAssetPagination() {
+        var table = document.getElementById('assetsTable');
+        if (!table) return;
+
+        var rows = Array.from(table.querySelectorAll('tbody tr.asset-table-row'));
+        var searchVal = (document.getElementById('assetSearchInput') ? document.getElementById('assetSearchInput').value : '').toLowerCase().trim();
+        var catVal = (document.getElementById('assetCategoryFilter') ? document.getElementById('assetCategoryFilter').value : 'ALL');
+
+        var visibleRows = rows.filter(function(r) {
+            var tag = r.getAttribute('data-tag') || '';
+            var name = r.getAttribute('data-name') || '';
+            var cat = r.getAttribute('data-category') || '';
+            var status = r.getAttribute('data-status') || '';
+            var assignee = r.getAttribute('data-assignee') || '';
+
+            var matchStatus = (assetPaginationState.selectedStatus === 'ALL' || status === assetPaginationState.selectedStatus);
+            var matchCat = (catVal === 'ALL' || cat === catVal);
+            var matchSearch = (!searchVal || tag.indexOf(searchVal) > -1 || name.indexOf(searchVal) > -1 || assignee.indexOf(searchVal) > -1 || cat.toLowerCase().indexOf(searchVal) > -1);
+
+            return matchStatus && matchCat && matchSearch;
+        });
+
+        var total = visibleRows.length;
+        var totalPages = Math.ceil(total / assetPaginationState.pageSize) || 1;
+        if (assetPaginationState.currentPage > totalPages) assetPaginationState.currentPage = totalPages;
+        if (assetPaginationState.currentPage < 1) assetPaginationState.currentPage = 1;
+
+        var startIdx = (assetPaginationState.currentPage - 1) * assetPaginationState.pageSize;
+        var endIdx = startIdx + assetPaginationState.pageSize;
+
+        // Visibility
+        rows.forEach(function(r) { r.style.display = 'none'; });
+        visibleRows.forEach(function(r, idx) {
+            if (idx >= startIdx && idx < endIdx) {
+                r.style.display = '';
+            }
+        });
+
+        // Controls
+        var container = document.getElementById('assetPagination');
+        if (!container) return;
+
+        var displayStart = total === 0 ? 0 : startIdx + 1;
+        var displayEnd = Math.min(endIdx, total);
+
+        var html = '<div>Showing <span style="font-weight:800; color:var(--text-main);">' + displayStart + '</span> to <span style="font-weight:800; color:var(--text-main);">' + displayEnd + '</span> of <span style="font-weight:800; color:var(--text-main);">' + total + '</span> assets</div>';
+        html += '<div class="pagination-pages">';
+
+        // Prev
+        html += '<button type="button" class="pagination-btn" ' + (assetPaginationState.currentPage === 1 ? 'disabled' : '') + ' onclick="goToAssetPage(' + (assetPaginationState.currentPage - 1) + ')">&lt; Prev</button>';
+
+        // Pages
+        for (var p = 1; p <= totalPages; p++) {
+            html += '<button type="button" class="pagination-btn ' + (p === assetPaginationState.currentPage ? 'active' : '') + '" onclick="goToAssetPage(' + p + ')">' + p + '</button>';
+        }
+
+        // Next
+        html += '<button type="button" class="pagination-btn ' + (assetPaginationState.currentPage === totalPages ? 'disabled' : '') + ' onclick="goToAssetPage(' + (assetPaginationState.currentPage + 1) + ')">Next &gt;</button>';
+        html += '</div>';
+
+        container.innerHTML = html;
+    }
+
+    function goToAssetPage(pageNum) {
+        assetPaginationState.currentPage = pageNum;
+        initAssetPagination();
+    }
+
+    function filterAssets() {
+        assetPaginationState.currentPage = 1;
+        initAssetPagination();
+    }
+
+    function filterAssetByStatus(statusName) {
+        assetPaginationState.selectedStatus = statusName;
+        assetPaginationState.currentPage = 1;
+        initAssetPagination();
+        if (typeof window.showToast === 'function') {
+            window.showToast('Filtering assets by ' + statusName + ' status.', 'info');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initAssetPagination();
+    });
 </script>
 {% endblock %}

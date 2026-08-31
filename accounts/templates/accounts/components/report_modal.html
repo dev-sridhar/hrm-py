@@ -1,0 +1,142 @@
+<!-- Reusable Report Export Modal Component -->
+{# Parameters: modal_id (default: 'newReportModal'), title (default: 'Export Database Report'), subtitle (default: 'Select module to download live CSV ledger.') #}
+
+<div class="modal-backdrop-wrap" id="{{ modal_id|default:'newReportModal' }}" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 20px;">
+    <div class="modal-inner-card" style="background: var(--card-bg, #ffffff); border-radius: 18px; width: 460px; max-width: 95%; padding: 24px; border: 1px solid var(--border, #e2e8f0); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.16); position: relative; animation: modalPop 0.2s ease-out; margin: auto;">
+
+        <!-- Header -->
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 11px; background: var(--pill-purple, #f5f3ff); color: var(--primary, #6366f1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 style="font-size: 17px; font-weight: 800; color: var(--text-main, #0f172a); margin: 0; line-height: 1.25;">
+                        {{ title|default:"Export Database Report" }}
+                    </h3>
+                    <p style="font-size: 12px; color: var(--text-muted, #64748b); margin: 3px 0 0; line-height: 1.3;">
+                        {{ subtitle|default:"Select module to download live CSV ledger." }}
+                    </p>
+                </div>
+            </div>
+            <button type="button" onclick="closeExportModal('{{ modal_id|default:'newReportModal' }}')" style="background: none; border: none; font-size: 22px; line-height: 1; color: var(--text-muted, #94a3b8); cursor: pointer; padding: 4px; border-radius: 6px; transition: color 0.15s ease;" aria-label="Close modal">&times;</button>
+        </div>
+
+        <!-- Form Body -->
+        <form id="reportExportForm_{{ modal_id|default:'newReportModal' }}" onsubmit="submitReportExport(event, '{{ modal_id|default:'newReportModal' }}')">
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Report Module Field -->
+                <div>
+                    <label style="display: block; font-size: 12.5px; font-weight: 700; color: var(--text-main, #0f172a); margin-bottom: 7px;">
+                        Report Module <span style="color: var(--primary, #6366f1);">*</span>
+                    </label>
+                    <div style="position: relative;">
+                        <select id="rptKey_{{ modal_id|default:'newReportModal' }}" class="perf-search-input" style="width: 100%; height: 42px; padding: 0 36px 0 14px; font-size: 13px; font-weight: 600; color: var(--text-main, #0f172a); background: var(--card-bg, #ffffff); border: 1.5px solid var(--border, #e2e8f0); border-radius: 10px; cursor: pointer; appearance: none; -webkit-appearance: none; outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease;">
+                            <option value="employee">Employee Directory & Summary</option>
+                            <option value="attendance">Monthly Attendance Ledger</option>
+                            <option value="payroll">Payroll & Compensation Audit</option>
+                            <option value="leave">Leave Requests & Analysis</option>
+                            <option value="performance">Performance Appraisal Reviews</option>
+                            <option value="tasks">Daily Tasks & Productivity</option>
+                            <option value="permissions">Permission & Pass Applications</option>
+                            <option value="master">Master Consolidated Ledger (All Modules)</option>
+                        </select>
+                        <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted, #64748b); display: flex; align-items: center;">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Format Field -->
+                <div>
+                    <label style="display: block; font-size: 12.5px; font-weight: 700; color: var(--text-main, #0f172a); margin-bottom: 7px;">
+                        Export Format
+                    </label>
+                    <div style="position: relative;">
+                        <select id="rptFormat_{{ modal_id|default:'newReportModal' }}" class="perf-search-input" style="width: 100%; height: 42px; padding: 0 36px 0 14px; font-size: 13px; font-weight: 600; color: var(--text-main, #0f172a); background: var(--card-bg, #ffffff); border: 1.5px solid var(--border, #e2e8f0); border-radius: 10px; cursor: pointer; appearance: none; -webkit-appearance: none; outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease;">
+                            <option value="CSV">CSV (Comma-Separated Values)</option>
+                            <option value="Excel">Excel Compatible (CSV)</option>
+                        </select>
+                        <div style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--text-muted, #64748b); display: flex; align-items: center;">
+                            <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 24px; border-top: 1px solid var(--border, #e2e8f0); padding-top: 18px;">
+                <button type="button" onclick="closeExportModal('{{ modal_id|default:'newReportModal' }}')" style="background: none; border: none; font-size: 13px; font-weight: 700; color: var(--text-main, #0f172a); cursor: pointer; padding: 8px 14px; border-radius: 8px; font-family: inherit; transition: opacity 0.15s ease;">
+                    Cancel
+                </button>
+                <button type="submit" style="background: var(--primary-gradient, linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)); color: #ffffff; border: none; border-radius: 11px; padding: 10px 22px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px var(--primary-shadow, rgba(99, 102, 241, 0.35)); transition: all 0.15s ease; font-family: inherit; display: inline-flex; align-items: center; gap: 6px;">
+                    <span>Generate & Download</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    if (typeof window.openExportModal !== 'function') {
+        window.openExportModal = function(modalId) {
+            var el = document.getElementById(modalId || 'newReportModal');
+            if (el) el.style.display = 'flex';
+        };
+    }
+    if (typeof window.closeExportModal !== 'function') {
+        window.closeExportModal = function(modalId) {
+            var el = document.getElementById(modalId || 'newReportModal');
+            if (el) el.style.display = 'none';
+        };
+    }
+    if (typeof window.openNewReportModal !== 'function') {
+        window.openNewReportModal = function() {
+            window.openExportModal('newReportModal');
+        };
+    }
+    if (typeof window.closeNewReportModal !== 'function') {
+        window.closeNewReportModal = function() {
+            window.closeExportModal('newReportModal');
+        };
+    }
+
+    if (typeof window.submitReportExport !== 'function') {
+        window.submitReportExport = function(e, modalId) {
+            e.preventDefault();
+            var keyEl = document.getElementById('rptKey_' + modalId);
+            var key = keyEl ? keyEl.value : 'employee';
+            window.closeExportModal(modalId);
+            if (typeof window.showToast === 'function') {
+                window.showToast('Generating and downloading report from database...', 'success');
+            }
+            window.location.href = '{% url "reports" %}?export=' + encodeURIComponent(key);
+        };
+    }
+
+    // Close on backdrop click and Escape key
+    (function() {
+        var modal = document.getElementById('{{ modal_id|default:"newReportModal" }}');
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                var m = document.getElementById('{{ modal_id|default:"newReportModal" }}');
+                if (m && m.style.display === 'flex') {
+                    m.style.display = 'none';
+                }
+            }
+        });
+    })();
+</script>
